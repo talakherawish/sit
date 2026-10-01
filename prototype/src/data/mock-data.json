@@ -3,7 +3,8 @@
   "seats": { "total": 40, "taken": 18 },
   "zones": [
     {
-      "id": "z-public", "type": "public_seating",
+      "id": "z-public",
+      "type": "public_seating",
       "name": { "en": "Public seating", "ar": "الجلسات العامة" },
       "rules": [
         { "en": "First come, first served — not bookable", "ar": "الأولوية لمن يحضر أولاً — غير قابلة للحجز" },
@@ -13,7 +14,8 @@
       "map_shape": { "x": 8, "y": 84, "w": 212, "h": 134 }
     },
     {
-      "id": "z-focus", "type": "small_room",
+      "id": "z-focus",
+      "type": "small_room",
       "name": { "en": "Focus Rooms", "ar": "غرف التركيز" },
       "rules": [
         { "en": "Closed door: calls are fine", "ar": "باب مغلق: المكالمات مسموحة" },
@@ -22,7 +24,8 @@
       "map_shape": { "x": 8, "y": 8, "w": 212, "h": 68 }
     },
     {
-      "id": "z-big", "type": "big_room",
+      "id": "z-big",
+      "type": "big_room",
       "name": { "en": "Big Rooms", "ar": "القاعات الكبيرة" },
       "rules": [
         { "en": "For groups and meetings", "ar": "للمجموعات والاجتماعات" },
@@ -34,39 +37,84 @@
   ],
   "spaces": [
     {
-      "id": "focus-1", "zone_id": "z-focus", "kind": "focus_room",
-      "label": { "en": "Focus Room 1", "ar": "غرفة التركيز 1" }, "short": { "en": "Focus 1", "ar": "تركيز 1" },
-      "capacity": 2, "size_m2": 8, "features": ["socket", "window"],
+      "id": "focus-1",
+      "zone_id": "z-focus",
+      "kind": "focus_room",
+      "label": { "en": "Focus Room 1", "ar": "غرفة التركيز 1" },
+      "short": { "en": "Focus 1", "ar": "تركيز 1" },
+      "capacity": 2,
+      "size_m2": 8,
+      "features": ["socket", "window"],
       "photos": ["#588888", "#24508F", "#6B7B7A"],
-      "map_x": 8, "map_y": 8, "map_w": 68, "map_h": 68, "status": "free"
+      "map_x": 8,
+      "map_y": 8,
+      "map_w": 68,
+      "map_h": 68,
+      "status": "free"
     },
     {
-      "id": "focus-2", "zone_id": "z-focus", "kind": "focus_room",
-      "label": { "en": "Focus Room 2", "ar": "غرفة التركيز 2" }, "short": { "en": "Focus 2", "ar": "تركيز 2" },
-      "capacity": 3, "size_m2": 10, "features": ["socket", "screen"],
+      "id": "focus-2",
+      "zone_id": "z-focus",
+      "kind": "focus_room",
+      "label": { "en": "Focus Room 2", "ar": "غرفة التركيز 2" },
+      "short": { "en": "Focus 2", "ar": "تركيز 2" },
+      "capacity": 3,
+      "size_m2": 10,
+      "features": ["socket", "screen"],
       "photos": ["#24508F", "#588888", "#F5821F"],
-      "map_x": 80, "map_y": 8, "map_w": 68, "map_h": 68, "status": "free"
+      "map_x": 80,
+      "map_y": 8,
+      "map_w": 68,
+      "map_h": 68,
+      "status": "free"
     },
     {
-      "id": "focus-3", "zone_id": "z-focus", "kind": "focus_room",
-      "label": { "en": "Focus Room 3", "ar": "غرفة التركيز 3" }, "short": { "en": "Focus 3", "ar": "تركيز 3" },
-      "capacity": 4, "size_m2": 12, "features": ["socket", "whiteboard", "window"],
+      "id": "focus-3",
+      "zone_id": "z-focus",
+      "kind": "focus_room",
+      "label": { "en": "Focus Room 3", "ar": "غرفة التركيز 3" },
+      "short": { "en": "Focus 3", "ar": "تركيز 3" },
+      "capacity": 4,
+      "size_m2": 12,
+      "features": ["socket", "whiteboard", "window"],
       "photos": ["#6B7B7A", "#588888", "#24508F"],
-      "map_x": 152, "map_y": 8, "map_w": 68, "map_h": 68, "status": "free"
+      "map_x": 152,
+      "map_y": 8,
+      "map_w": 68,
+      "map_h": 68,
+      "status": "free"
     },
     {
-      "id": "big-1", "zone_id": "z-big", "kind": "big_room",
-      "label": { "en": "Big Room 1", "ar": "القاعة الكبيرة 1" }, "short": { "en": "Big Room 1", "ar": "القاعة 1" },
-      "capacity": 10, "size_m2": 30, "features": ["screen", "whiteboard", "ac", "socket"],
+      "id": "big-1",
+      "zone_id": "z-big",
+      "kind": "big_room",
+      "label": { "en": "Big Room 1", "ar": "القاعة الكبيرة 1" },
+      "short": { "en": "Big Room 1", "ar": "القاعة 1" },
+      "capacity": 10,
+      "size_m2": 30,
+      "features": ["screen", "whiteboard", "ac", "socket"],
       "photos": ["#588888", "#F5821F", "#24508F"],
-      "map_x": 232, "map_y": 8, "map_w": 120, "map_h": 94, "status": "free"
+      "map_x": 232,
+      "map_y": 8,
+      "map_w": 120,
+      "map_h": 94,
+      "status": "free"
     },
     {
-      "id": "big-2", "zone_id": "z-big", "kind": "big_room",
-      "label": { "en": "Big Room 2", "ar": "القاعة الكبيرة 2" }, "short": { "en": "Big Room 2", "ar": "القاعة 2" },
-      "capacity": 12, "size_m2": 36, "features": ["screen", "whiteboard", "ac", "socket"],
+      "id": "big-2",
+      "zone_id": "z-big",
+      "kind": "big_room",
+      "label": { "en": "Big Room 2", "ar": "القاعة الكبيرة 2" },
+      "short": { "en": "Big Room 2", "ar": "القاعة 2" },
+      "capacity": 12,
+      "size_m2": 36,
+      "features": ["screen", "whiteboard", "ac", "socket"],
       "photos": ["#24508F", "#6B7B7A", "#588888"],
-      "map_x": 232, "map_y": 110, "map_w": 120, "map_h": 94, "status": "free"
+      "map_x": 232,
+      "map_y": 110,
+      "map_w": 120,
+      "map_h": 94,
+      "status": "free"
     }
   ],
   "landmarks": [
@@ -76,7 +124,12 @@
     { "id": "entrance", "label": { "en": "Entrance", "ar": "المدخل" }, "x": 232, "y": 272, "w": 120, "h": 40 }
   ],
   "work_modes": [
-    { "id": "focus", "label": { "en": "Focus alone", "ar": "تركيز وحدي" }, "highlight_zone_types": ["small_room", "public_seating"], "default_reason": "study" },
+    {
+      "id": "focus",
+      "label": { "en": "Focus alone", "ar": "تركيز وحدي" },
+      "highlight_zone_types": ["small_room", "public_seating"],
+      "default_reason": "study"
+    },
     { "id": "call", "label": { "en": "Call", "ar": "مكالمة" }, "highlight_zone_types": ["small_room"], "default_reason": "client_call" },
     { "id": "group", "label": { "en": "Group work", "ar": "عمل جماعي" }, "highlight_zone_types": ["big_room"], "default_reason": "group_project" },
     { "id": "meeting", "label": { "en": "Meeting", "ar": "اجتماع" }, "highlight_zone_types": ["big_room"], "default_reason": "meeting" },
@@ -96,28 +149,233 @@
     { "date": "2026-11-15", "reason": { "en": "Independence Day", "ar": "يوم الاستقلال" } }
   ],
   "renters": [
-    { "id": "larine", "name": "Larine Saleh", "phone": "+970599100201", "email": "larine@example.com", "language": "ar", "birthday": "2004-03-12", "preferred_contact": "whatsapp", "no_show_count": 0, "paused_until": null },
-    { "id": "mohammad", "name": "Mohammad Odeh", "phone": "+970599100202", "email": "mohammad@example.com", "language": "en", "birthday": null, "preferred_contact": "sms", "no_show_count": 0, "paused_until": null },
-    { "id": "omar", "name": "Omar Nasser", "phone": "+970599100203", "email": "omar@example.com", "language": "en", "birthday": null, "preferred_contact": "email", "no_show_count": 0, "paused_until": null },
-    { "id": "sara", "name": "Sara Khalil", "phone": "+970599100204", "email": "sara@example.com", "language": "ar", "birthday": null, "preferred_contact": "sms", "no_show_count": 1, "paused_until": null },
-    { "id": "yousef", "name": "Yousef Darwish", "phone": "+972528100205", "email": "yousef@example.com", "language": "en", "birthday": null, "preferred_contact": "email", "no_show_count": 0, "paused_until": null },
-    { "id": "hala", "name": "Hala Mansour", "phone": "+970599100206", "email": "hala@example.com", "language": "ar", "birthday": null, "preferred_contact": "sms", "no_show_count": 0, "paused_until": null },
-    { "id": "ahmad", "name": "Ahmad Qasem", "phone": "+970599100207", "email": "ahmad@example.com", "language": "en", "birthday": null, "preferred_contact": "sms", "no_show_count": 2, "paused_until": null }
+    {
+      "id": "larine",
+      "name": "Larine Saleh",
+      "phone": "+970599100201",
+      "email": "larine@example.com",
+      "language": "ar",
+      "birthday": "2004-03-12",
+      "preferred_contact": "whatsapp",
+      "no_show_count": 0,
+      "paused_until": null
+    },
+    {
+      "id": "mohammad",
+      "name": "Mohammad Odeh",
+      "phone": "+970599100202",
+      "email": "mohammad@example.com",
+      "language": "en",
+      "birthday": null,
+      "preferred_contact": "sms",
+      "no_show_count": 0,
+      "paused_until": null
+    },
+    {
+      "id": "omar",
+      "name": "Omar Nasser",
+      "phone": "+970599100203",
+      "email": "omar@example.com",
+      "language": "en",
+      "birthday": null,
+      "preferred_contact": "email",
+      "no_show_count": 0,
+      "paused_until": null
+    },
+    {
+      "id": "sara",
+      "name": "Sara Khalil",
+      "phone": "+970599100204",
+      "email": "sara@example.com",
+      "language": "ar",
+      "birthday": null,
+      "preferred_contact": "sms",
+      "no_show_count": 1,
+      "paused_until": null
+    },
+    {
+      "id": "yousef",
+      "name": "Yousef Darwish",
+      "phone": "+972528100205",
+      "email": "yousef@example.com",
+      "language": "en",
+      "birthday": null,
+      "preferred_contact": "email",
+      "no_show_count": 0,
+      "paused_until": null
+    },
+    {
+      "id": "hala",
+      "name": "Hala Mansour",
+      "phone": "+970599100206",
+      "email": "hala@example.com",
+      "language": "ar",
+      "birthday": null,
+      "preferred_contact": "sms",
+      "no_show_count": 0,
+      "paused_until": null
+    },
+    {
+      "id": "ahmad",
+      "name": "Ahmad Qasem",
+      "phone": "+970599100207",
+      "email": "ahmad@example.com",
+      "language": "en",
+      "birthday": null,
+      "preferred_contact": "sms",
+      "no_show_count": 2,
+      "paused_until": null
+    }
   ],
   "bookings": [
-    { "id": "b-moh-today", "renter_id": "mohammad", "space_id": "focus-1", "date": "2026-10-01", "start": "09:00", "end": "10:00", "reason": "study", "reminder": "2h", "series_id": "ser-moh", "status": "used", "created_by": "renter", "source": "map" },
-    { "id": "b-hala", "renter_id": "hala", "space_id": "focus-3", "date": "2026-10-01", "start": "09:30", "end": "11:00", "reason": "client_call", "reminder": null, "status": "used", "created_by": "renter", "source": "list" },
-    { "id": "b-sara", "renter_id": "sara", "space_id": "focus-2", "date": "2026-10-01", "start": "10:00", "end": "11:00", "reason": "study", "reminder": "3h", "status": "confirmed", "created_by": "renter", "source": "map" },
-    { "id": "b-yousef", "renter_id": "yousef", "space_id": "big-1", "date": "2026-10-01", "start": "12:00", "end": "13:00", "reason": "meeting", "reminder": "1d", "status": "confirmed", "created_by": "staff", "source": "staff" },
-    { "id": "b-ahmad", "renter_id": "ahmad", "space_id": "focus-1", "date": "2026-10-01", "start": "14:00", "end": "15:30", "reason": "interview", "reminder": "2h", "status": "awaiting_confirmation", "created_by": "renter", "source": "filter" },
-    { "id": "b-larine", "renter_id": "larine", "space_id": "big-2", "date": "2026-10-01", "start": "15:00", "end": "17:00", "reason": "group_project", "reminder": "2h", "status": "awaiting_confirmation", "created_by": "renter", "source": "map" },
-    { "id": "b-larine-past", "renter_id": "larine", "space_id": "big-1", "date": "2026-09-24", "start": "13:00", "end": "15:00", "reason": "group_project", "reminder": "2h", "status": "used", "created_by": "renter", "source": "map" },
-    { "id": "b-larine-past2", "renter_id": "larine", "space_id": "focus-3", "date": "2026-09-17", "start": "10:00", "end": "12:00", "reason": "study", "reminder": "eve", "status": "released", "release_reason": "unconfirmed", "created_by": "renter", "source": "list" },
-    { "id": "b-moh-p1", "renter_id": "mohammad", "space_id": "focus-1", "date": "2026-09-30", "start": "09:00", "end": "10:00", "reason": "study", "reminder": "2h", "series_id": "ser-moh", "status": "used", "created_by": "renter", "source": "map" },
-    { "id": "b-moh-p2", "renter_id": "mohammad", "space_id": "focus-1", "date": "2026-09-29", "start": "09:00", "end": "10:00", "reason": "study", "reminder": "2h", "series_id": "ser-moh", "status": "used", "created_by": "renter", "source": "map" }
+    {
+      "id": "b-moh-today",
+      "renter_id": "mohammad",
+      "space_id": "focus-1",
+      "date": "2026-10-01",
+      "start": "09:00",
+      "end": "10:00",
+      "reason": "study",
+      "reminder": "2h",
+      "series_id": "ser-moh",
+      "status": "used",
+      "created_by": "renter",
+      "source": "map"
+    },
+    {
+      "id": "b-hala",
+      "renter_id": "hala",
+      "space_id": "focus-3",
+      "date": "2026-10-01",
+      "start": "09:30",
+      "end": "11:00",
+      "reason": "client_call",
+      "reminder": null,
+      "status": "used",
+      "created_by": "renter",
+      "source": "list"
+    },
+    {
+      "id": "b-sara",
+      "renter_id": "sara",
+      "space_id": "focus-2",
+      "date": "2026-10-01",
+      "start": "10:00",
+      "end": "11:00",
+      "reason": "study",
+      "reminder": "3h",
+      "status": "confirmed",
+      "created_by": "renter",
+      "source": "map"
+    },
+    {
+      "id": "b-yousef",
+      "renter_id": "yousef",
+      "space_id": "big-1",
+      "date": "2026-10-01",
+      "start": "12:00",
+      "end": "13:00",
+      "reason": "meeting",
+      "reminder": "1d",
+      "status": "confirmed",
+      "created_by": "staff",
+      "source": "staff"
+    },
+    {
+      "id": "b-ahmad",
+      "renter_id": "ahmad",
+      "space_id": "focus-1",
+      "date": "2026-10-01",
+      "start": "14:00",
+      "end": "15:30",
+      "reason": "interview",
+      "reminder": "2h",
+      "status": "awaiting_confirmation",
+      "created_by": "renter",
+      "source": "filter"
+    },
+    {
+      "id": "b-larine",
+      "renter_id": "larine",
+      "space_id": "big-2",
+      "date": "2026-10-01",
+      "start": "15:00",
+      "end": "17:00",
+      "reason": "group_project",
+      "reminder": "2h",
+      "status": "awaiting_confirmation",
+      "created_by": "renter",
+      "source": "map"
+    },
+    {
+      "id": "b-larine-past",
+      "renter_id": "larine",
+      "space_id": "big-1",
+      "date": "2026-09-24",
+      "start": "13:00",
+      "end": "15:00",
+      "reason": "group_project",
+      "reminder": "2h",
+      "status": "used",
+      "created_by": "renter",
+      "source": "map"
+    },
+    {
+      "id": "b-larine-past2",
+      "renter_id": "larine",
+      "space_id": "focus-3",
+      "date": "2026-09-17",
+      "start": "10:00",
+      "end": "12:00",
+      "reason": "study",
+      "reminder": "eve",
+      "status": "released",
+      "release_reason": "unconfirmed",
+      "created_by": "renter",
+      "source": "list"
+    },
+    {
+      "id": "b-moh-p1",
+      "renter_id": "mohammad",
+      "space_id": "focus-1",
+      "date": "2026-09-30",
+      "start": "09:00",
+      "end": "10:00",
+      "reason": "study",
+      "reminder": "2h",
+      "series_id": "ser-moh",
+      "status": "used",
+      "created_by": "renter",
+      "source": "map"
+    },
+    {
+      "id": "b-moh-p2",
+      "renter_id": "mohammad",
+      "space_id": "focus-1",
+      "date": "2026-09-29",
+      "start": "09:00",
+      "end": "10:00",
+      "reason": "study",
+      "reminder": "2h",
+      "series_id": "ser-moh",
+      "status": "used",
+      "created_by": "renter",
+      "source": "map"
+    }
   ],
   "series": [
-    { "id": "ser-moh", "renter_id": "mohammad", "space_id": "focus-1", "days": [0, 1, 2, 3, 4], "from": "2026-10-04", "until": "2026-10-29", "start": "09:00", "end": "10:00", "reason": "study", "reminder": "2h" }
+    {
+      "id": "ser-moh",
+      "renter_id": "mohammad",
+      "space_id": "focus-1",
+      "days": [0, 1, 2, 3, 4],
+      "from": "2026-10-04",
+      "until": "2026-10-29",
+      "start": "09:00",
+      "end": "10:00",
+      "reason": "study",
+      "reminder": "2h"
+    }
   ],
   "visits": [
     { "id": "v-moh", "renter_id": "mohammad", "check_in": "2026-10-01T09:02", "check_out": null, "via": "sit" },
@@ -131,14 +389,77 @@
     { "time": "2026-10-01T09:28", "change": "+1", "new_total": 18, "source": "check_in", "staff": "Rana" }
   ],
   "notices": [
-    { "id": "n-event", "tag": "events", "text": { "en": "Event in the main hall 10:00–14:00, expect noise", "ar": "فعالية في القاعة الرئيسية 10:00–14:00، توقّع بعض الضجيج" }, "space_id": null, "posted_at": "2026-10-01T08:05", "expires_at": "2026-10-01T18:00", "daily": false },
-    { "id": "n-wifi", "tag": "wifi", "text": { "en": "Wifi back to normal", "ar": "عاد الواي فاي للعمل بشكل طبيعي" }, "space_id": null, "posted_at": "2026-10-01T08:40", "expires_at": "2026-10-01T18:00", "daily": false },
-    { "id": "n-old", "tag": "ac", "text": { "en": "AC being serviced in Big Room 2", "ar": "صيانة التكييف في القاعة الكبيرة 2" }, "space_id": "big-2", "posted_at": "2026-09-30T08:10", "expires_at": "2026-09-30T18:00", "daily": true }
+    {
+      "id": "n-event",
+      "tag": "events",
+      "text": { "en": "Event in the main hall 10:00–14:00, expect noise", "ar": "فعالية في القاعة الرئيسية 10:00–14:00، توقّع بعض الضجيج" },
+      "space_id": null,
+      "posted_at": "2026-10-01T08:05",
+      "expires_at": "2026-10-01T18:00",
+      "daily": false
+    },
+    {
+      "id": "n-wifi",
+      "tag": "wifi",
+      "text": { "en": "Wifi back to normal", "ar": "عاد الواي فاي للعمل بشكل طبيعي" },
+      "space_id": null,
+      "posted_at": "2026-10-01T08:40",
+      "expires_at": "2026-10-01T18:00",
+      "daily": false
+    },
+    {
+      "id": "n-old",
+      "tag": "ac",
+      "text": { "en": "AC being serviced in Big Room 2", "ar": "صيانة التكييف في القاعة الكبيرة 2" },
+      "space_id": "big-2",
+      "posted_at": "2026-09-30T08:10",
+      "expires_at": "2026-09-30T18:00",
+      "daily": true
+    }
   ],
   "reports": [
-    { "id": "r-larine", "renter_id": "larine", "space_id": "big-2", "type": "ac", "note": "AC not cooling in Big Room 2", "status": "in_progress", "history": [ { "status": "sent", "time": "2026-09-30T14:10" }, { "status": "seen", "time": "2026-09-30T14:40" }, { "status": "in_progress", "time": "2026-10-01T08:15" } ], "reply": "Technician booked for this afternoon." },
-    { "id": "r-moh", "renter_id": "mohammad", "space_id": "public", "type": "wifi", "note": "Wifi drops on the quiet side", "status": "seen", "history": [ { "status": "sent", "time": "2026-09-29T10:05" }, { "status": "seen", "time": "2026-09-29T11:00" } ], "reply": null },
-    { "id": "r-sara", "renter_id": "sara", "space_id": "focus-2", "type": "furniture", "note": "Chair wobbles", "status": "fixed", "history": [ { "status": "sent", "time": "2026-09-25T12:00" }, { "status": "seen", "time": "2026-09-25T12:30" }, { "status": "in_progress", "time": "2026-09-26T09:00" }, { "status": "fixed", "time": "2026-09-26T15:00" } ], "reply": "Chair replaced." }
+    {
+      "id": "r-larine",
+      "renter_id": "larine",
+      "space_id": "big-2",
+      "type": "ac",
+      "note": "AC not cooling in Big Room 2",
+      "status": "in_progress",
+      "history": [
+        { "status": "sent", "time": "2026-09-30T14:10" },
+        { "status": "seen", "time": "2026-09-30T14:40" },
+        { "status": "in_progress", "time": "2026-10-01T08:15" }
+      ],
+      "reply": "Technician booked for this afternoon."
+    },
+    {
+      "id": "r-moh",
+      "renter_id": "mohammad",
+      "space_id": "public",
+      "type": "wifi",
+      "note": "Wifi drops on the quiet side",
+      "status": "seen",
+      "history": [
+        { "status": "sent", "time": "2026-09-29T10:05" },
+        { "status": "seen", "time": "2026-09-29T11:00" }
+      ],
+      "reply": null
+    },
+    {
+      "id": "r-sara",
+      "renter_id": "sara",
+      "space_id": "focus-2",
+      "type": "furniture",
+      "note": "Chair wobbles",
+      "status": "fixed",
+      "history": [
+        { "status": "sent", "time": "2026-09-25T12:00" },
+        { "status": "seen", "time": "2026-09-25T12:30" },
+        { "status": "in_progress", "time": "2026-09-26T09:00" },
+        { "status": "fixed", "time": "2026-09-26T15:00" }
+      ],
+      "reply": "Chair replaced."
+    }
   ],
   "insights": {
     "weeks": [

@@ -3,7 +3,7 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useRequireLogin } from '../lib/hooks'
-import { today } from '../lib/logic'
+import { dateOf } from '../lib/logic'
 import Icon, { SitMark } from '../components/Icon'
 import { Sheet, Toast } from '../components/ui'
 
@@ -16,8 +16,8 @@ export default function RenterLayout() {
     // North Star: one page_view per visitor per day (#32)
     const s = useStore.getState()
     const visitor = s.renterId || s.guestId
-    const day = today(s.now)
-    const seen = s.data.events.some((e) => e.name === 'page_view' && e.visitor_id === visitor && today(e.time) === day)
+    const day = dateOf(s.now)
+    const seen = s.data.events.some((e) => e.name === 'page_view' && e.visitor_id === visitor && dateOf(e.time) === day)
     if (!seen) s.logEvent('page_view', { visitor_id: visitor, path: loc.pathname })
   }, [loc.pathname])
 
@@ -50,13 +50,17 @@ function Header() {
         <SitMark />
       </Link>
       <div className="flex-1" />
-      <button onClick={() => setLang(lang === 'en' ? 'ar' : 'en')} className="min-h-11 rounded-lg px-2.5 text-sm font-semibold text-navy" aria-label={t('common.switch_lang')}>
+      <button
+        onClick={() => setLang(lang === 'en' ? 'ar' : 'en')}
+        className="min-h-11 rounded-lg px-2.5 text-sm font-semibold text-navy"
+        aria-label={t('common.switch_lang')}
+      >
         {lang === 'en' ? 'عربي' : 'English'}
       </button>
       {me && (
         <Link to="/r/notifications" className="relative grid size-11 place-items-center text-navy" aria-label={t('nav.notifications')}>
           <Icon name="bell" />
-          {unread && <span className="absolute top-2.5 end-2.5 size-2.5 rounded-full bg-orange ring-2 ring-white" />}
+          {unread && <span className="absolute end-2.5 top-2.5 size-2.5 rounded-full bg-orange ring-2 ring-white" />}
         </Link>
       )}
       {me ? (
@@ -64,7 +68,9 @@ function Header() {
           <span className="grid size-9 place-items-center rounded-full bg-navy font-semibold text-white">{me.name[0]}</span>
         </Link>
       ) : (
-        <Link to="/r/login" className="min-h-11 content-center rounded-lg px-3 font-semibold text-navy">{t('nav.login')}</Link>
+        <Link to="/r/login" className="min-h-11 content-center rounded-lg px-3 font-semibold text-navy">
+          {t('nav.login')}
+        </Link>
       )}
     </header>
   )
@@ -86,8 +92,12 @@ function TabBar() {
       {tabs.map((tab) => {
         const active = tab.match.some((m) => pathname.startsWith(m))
         return (
-          <button key={tab.key} onClick={tab.open} aria-current={active ? 'page' : undefined}
-            className={`flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs font-medium ${active ? 'text-orange' : 'text-grey-ink'}`}>
+          <button
+            key={tab.key}
+            onClick={tab.open}
+            aria-current={active ? 'page' : undefined}
+            className={`flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs font-medium ${active ? 'text-orange' : 'text-grey-ink'}`}
+          >
             <Icon name={tab.icon} />
             {t(`nav.${tab.key}`)}
           </button>
@@ -112,8 +122,12 @@ function LoginGate() {
       <p className="text-xs text-grey-ink">R-09</p>
       <p className="mb-4 text-grey-ink">{t('gate.body')}</p>
       <div className="grid gap-2">
-        <button className="btn-primary" onClick={() => go('/r/signup')}>{t('gate.signup')}</button>
-        <button className="btn-secondary" onClick={() => go('/r/login')}>{t('gate.login')}</button>
+        <button className="btn-primary" onClick={() => go('/r/signup')}>
+          {t('gate.signup')}
+        </button>
+        <button className="btn-secondary" onClick={() => go('/r/login')}>
+          {t('gate.login')}
+        </button>
       </div>
     </Sheet>
   )
@@ -127,7 +141,9 @@ export function NeedLogin({ returnTo }) {
     <div className="p-6 text-center">
       <Icon name="lock" className="mx-auto mb-2 text-grey-ink" size={32} />
       <p className="mb-4 text-grey-ink">{t('gate.body')}</p>
-      <button className="btn-primary" onClick={() => set({ gate: { returnTo } })}>{t('nav.login')}</button>
+      <button className="btn-primary" onClick={() => set({ gate: { returnTo } })}>
+        {t('nav.login')}
+      </button>
     </div>
   )
 }

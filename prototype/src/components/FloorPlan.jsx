@@ -6,7 +6,11 @@ import { stateAt, nextFreeAt } from '../lib/logic'
 import { hm } from '../lib/time'
 import Icon from './Icon'
 
-const TEAL = '#588888', GREY = '#6B7B7A', ORANGE = '#F5821F', RED = '#D64545', INK = '#111111'
+const TEAL = '#588888',
+  GREY = '#6B7B7A',
+  ORANGE = '#F5821F',
+  RED = '#D64545',
+  INK = '#111111'
 
 /** Top-down plan of the Technopark ground floor. Rooms are tappable; public seating shows the staff count. */
 export default function FloorPlan({ date, min, mode, selected, onSelect }) {
@@ -20,7 +24,12 @@ export default function FloorPlan({ date, min, mode, selected, onSelect }) {
   const pubMatch = hl.includes('public_seating')
   const dimPub = mode !== 'browse' && !pubMatch && selected !== 'public'
 
-  const key = (fn) => (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fn() } }
+  const key = (fn) => (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault()
+      fn()
+    }
+  }
 
   return (
     <TransformWrapper minScale={1} maxScale={3} doubleClick={{ mode: 'zoomIn', step: 0.7 }} wheel={{ step: 0.12 }} panning={{ velocityDisabled: true }}>
@@ -38,20 +47,49 @@ export default function FloorPlan({ date, min, mode, selected, onSelect }) {
 
               {/* Public seating zone: not bookable, shaded by how full it is */}
               <g
-                role="button" tabIndex={0} className="cursor-pointer outline-none"
+                role="button"
+                tabIndex={0}
+                className="cursor-pointer outline-none"
                 aria-label={t('map.public_aria', { taken, total })}
-                onClick={() => onSelect('public')} onKeyDown={key(() => onSelect('public'))}
+                onClick={() => onSelect('public')}
+                onKeyDown={key(() => onSelect('public'))}
                 opacity={dimPub ? 0.35 : 1}
               >
-                <rect x={pub.map_shape.x} y={pub.map_shape.y} width={pub.map_shape.w} height={pub.map_shape.h} rx="8"
-                  fill={ORANGE} fillOpacity={0.06 + 0.22 * (taken / total)}
-                  stroke={selected === 'public' || pubMatch ? ORANGE : TEAL} strokeWidth={selected === 'public' || pubMatch ? 3 : 1.5} strokeDasharray={selected === 'public' || pubMatch ? '' : '5 3'} />
-                <text x="114" y="104" textAnchor="middle" fontSize="13" fontWeight="600" fill={INK}>{L(pub.name)}</text>
+                <rect
+                  x={pub.map_shape.x}
+                  y={pub.map_shape.y}
+                  width={pub.map_shape.w}
+                  height={pub.map_shape.h}
+                  rx="8"
+                  fill={ORANGE}
+                  fillOpacity={0.06 + 0.22 * (taken / total)}
+                  stroke={selected === 'public' || pubMatch ? ORANGE : TEAL}
+                  strokeWidth={selected === 'public' || pubMatch ? 3 : 1.5}
+                  strokeDasharray={selected === 'public' || pubMatch ? '' : '5 3'}
+                />
+                <text x="114" y="104" textAnchor="middle" fontSize="13" fontWeight="600" fill={INK}>
+                  {L(pub.name)}
+                </text>
                 {Array.from({ length: total }, (_, i) => (
-                  <circle key={i} cx={24 + (i % 10) * 20.2} cy={122 + Math.floor(i / 10) * 18} r="6"
-                    fill={i < taken ? GREY : '#fff'} stroke={i < taken ? GREY : TEAL} strokeWidth="1.5" />
+                  <circle
+                    key={i}
+                    cx={24 + (i % 10) * 20.2}
+                    cy={122 + Math.floor(i / 10) * 18}
+                    r="6"
+                    fill={i < taken ? GREY : '#fff'}
+                    stroke={i < taken ? GREY : TEAL}
+                    strokeWidth="1.5"
+                  />
                 ))}
-                <text x="114" y="208" textAnchor="middle" fontSize="16" fontWeight="700" fill={INK} style={{ fontFamily: '"Barlow Semi Condensed", sans-serif' }}>
+                <text
+                  x="114"
+                  y="208"
+                  textAnchor="middle"
+                  fontSize="16"
+                  fontWeight="700"
+                  fill={INK}
+                  style={{ fontFamily: '"Barlow Semi Condensed", sans-serif' }}
+                >
                   {taken} / {total}
                 </text>
               </g>
@@ -73,20 +111,59 @@ export default function FloorPlan({ date, min, mode, selected, onSelect }) {
                       ? t('map.room_booked_aria', { name: L(sp.label), until: until !== null ? hm(until) : '—' })
                       : t('map.room_down_aria', { name: L(sp.label) })
                 return (
-                  <g key={sp.id} role="button" tabIndex={0} aria-label={label} className="cursor-pointer outline-none"
-                    onClick={() => onSelect(sp.id)} onKeyDown={key(() => onSelect(sp.id))} opacity={dim ? 0.35 : 1}>
-                    <rect x={sp.map_x} y={sp.map_y} width={sp.map_w} height={sp.map_h} rx="8" fill={fill} stroke={stroke} strokeWidth={isSel || match ? 3 : 1.5} />
+                  <g
+                    key={sp.id}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={label}
+                    className="cursor-pointer outline-none"
+                    onClick={() => onSelect(sp.id)}
+                    onKeyDown={key(() => onSelect(sp.id))}
+                    opacity={dim ? 0.35 : 1}
+                  >
+                    <rect
+                      x={sp.map_x}
+                      y={sp.map_y}
+                      width={sp.map_w}
+                      height={sp.map_h}
+                      rx="8"
+                      fill={fill}
+                      stroke={stroke}
+                      strokeWidth={isSel || match ? 3 : 1.5}
+                    />
                     {/* door gap */}
                     <line x1={cx - 10} x2={cx + 10} y1={sp.map_y + sp.map_h} y2={sp.map_y + sp.map_h} stroke="#F4F7F7" strokeWidth="3" />
-                    <text x={cx} y={sp.map_y + sp.map_h / 2 - 8} textAnchor="middle" fontSize="13" fontWeight="600" fill={INK}>{L(sp.short)}</text>
-                    <text x={cx} y={sp.map_y + sp.map_h / 2 + 8} textAnchor="middle" fontSize="12" fill={INK}>{t('map.people', { n: sp.capacity })}</text>
-                    <text x={cx} y={sp.map_y + sp.map_h / 2 + 23} textAnchor="middle" fontSize="12" fontWeight="600" fill={st.state === 'down' ? '#a32f2f' : INK}>
-                      {st.state === 'free' ? t('map.free') : st.state === 'down' ? t('map.down') : until !== null ? t('map.until', { time: hm(until) }) : t('map.booked')}
+                    <text x={cx} y={sp.map_y + sp.map_h / 2 - 8} textAnchor="middle" fontSize="13" fontWeight="600" fill={INK}>
+                      {L(sp.short)}
+                    </text>
+                    <text x={cx} y={sp.map_y + sp.map_h / 2 + 8} textAnchor="middle" fontSize="12" fill={INK}>
+                      {t('map.people', { n: sp.capacity })}
+                    </text>
+                    <text
+                      x={cx}
+                      y={sp.map_y + sp.map_h / 2 + 23}
+                      textAnchor="middle"
+                      fontSize="12"
+                      fontWeight="600"
+                      fill={st.state === 'down' ? '#a32f2f' : INK}
+                    >
+                      {st.state === 'free'
+                        ? t('map.free')
+                        : st.state === 'down'
+                          ? t('map.down')
+                          : until !== null
+                            ? t('map.until', { time: hm(until) })
+                            : t('map.booked')}
                     </text>
                     {st.state === 'booked' && (
                       <g>
                         <circle cx={sp.map_x + sp.map_w - 11} cy={sp.map_y + 11} r="7" fill={INK} />
-                        <path d={`M${sp.map_x + sp.map_w - 14} ${sp.map_y + 11}h6v4h-6z M${sp.map_x + sp.map_w - 13} ${sp.map_y + 11}v-2a2 2 0 0 1 4 0v2`} stroke="#fff" strokeWidth="1.2" fill="#fff" />
+                        <path
+                          d={`M${sp.map_x + sp.map_w - 14} ${sp.map_y + 11}h6v4h-6z M${sp.map_x + sp.map_w - 13} ${sp.map_y + 11}v-2a2 2 0 0 1 4 0v2`}
+                          stroke="#fff"
+                          strokeWidth="1.2"
+                          fill="#fff"
+                        />
                       </g>
                     )}
                   </g>
@@ -97,19 +174,33 @@ export default function FloorPlan({ date, min, mode, selected, onSelect }) {
                 <g key={lm.id} aria-hidden="true">
                   <rect x={lm.x} y={lm.y} width={lm.w} height={lm.h} rx="8" fill="#E6EBEB" stroke="#C9D2D2" />
                   <text x={lm.x + lm.w / 2} y={lm.y + lm.h / 2 + 4} textAnchor="middle" fontSize="12" fill="#4b5859">
-                    {lm.id === 'entrance' ? '↓ ' : ''}{L(lm.label)}
+                    {lm.id === 'entrance' ? '↓ ' : ''}
+                    {L(lm.label)}
                   </text>
                 </g>
               ))}
             </svg>
           </TransformComponent>
           <div className="absolute right-2 bottom-2 flex flex-col gap-1" dir="ltr">
-            {[['plus', () => zoomIn(0.5)], ['minus', () => zoomOut(0.5)]].map(([ic, fn]) => (
-              <button key={ic} onClick={fn} className="grid size-11 place-items-center rounded-lg bg-white/95 text-navy shadow ring-1 ring-grey/20" aria-label={t(`map.zoom_${ic}`)}>
+            {[
+              ['plus', () => zoomIn(0.5)],
+              ['minus', () => zoomOut(0.5)],
+            ].map(([ic, fn]) => (
+              <button
+                key={ic}
+                onClick={fn}
+                className="grid size-11 place-items-center rounded-lg bg-white/95 text-navy shadow ring-1 ring-grey/20"
+                aria-label={t(`map.zoom_${ic}`)}
+              >
                 <Icon name={ic} size={18} />
               </button>
             ))}
-            <button onClick={() => resetTransform()} className="grid h-11 place-items-center rounded-lg bg-white/95 px-1 text-xs font-semibold text-navy shadow ring-1 ring-grey/20">{t('map.reset')}</button>
+            <button
+              onClick={() => resetTransform()}
+              className="grid h-11 place-items-center rounded-lg bg-white/95 px-1 text-xs font-semibold text-navy shadow ring-1 ring-grey/20"
+            >
+              {t('map.reset')}
+            </button>
           </div>
         </div>
       )}

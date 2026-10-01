@@ -31,29 +31,45 @@ export function Report() {
   return (
     <>
       <ScreenTitle id="R-16" title={t('report.title')} phase="next">
-        <Link to="/r/reports" className="btn-link shrink-0 text-sm">{t('report.mine')}</Link>
+        <Link to="/r/reports" className="btn-link shrink-0 text-sm">
+          {t('report.mine')}
+        </Link>
       </ScreenTitle>
       <form onSubmit={send} className="space-y-4 px-4">
         <Field label={t('report.where')}>
           <select className="input" value={where} onChange={(e) => setWhere(e.target.value)}>
             <option value="public">{L(s.data.zones[0].name)}</option>
-            {s.data.spaces.map((sp) => <option key={sp.id} value={sp.id}>{L(sp.label)}</option>)}
+            {s.data.spaces.map((sp) => (
+              <option key={sp.id} value={sp.id}>
+                {L(sp.label)}
+              </option>
+            ))}
           </select>
         </Field>
         <fieldset>
           <legend className="mb-1 text-sm font-medium">{t('report.type')}</legend>
           <div className="flex flex-wrap gap-2">
-            {ISSUE_TYPES.map((k) => <Chip key={k} active={type === k} onClick={() => setType(k)}>{t(`issue.${k}`)}</Chip>)}
+            {ISSUE_TYPES.map((k) => (
+              <Chip key={k} active={type === k} onClick={() => setType(k)}>
+                {t(`issue.${k}`)}
+              </Chip>
+            ))}
           </div>
         </fieldset>
         <Field label={t('report.note')} hint={`${note.length}/200`}>
           <textarea className="input min-h-24 py-2" maxLength={200} value={note} onChange={(e) => setNote(e.target.value)} />
         </Field>
         <Field label={t('report.photo')}>
-          <input type="file" accept="image/*" className="block w-full text-sm file:me-3 file:min-h-11 file:rounded-lg file:border-0 file:bg-navy/10 file:px-4 file:font-semibold file:text-navy"
-            onChange={(e) => setPhoto(e.target.files?.[0]?.name || null)} />
+          <input
+            type="file"
+            accept="image/*"
+            className="block w-full text-sm file:me-3 file:min-h-11 file:rounded-lg file:border-0 file:bg-navy/10 file:px-4 file:font-semibold file:text-navy"
+            onChange={(e) => setPhoto(e.target.files?.[0]?.name || null)}
+          />
         </Field>
-        <button className="btn-primary w-full" disabled={!type}>{t('report.send')}</button>
+        <button className="btn-primary w-full" disabled={!type}>
+          {t('report.send')}
+        </button>
       </form>
     </>
   )
@@ -71,23 +87,33 @@ export function MyReports() {
     <>
       <ScreenTitle id="R-17" title={t('report.mine')} phase="next" back />
       <div className="space-y-3 px-4">
-        <Link to="/r/report" className="btn-primary w-full">{t('report.new')}</Link>
+        <Link to="/r/report" className="btn-primary w-full">
+          {t('report.new')}
+        </Link>
         {!mine.length && <Empty>{t('report.none')}</Empty>}
         {mine.map((r) => (
           <Card key={r.id}>
             <div className="flex items-start justify-between gap-2">
               <div>
-                <h2 className="font-semibold">{t(`issue.${r.type}`)} · {name(r.space_id)}</h2>
+                <h2 className="font-semibold">
+                  {t(`issue.${r.type}`)} · {name(r.space_id)}
+                </h2>
                 {r.note && <p className="text-sm">{r.note}</p>}
               </div>
               <StatusChip status={r.status} label={t(`report_status.${r.status}`)} />
             </div>
             <ol className="mt-2 space-y-1 border-s-2 border-grey/20 ps-3 text-sm">
               {r.history.map((h, i) => (
-                <li key={i}><span className="font-medium">{t(`report_status.${h.status}`)}</span> · <span className="text-grey-ink">{fmtAbs(h.time, s.lang)}</span></li>
+                <li key={i}>
+                  <span className="font-medium">{t(`report_status.${h.status}`)}</span> · <span className="text-grey-ink">{fmtAbs(h.time, s.lang)}</span>
+                </li>
               ))}
             </ol>
-            {r.reply && <p className="mt-2 rounded-lg bg-surface p-2 text-sm"><span className="font-semibold">{t('report.staff_reply')}:</span> {r.reply}</p>}
+            {r.reply && (
+              <p className="mt-2 rounded-lg bg-surface p-2 text-sm">
+                <span className="font-semibold">{t('report.staff_reply')}:</span> {r.reply}
+              </p>
+            )}
           </Card>
         ))}
       </div>
@@ -103,12 +129,19 @@ export function Notifications() {
   const me = findRenter(s.data, s.renterId)
   const list = me ? s.data.notifications.filter((n) => n.renter_id === me.id).sort((a, b) => b.time - a.time) : []
   const [unread] = useState(() => new Set(list.filter((n) => !n.read).map((n) => n.id)))
-  useEffect(() => { if (me) s.markNotificationsRead(me.id) }, [me?.id, list.length]) // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (me) s.markNotificationsRead(me.id)
+  }, [me?.id, list.length]) // eslint-disable-line react-hooks/exhaustive-deps
   if (!me) return <NeedLogin returnTo="/r/notifications" />
-  const action = (n) => ({
-    cancel: t('notif.book_another'), report: t('notif.see_report'), reminder: t('notif.open_reminder'),
-    notice: t('notif.see_map'), release: t('notif.see_bookings'), booking: t('notif.see_bookings'),
-  })[n.kind]
+  const action = (n) =>
+    ({
+      cancel: t('notif.book_another'),
+      report: t('notif.see_report'),
+      reminder: t('notif.open_reminder'),
+      notice: t('notif.see_map'),
+      release: t('notif.see_bookings'),
+      booking: t('notif.see_bookings'),
+    })[n.kind]
   return (
     <>
       <ScreenTitle id="R-18" title={t('notif.title')} phase="next" back />
@@ -118,7 +151,11 @@ export function Notifications() {
           <article key={n.id} className={`rounded-lg bg-white p-3 ring-1 ${unread.has(n.id) ? 'ring-2 ring-orange' : 'ring-grey/20'}`}>
             <p className="text-xs text-grey-ink">{fmtAbs(n.time, s.lang)}</p>
             <p>{tpl(n.tpl, n.params)}</p>
-            {n.link && <Link to={n.link} className="btn-link">{action(n)}</Link>}
+            {n.link && (
+              <Link to={n.link} className="btn-link">
+                {action(n)}
+              </Link>
+            )}
           </article>
         ))}
       </div>
@@ -151,8 +188,14 @@ export function Rate() {
           <legend className="mb-1 font-medium">{t('rate.stars')}</legend>
           <div className="flex gap-1" dir="ltr">
             {[1, 2, 3, 4, 5].map((n) => (
-              <button type="button" key={n} onClick={() => setStars(n)} aria-label={t('rate.n_stars', { count: n })} aria-pressed={stars >= n}
-                className={`grid size-12 place-items-center ${stars >= n ? 'text-orange' : 'text-grey/50'}`}>
+              <button
+                type="button"
+                key={n}
+                onClick={() => setStars(n)}
+                aria-label={t('rate.n_stars', { count: n })}
+                aria-pressed={stars >= n}
+                className={`grid size-12 place-items-center ${stars >= n ? 'text-orange' : 'text-grey/50'}`}
+              >
                 <Icon name="star" size={36} filled={stars >= n} />
               </button>
             ))}
@@ -164,11 +207,17 @@ export function Rate() {
         <fieldset>
           <legend className="mb-1 font-medium">{t('rate.checked_before')}</legend>
           <div className="flex gap-2">
-            <Chip active={before === 'yes'} onClick={() => setBefore('yes')}>{t('common.yes')}</Chip>
-            <Chip active={before === 'no'} onClick={() => setBefore('no')}>{t('common.no')}</Chip>
+            <Chip active={before === 'yes'} onClick={() => setBefore('yes')}>
+              {t('common.yes')}
+            </Chip>
+            <Chip active={before === 'no'} onClick={() => setBefore('no')}>
+              {t('common.no')}
+            </Chip>
           </div>
         </fieldset>
-        <button className="btn-primary w-full" disabled={!stars || !before}>{t('rate.send')}</button>
+        <button className="btn-primary w-full" disabled={!stars || !before}>
+          {t('rate.send')}
+        </button>
       </form>
     </>
   )
@@ -193,7 +242,9 @@ export function Profile() {
             <span className="grid size-14 place-items-center rounded-full bg-navy font-head text-2xl font-bold text-white">{me.name[0]}</span>
             <div>
               <p className="font-semibold">{me.name}</p>
-              <p className="text-sm text-grey-ink" dir="ltr">{me.phone}</p>
+              <p className="text-sm text-grey-ink" dir="ltr">
+                {me.phone}
+              </p>
               <p className="text-sm text-grey-ink">{me.email}</p>
             </div>
           </div>
@@ -204,14 +255,34 @@ export function Profile() {
             <fieldset>
               <legend className="mb-1 text-sm font-medium">{t('profile.contact')}</legend>
               <div className="flex flex-wrap gap-2">
-                {['sms', 'email', 'whatsapp'].map((c) => <Chip key={c} active={me.preferred_contact === c} onClick={() => upd({ preferred_contact: c })}>{t(`profile.${c}`)}</Chip>)}
+                {['sms', 'email', 'whatsapp'].map((c) => (
+                  <Chip key={c} active={me.preferred_contact === c} onClick={() => upd({ preferred_contact: c })}>
+                    {t(`profile.${c}`)}
+                  </Chip>
+                ))}
               </div>
             </fieldset>
             <fieldset>
               <legend className="mb-1 text-sm font-medium">{t('profile.language')}</legend>
               <div className="flex gap-2">
-                <Chip active={me.language === 'ar'} onClick={() => { upd({ language: 'ar' }); s.setLang('ar') }}>العربية</Chip>
-                <Chip active={me.language === 'en'} onClick={() => { upd({ language: 'en' }); s.setLang('en') }}>English</Chip>
+                <Chip
+                  active={me.language === 'ar'}
+                  onClick={() => {
+                    upd({ language: 'ar' })
+                    s.setLang('ar')
+                  }}
+                >
+                  العربية
+                </Chip>
+                <Chip
+                  active={me.language === 'en'}
+                  onClick={() => {
+                    upd({ language: 'en' })
+                    s.setLang('en')
+                  }}
+                >
+                  English
+                </Chip>
               </div>
             </fieldset>
           </div>
@@ -222,15 +293,34 @@ export function Profile() {
           <ul className="space-y-2">
             {past.map((b) => (
               <li key={b.id} className="flex items-center justify-between gap-2 rounded-lg bg-white p-3 ring-1 ring-grey/20">
-                <span>{name(b.space_id)}<br /><span className="text-sm text-grey-ink">{fmtDate(b.date, s.lang)} · <span dir="ltr">{hm(b.start)}–{hm(b.end)}</span></span></span>
+                <span>
+                  {name(b.space_id)}
+                  <br />
+                  <span className="text-sm text-grey-ink">
+                    {fmtDate(b.date, s.lang)} ·{' '}
+                    <span dir="ltr">
+                      {hm(b.start)}–{hm(b.end)}
+                    </span>
+                  </span>
+                </span>
                 <StatusChip status={b.status} />
               </li>
             ))}
           </ul>
         </section>
         <div className="flex flex-wrap gap-2">
-          <Link to="/r/reports" className="btn-secondary flex-1">{t('report.mine')} <PhaseBadge phase="next" /></Link>
-          <button className="btn-danger flex-1" onClick={() => { s.loginAs(null); navigate('/r/home') }}>{t('profile.logout')}</button>
+          <Link to="/r/reports" className="btn-secondary flex-1">
+            {t('report.mine')} <PhaseBadge phase="next" />
+          </Link>
+          <button
+            className="btn-danger flex-1"
+            onClick={() => {
+              s.loginAs(null)
+              navigate('/r/home')
+            }}
+          >
+            {t('profile.logout')}
+          </button>
         </div>
       </div>
     </>

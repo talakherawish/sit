@@ -27,7 +27,18 @@ const P = {
 
 export default function Icon({ name, className = '', size = 22, filled }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true">
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill={filled ? 'currentColor' : 'none'}
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+    >
       <path d={P[name]} />
     </svg>
   )
@@ -42,7 +53,9 @@ export function SitMark({ className = '' }) {
         <rect x="7" y="15" width="2.5" height="6" rx="1" fill="#F5821F" />
         <rect x="15" y="15" width="2.5" height="6" rx="1" fill="#F5821F" />
       </svg>
-      <span className="font-head text-[26px] leading-none font-bold text-navy" style={{ fontFamily: '"Barlow Semi Condensed", sans-serif' }}>Sit</span>
+      <span className="font-head text-[26px] leading-none font-bold text-navy" style={{ fontFamily: '"Barlow Semi Condensed", sans-serif' }}>
+        Sit
+      </span>
     </span>
   )
 }

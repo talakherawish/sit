@@ -2,7 +2,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL, useSpaceName } from '../lib/hooks'
-import { freeStarts, isFree, isPaused, renter as findRenter } from '../lib/logic'
+import { freeStarts, isFree, isPaused, dateOf, renter as findRenter } from '../lib/logic'
 import { fmtDate, fmtAbs, hm, addDays } from '../lib/time'
 import BookingForm from '../components/BookingForm'
 import { Card, ScreenTitle, StatusChip } from '../components/ui'
@@ -71,23 +71,43 @@ export function SlotTaken() {
         <section>
           <h2 className="mb-2 font-semibold">{t('taken.same_room', { room: L(room.label) })}</h2>
           <div className="grid gap-2">
-            {same.length ? same.map((m) => (
-              <button key={m} onClick={() => pick({ start: m, end: m + dur })} className="flex min-h-12 items-center justify-between rounded-lg bg-white px-4 ring-1 ring-grey/20">
-                <span dir="ltr" className="font-semibold">{hm(m)}–{hm(m + dur)}</span>
-                <Icon name="next" size={18} className="rtl:rotate-180" />
-              </button>
-            )) : <p className="text-grey-ink">{t('room.no_free_today')}</p>}
+            {same.length ? (
+              same.map((m) => (
+                <button
+                  key={m}
+                  onClick={() => pick({ start: m, end: m + dur })}
+                  className="flex min-h-12 items-center justify-between rounded-lg bg-white px-4 ring-1 ring-grey/20"
+                >
+                  <span dir="ltr" className="font-semibold">
+                    {hm(m)}–{hm(m + dur)}
+                  </span>
+                  <Icon name="next" size={18} className="rtl:rotate-180" />
+                </button>
+              ))
+            ) : (
+              <p className="text-grey-ink">{t('room.no_free_today')}</p>
+            )}
           </div>
         </section>
         <section>
           <h2 className="mb-2 font-semibold">{t('taken.other_rooms', { time: `${hm(draft.start)}–${hm(draft.end)}` })}</h2>
           <div className="grid gap-2">
-            {others.length ? others.map((sp) => (
-              <button key={sp.id} onClick={() => pick({ spaceId: sp.id })} className="flex min-h-12 items-center justify-between rounded-lg bg-white px-4 ring-1 ring-grey/20">
-                <span>{L(sp.label)} · {t('map.people', { n: sp.capacity })}</span>
-                <Icon name="next" size={18} className="rtl:rotate-180" />
-              </button>
-            )) : <p className="text-grey-ink">{t('room.none_free')}</p>}
+            {others.length ? (
+              others.map((sp) => (
+                <button
+                  key={sp.id}
+                  onClick={() => pick({ spaceId: sp.id })}
+                  className="flex min-h-12 items-center justify-between rounded-lg bg-white px-4 ring-1 ring-grey/20"
+                >
+                  <span>
+                    {L(sp.label)} · {t('map.people', { n: sp.capacity })}
+                  </span>
+                  <Icon name="next" size={18} className="rtl:rotate-180" />
+                </button>
+              ))
+            ) : (
+              <p className="text-grey-ink">{t('room.none_free')}</p>
+            )}
           </div>
         </section>
       </div>
@@ -111,23 +131,44 @@ export function Confirmed() {
     <>
       <ScreenTitle id="R-08" title={t('confirmed.title')} />
       <div className="space-y-4 px-4">
-        <div className="grid size-16 place-items-center rounded-full bg-teal/20 text-[#2f5656]"><Icon name="check" size={34} /></div>
+        <div className="grid size-16 place-items-center rounded-full bg-teal/20 text-[#2f5656]">
+          <Icon name="check" size={34} />
+        </div>
         <Card>
           <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
-            <dt className="text-grey-ink">{t('book.room')}</dt><dd className="font-semibold">{name(b.space_id)}</dd>
-            <dt className="text-grey-ink">{t('book.date')}</dt><dd>{fmtDate(b.date, lang)}</dd>
-            <dt className="text-grey-ink">{t('book.time')}</dt><dd dir="ltr" className="text-start">{hm(b.start)}–{hm(b.end)}</dd>
-            <dt className="text-grey-ink">{t('book.reason')}</dt><dd>{b.reason === 'other' ? b.reason_other : t(`reason.${b.reason}`)}</dd>
-            <dt className="text-grey-ink">{t('book.reminder')}</dt><dd>{b.reminder_at ? fmtAbs(b.reminder_at, lang) : t('book.no_reminder_short')}</dd>
-            <dt className="text-grey-ink">{t('bookings.status')}</dt><dd><StatusChip status={b.status} /></dd>
+            <dt className="text-grey-ink">{t('book.room')}</dt>
+            <dd className="font-semibold">{name(b.space_id)}</dd>
+            <dt className="text-grey-ink">{t('book.date')}</dt>
+            <dd>{fmtDate(b.date, lang)}</dd>
+            <dt className="text-grey-ink">{t('book.time')}</dt>
+            <dd dir="ltr" className="text-start">
+              {hm(b.start)}–{hm(b.end)}
+            </dd>
+            <dt className="text-grey-ink">{t('book.reason')}</dt>
+            <dd>{b.reason === 'other' ? b.reason_other : t(`reason.${b.reason}`)}</dd>
+            <dt className="text-grey-ink">{t('book.reminder')}</dt>
+            <dd>{b.reminder_at ? fmtAbs(b.reminder_at, lang) : t('book.no_reminder_short')}</dd>
+            <dt className="text-grey-ink">{t('bookings.status')}</dt>
+            <dd>
+              <StatusChip status={b.status} />
+            </dd>
           </dl>
           {series > 1 && <p className="mt-2 text-sm font-medium">{t('confirmed.series', { count: series })}</p>}
         </Card>
-        <p className="flex items-center gap-2 text-sm"><Icon name="check" size={18} className="text-teal" />{t('confirmed.receipt', { email: me.email || me.phone })}</p>
+        <p className="flex items-center gap-2 text-sm">
+          <Icon name="check" size={18} className="text-teal" />
+          {t('confirmed.receipt', { email: me.email || me.phone })}
+        </p>
         <div className="grid gap-2">
-          <Link to="/r/bookings" className="btn-primary">{t('confirmed.my_bookings')}</Link>
-          <button className="btn-secondary" onClick={() => showToast('toast.calendar')}>{t('confirmed.calendar')}</button>
-          <Link to="/r/home" className="btn-secondary">{t('confirmed.done')}</Link>
+          <Link to="/r/bookings" className="btn-primary">
+            {t('confirmed.my_bookings')}
+          </Link>
+          <button className="btn-secondary" onClick={() => showToast('toast.calendar')}>
+            {t('confirmed.calendar')}
+          </button>
+          <Link to="/r/home" className="btn-secondary">
+            {t('confirmed.done')}
+          </Link>
         </div>
       </div>
     </>
@@ -139,20 +180,25 @@ export function Paused() {
   const { t } = useTranslation()
   const lang = useStore((s) => s.lang)
   const data = useStore((s) => s.data)
+  const now = useStore((s) => s.now)
   const renterId = useStore((s) => s.renterId)
   const me = findRenter(data, renterId)
   const rule = data.settings.no_show
-  const until = me?.paused_until || addDays('2026-10-01', rule.pause)
+  const until = me?.paused_until || addDays(dateOf(now), rule.pause)
   return (
     <>
       <ScreenTitle id="R-21" title={t('paused.title')} phase="later" back />
       <div className="space-y-4 px-4">
         <Card className="border-s-4 border-amber">
-          <p className="text-lg font-semibold">{t('paused.body', { count: me?.no_show_count ?? rule.count, date: fmtDate(until, lang, { day: 'numeric', month: 'short' }) })}</p>
+          <p className="text-lg font-semibold">
+            {t('paused.body', { count: me?.no_show_count ?? rule.count, date: fmtDate(until, lang, { day: 'numeric', month: 'short' }) })}
+          </p>
           <p className="mt-2 text-sm text-grey-ink">{t('paused.rule', { count: rule.count, days: rule.days, pause: rule.pause })}</p>
         </Card>
         <p>{t('paused.browse')}</p>
-        <Link to="/r/home" className="btn-primary w-full">{t('paused.to_map')}</Link>
+        <Link to="/r/home" className="btn-primary w-full">
+          {t('paused.to_map')}
+        </Link>
       </div>
     </>
   )

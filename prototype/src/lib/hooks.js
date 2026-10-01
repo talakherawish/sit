@@ -9,7 +9,7 @@ import { fmtDate } from './time'
 /** Picks the current language from an { en, ar } object. */
 export function useL() {
   const lang = useStore((s) => s.lang)
-  return (o) => (o && typeof o === 'object' ? o[lang] ?? o.en : o ?? '')
+  return (o) => (o && typeof o === 'object' ? (o[lang] ?? o.en) : (o ?? ''))
 }
 
 export function useSpaceName() {

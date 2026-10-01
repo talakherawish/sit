@@ -7,9 +7,7 @@ import Icon from './Icon'
 export function PhaseBadge({ phase }) {
   const { t } = useTranslation()
   return (
-    <span className="inline-flex items-center rounded-full bg-grey/15 px-2 py-0.5 text-xs font-medium text-grey-ink align-middle">
-      {t(`phase.${phase}`)}
-    </span>
+    <span className="inline-flex items-center rounded-full bg-grey/15 px-2 py-0.5 align-middle text-xs font-medium text-grey-ink">{t(`phase.${phase}`)}</span>
   )
 }
 
@@ -111,8 +109,12 @@ export function Confirm({ open, title, body, okLabel, onOk, onCancel, danger, ch
         {body && <p className="mt-1 text-grey-ink">{body}</p>}
         {children}
         <div className="mt-4 flex justify-end gap-2">
-          <button className="btn-secondary" onClick={onCancel}>{t('common.back')}</button>
-          <button className={danger ? 'btn-danger' : 'btn-primary'} onClick={onOk}>{okLabel}</button>
+          <button className="btn-secondary" onClick={onCancel}>
+            {t('common.back')}
+          </button>
+          <button className={danger ? 'btn-danger' : 'btn-primary'} onClick={onOk}>
+            {okLabel}
+          </button>
         </div>
       </div>
     </div>
@@ -130,7 +132,7 @@ export function Toast({ fixed }) {
   }, [toast, set])
   if (!toast) return null
   return (
-    <div className={`${fixed ? 'fixed top-20' : 'absolute top-16'} inset-x-0 z-50 flex justify-center px-4 pointer-events-none`} role="status">
+    <div className={`${fixed ? 'fixed top-20' : 'absolute top-16'} pointer-events-none inset-x-0 z-50 flex justify-center px-4`} role="status">
       <div className="rounded-lg bg-ink px-4 py-3 text-white shadow-lg">{t(toast.key, toast.params)}</div>
     </div>
   )
@@ -171,9 +173,23 @@ export function Card({ children, className = '' }) {
 /** Placeholder room "photo" — swap with real Technopark photos. */
 export function Photo({ color, label, i = 0, className = '' }) {
   const shapes = [
-    <g key="a"><rect x="20" y="70" width="160" height="12" rx="2" fill="#fff" opacity=".85" /><rect x="40" y="82" width="6" height="30" fill="#fff" opacity=".7" /><rect x="154" y="82" width="6" height="30" fill="#fff" opacity=".7" /><circle cx="70" cy="60" r="10" fill="#fff" opacity=".6" /><circle cx="130" cy="60" r="10" fill="#fff" opacity=".6" /></g>,
-    <g key="b"><rect x="30" y="20" width="140" height="70" rx="4" fill="#fff" opacity=".85" /><path d="M45 75 L85 45 L110 65 L130 50 L155 75 Z" fill={color} opacity=".5" /></g>,
-    <g key="c"><rect x="25" y="25" width="60" height="80" rx="3" fill="#fff" opacity=".6" /><rect x="115" y="25" width="60" height="80" rx="3" fill="#fff" opacity=".6" /><line x1="55" y1="25" x2="55" y2="105" stroke={color} strokeWidth="2" /><line x1="145" y1="25" x2="145" y2="105" stroke={color} strokeWidth="2" /></g>,
+    <g key="a">
+      <rect x="20" y="70" width="160" height="12" rx="2" fill="#fff" opacity=".85" />
+      <rect x="40" y="82" width="6" height="30" fill="#fff" opacity=".7" />
+      <rect x="154" y="82" width="6" height="30" fill="#fff" opacity=".7" />
+      <circle cx="70" cy="60" r="10" fill="#fff" opacity=".6" />
+      <circle cx="130" cy="60" r="10" fill="#fff" opacity=".6" />
+    </g>,
+    <g key="b">
+      <rect x="30" y="20" width="140" height="70" rx="4" fill="#fff" opacity=".85" />
+      <path d="M45 75 L85 45 L110 65 L130 50 L155 75 Z" fill={color} opacity=".5" />
+    </g>,
+    <g key="c">
+      <rect x="25" y="25" width="60" height="80" rx="3" fill="#fff" opacity=".6" />
+      <rect x="115" y="25" width="60" height="80" rx="3" fill="#fff" opacity=".6" />
+      <line x1="55" y1="25" x2="55" y2="105" stroke={color} strokeWidth="2" />
+      <line x1="145" y1="25" x2="145" y2="105" stroke={color} strokeWidth="2" />
+    </g>,
   ]
   return (
     <svg viewBox="0 0 200 120" className={`block w-full rounded-lg ${className}`} role="img" aria-label={label}>

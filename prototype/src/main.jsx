@@ -11,4 +11,7 @@ createRoot(document.getElementById('root')).render(
 )
 
 // Dev only: lets reviewers / tests poke the mock store from the console.
-if (import.meta.env.DEV) import('./store').then(({ useStore }) => { window.__sit = useStore })
+if (import.meta.env.DEV)
+  import('./store').then(({ useStore }) => {
+    window.__sit = useStore
+  })

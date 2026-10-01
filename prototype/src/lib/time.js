@@ -22,5 +22,4 @@ export const fmtAbs = (a, lang) => {
   const { date, min } = split(a)
   return `${fmtDate(date, lang)} · ${hm(min)}`
 }
-export const weekdayName = (wd, lang) =>
-  new Intl.DateTimeFormat(locale(lang), { weekday: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(2026, 9, 4 + wd)))
+export const weekdayName = (wd, lang) => new Intl.DateTimeFormat(locale(lang), { weekday: 'long', timeZone: 'UTC' }).format(new Date(Date.UTC(2026, 9, 4 + wd)))

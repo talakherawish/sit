@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL } from '../lib/hooks'
-import { REASONS, REMINDERS, hoursFor, isFree, reminderAt, today, nowMin, closedReason } from '../lib/logic'
+import { REASONS, REMINDERS, hoursFor, isFree, reminderAt, dateOf, minOfDay, closedReason } from '../lib/logic'
 import { addDays, fmtDate, fmtAbs, hm, ceil30, weekdayName } from '../lib/time'
 import { Field, PhaseBadge, Chip } from './ui'
 
@@ -14,7 +14,7 @@ export default function BookingForm({ initial = {}, onSubmit, submitLabel, compa
   const data = useStore((s) => s.data)
   const now = useStore((s) => s.now)
 
-  const days = useMemo(() => Array.from({ length: 21 }, (_, i) => addDays(today(now), i)), [now])
+  const days = useMemo(() => Array.from({ length: 21 }, (_, i) => addDays(dateOf(now), i)), [now])
   const firstOpen = days.find((d) => hoursFor(data, d))
   const [spaceId, setSpaceId] = useState(initial.spaceId || data.spaces[0].id)
   const [date, setDate] = useState(initial.date && hoursFor(data, initial.date) ? initial.date : firstOpen)
@@ -23,10 +23,10 @@ export default function BookingForm({ initial = {}, onSubmit, submitLabel, compa
   const [reason, setReason] = useState(initial.reason || '')
   const [reasonOther, setReasonOther] = useState(initial.reasonOther || '')
   const [reminder, setReminder] = useState(null)
-  const [repeat, setRepeat] = useState({ on: false, kind: 'days', days: [], until: addDays(today(now), 28) })
+  const [repeat, setRepeat] = useState({ on: false, kind: 'days', days: [], until: addDays(dateOf(now), 28) })
 
   const h = hoursFor(data, date)
-  const earliest = date === today(now) ? ceil30(nowMin(now)) : 0
+  const earliest = date === dateOf(now) ? ceil30(minOfDay(now)) : 0
   const startOpts = []
   const endOpts = []
   if (h) {
@@ -63,7 +63,11 @@ export default function BookingForm({ initial = {}, onSubmit, submitLabel, compa
     <form onSubmit={submit} className="space-y-4">
       <Field label={t('book.room')}>
         <select className="input" value={spaceId} onChange={(e) => setSpaceId(e.target.value)}>
-          {data.spaces.map((s) => <option key={s.id} value={s.id}>{L(s.label)} · {t('map.people', { n: s.capacity })}</option>)}
+          {data.spaces.map((s) => (
+            <option key={s.id} value={s.id}>
+              {L(s.label)} · {t('map.people', { n: s.capacity })}
+            </option>
+          ))}
         </select>
       </Field>
       <Field label={t('book.date')}>
@@ -71,26 +75,45 @@ export default function BookingForm({ initial = {}, onSubmit, submitLabel, compa
           {days.map((d) => {
             const closed = !hoursFor(data, d)
             const why = closedReason(data, d)
-            return <option key={d} value={d} disabled={closed}>{fmtDate(d, lang)}{closed ? ` — ${t('common.closed')}${why ? ` (${L(why)})` : ''}` : ''}</option>
+            return (
+              <option key={d} value={d} disabled={closed}>
+                {fmtDate(d, lang)}
+                {closed ? ` — ${t('common.closed')}${why ? ` (${L(why)})` : ''}` : ''}
+              </option>
+            )
           })}
         </select>
       </Field>
       <div className="grid grid-cols-2 gap-3">
         <Field label={t('book.start')}>
           <select className="input" value={start ?? ''} onChange={(e) => setStart(+e.target.value)}>
-            {startOpts.map((o) => <option key={o.m} value={o.m} disabled={!o.ok}>{hm(o.m)}{!o.ok ? ` · ${t('book.taken')}` : ''}</option>)}
+            {startOpts.map((o) => (
+              <option key={o.m} value={o.m} disabled={!o.ok}>
+                {hm(o.m)}
+                {!o.ok ? ` · ${t('book.taken')}` : ''}
+              </option>
+            ))}
           </select>
         </Field>
         <Field label={t('book.end')}>
           <select className="input" value={end ?? ''} onChange={(e) => setEnd(+e.target.value)}>
-            {endOpts.map((o) => <option key={o.m} value={o.m} disabled={!o.ok}>{hm(o.m)}{!o.ok ? ` · ${t('book.taken')}` : ''}</option>)}
+            {endOpts.map((o) => (
+              <option key={o.m} value={o.m} disabled={!o.ok}>
+                {hm(o.m)}
+                {!o.ok ? ` · ${t('book.taken')}` : ''}
+              </option>
+            ))}
           </select>
         </Field>
       </div>
       <Field label={`${t('book.reason')} *`} error={!reason ? t('book.reason_required') : null}>
         <select className="input" value={reason} onChange={(e) => setReason(e.target.value)} required>
           <option value="">{t('book.choose')}</option>
-          {REASONS.map((r) => <option key={r} value={r}>{t(`reason.${r}`)}</option>)}
+          {REASONS.map((r) => (
+            <option key={r} value={r}>
+              {t(`reason.${r}`)}
+            </option>
+          ))}
         </select>
       </Field>
       {reason === 'other' && (
@@ -117,20 +140,29 @@ export default function BookingForm({ initial = {}, onSubmit, submitLabel, compa
       {!compact && (
         <fieldset className="rounded-lg bg-white p-3 ring-1 ring-grey/20">
           <label className="flex min-h-11 items-center justify-between gap-2">
-            <span className="font-medium">{t('book.repeat')} <PhaseBadge phase="next" /></span>
+            <span className="font-medium">
+              {t('book.repeat')} <PhaseBadge phase="next" />
+            </span>
             <input type="checkbox" className="size-6 accent-orange" checked={repeat.on} onChange={(e) => setRepeat({ ...repeat, on: e.target.checked })} />
           </label>
           {repeat.on && (
             <div className="mt-2 space-y-3">
               <div className="flex gap-2">
-                <Chip active={repeat.kind === 'days'} onClick={() => setRepeat({ ...repeat, kind: 'days' })}>{t('book.repeat_days')}</Chip>
-                <Chip active={repeat.kind === 'weekly'} onClick={() => setRepeat({ ...repeat, kind: 'weekly' })}>{t('book.repeat_weekly')}</Chip>
+                <Chip active={repeat.kind === 'days'} onClick={() => setRepeat({ ...repeat, kind: 'days' })}>
+                  {t('book.repeat_days')}
+                </Chip>
+                <Chip active={repeat.kind === 'weekly'} onClick={() => setRepeat({ ...repeat, kind: 'weekly' })}>
+                  {t('book.repeat_weekly')}
+                </Chip>
               </div>
               {repeat.kind === 'days' && (
                 <div className="flex flex-wrap gap-1.5">
                   {[0, 1, 2, 3, 4, 6].map((wd) => (
-                    <Chip key={wd} active={repeat.days.includes(wd)}
-                      onClick={() => setRepeat({ ...repeat, days: repeat.days.includes(wd) ? repeat.days.filter((x) => x !== wd) : [...repeat.days, wd] })}>
+                    <Chip
+                      key={wd}
+                      active={repeat.days.includes(wd)}
+                      onClick={() => setRepeat({ ...repeat, days: repeat.days.includes(wd) ? repeat.days.filter((x) => x !== wd) : [...repeat.days, wd] })}
+                    >
                       {weekdayName(wd, lang).slice(0, lang === 'ar' ? 8 : 3)}
                     </Chip>
                   ))}
@@ -144,7 +176,9 @@ export default function BookingForm({ initial = {}, onSubmit, submitLabel, compa
         </fieldset>
       )}
 
-      <button type="submit" className="btn-primary w-full" disabled={!valid}>{submitLabel || t('book.book')}</button>
+      <button type="submit" className="btn-primary w-full" disabled={!valid}>
+        {submitLabel || t('book.book')}
+      </button>
     </form>
   )
 }

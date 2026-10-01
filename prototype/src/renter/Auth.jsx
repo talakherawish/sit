@@ -13,7 +13,14 @@ function PhoneInput({ prefix, setPrefix, number, setNumber }) {
           <option value="+970">+970</option>
           <option value="+972">+972</option>
         </select>
-        <input className="input" inputMode="tel" autoComplete="tel-national" value={number} onChange={(e) => setNumber(e.target.value.replace(/[^\d ]/g, ''))} placeholder="59 9123 456" />
+        <input
+          className="input"
+          inputMode="tel"
+          autoComplete="tel-national"
+          value={number}
+          onChange={(e) => setNumber(e.target.value.replace(/[^\d ]/g, ''))}
+          placeholder="59 9123 456"
+        />
       </div>
     </Field>
   )
@@ -40,17 +47,42 @@ export function SignUpForm({ onExisting, onDone }) {
   }
   return (
     <form onSubmit={submit} className="space-y-4">
-      <Field label={t('auth.name')}><input className="input" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} /></Field>
-      <PhoneInput prefix={prefix} setPrefix={setPrefix} number={number} setNumber={(v) => { setNumber(v); setExisting(null) }} />
-      <Field label={t('auth.email')}><input className="input" type="email" autoComplete="email" value={email} onChange={(e) => { setEmail(e.target.value); setExisting(null) }} /></Field>
+      <Field label={t('auth.name')}>
+        <input className="input" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} />
+      </Field>
+      <PhoneInput
+        prefix={prefix}
+        setPrefix={setPrefix}
+        number={number}
+        setNumber={(v) => {
+          setNumber(v)
+          setExisting(null)
+        }}
+      />
+      <Field label={t('auth.email')}>
+        <input
+          className="input"
+          type="email"
+          autoComplete="email"
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value)
+            setExisting(null)
+          }}
+        />
+      </Field>
       {existing && (
         <div className="rounded-lg bg-amber/15 p-3" role="alert">
           <p className="font-semibold">{t('auth.exists')}</p>
-          <button type="button" className="btn-link" onClick={() => onExisting(existing)}>{t('auth.login_instead')}</button>
+          <button type="button" className="btn-link" onClick={() => onExisting(existing)}>
+            {t('auth.login_instead')}
+          </button>
         </div>
       )}
       <p className="text-sm text-grey-ink">{t('auth.later')}</p>
-      <button className="btn-primary w-full" disabled={!valid}>{t('auth.continue')}</button>
+      <button className="btn-primary w-full" disabled={!valid}>
+        {t('auth.continue')}
+      </button>
     </form>
   )
 }
@@ -66,9 +98,14 @@ export function SignUp() {
       <div className="px-4">
         <SignUpForm
           onExisting={(r) => navigate('/r/login', { state: { phone: r.phone } })}
-          onDone={(f) => { sendCode({ mode: 'signup', ...f }); navigate('/r/code') }}
+          onDone={(f) => {
+            sendCode({ mode: 'signup', ...f })
+            navigate('/r/code')
+          }}
         />
-        <button className="btn-link mt-2" onClick={() => navigate('/r/login')}>{t('auth.have_account')}</button>
+        <button className="btn-link mt-2" onClick={() => navigate('/r/login')}>
+          {t('auth.have_account')}
+        </button>
       </div>
     </>
   )
@@ -98,10 +135,26 @@ export function Login() {
       <ScreenTitle id="R-12" title={t('auth.login_title')} back />
       <form onSubmit={submit} className="space-y-4 px-4">
         <p className="text-grey-ink">{t('auth.login_body')}</p>
-        <PhoneInput prefix={prefix} setPrefix={setPrefix} number={number} setNumber={(v) => { setNumber(v); setMissing(false) }} />
-        {missing && <p className="rounded-lg bg-amber/15 p-3" role="alert">{t('auth.no_account')}</p>}
-        <button className="btn-primary w-full" disabled={number.replace(/\D/g, '').length < 8}>{t('auth.send_code')}</button>
-        <button type="button" className="btn-link" onClick={() => navigate('/r/signup')}>{t('auth.new_here')}</button>
+        <PhoneInput
+          prefix={prefix}
+          setPrefix={setPrefix}
+          number={number}
+          setNumber={(v) => {
+            setNumber(v)
+            setMissing(false)
+          }}
+        />
+        {missing && (
+          <p className="rounded-lg bg-amber/15 p-3" role="alert">
+            {t('auth.no_account')}
+          </p>
+        )}
+        <button className="btn-primary w-full" disabled={number.replace(/\D/g, '').length < 8}>
+          {t('auth.send_code')}
+        </button>
+        <button type="button" className="btn-link" onClick={() => navigate('/r/signup')}>
+          {t('auth.new_here')}
+        </button>
         <p className="text-xs text-grey-ink">{t('auth.demo_hint')}</p>
       </form>
     </>
@@ -125,13 +178,19 @@ export function Code() {
     const id = setTimeout(() => setWait(wait - 1), 1000)
     return () => clearTimeout(id)
   }, [wait])
-  useEffect(() => { refs.current[0]?.focus() }, [])
+  useEffect(() => {
+    refs.current[0]?.focus()
+  }, [])
 
   if (!pending) {
     return (
       <>
         <ScreenTitle id="R-11" title={t('auth.code_title')} back />
-        <div className="px-4"><button className="btn-primary w-full" onClick={() => navigate('/r/login')}>{t('nav.login')}</button></div>
+        <div className="px-4">
+          <button className="btn-primary w-full" onClick={() => navigate('/r/login')}>
+            {t('nav.login')}
+          </button>
+        </div>
       </>
     )
   }
@@ -155,15 +214,34 @@ export function Code() {
         <p>{t('auth.code_sent', { phone: pending.phone })}</p>
         <div className="flex justify-center gap-3" dir="ltr">
           {digits.map((d, i) => (
-            <input key={i} ref={(el) => (refs.current[i] = el)} value={d} inputMode="numeric" maxLength={2} aria-label={t('auth.digit', { n: i + 1 })}
+            <input
+              key={i}
+              ref={(el) => (refs.current[i] = el)}
+              value={d}
+              inputMode="numeric"
+              maxLength={2}
+              aria-label={t('auth.digit', { n: i + 1 })}
               onChange={(e) => type(i, e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Backspace' && !d && i > 0) refs.current[i - 1]?.focus() }}
-              className="size-14 rounded-lg border border-grey/40 bg-white text-center font-head text-2xl font-bold focus:border-navy focus:ring-2 focus:ring-navy/20 focus:outline-none" />
+              onKeyDown={(e) => {
+                if (e.key === 'Backspace' && !d && i > 0) refs.current[i - 1]?.focus()
+              }}
+              className="size-14 rounded-lg border border-grey/40 bg-white text-center font-head text-2xl font-bold focus:border-navy focus:ring-2 focus:ring-navy/20 focus:outline-none"
+            />
           ))}
         </div>
         <p className="text-center text-xs text-grey-ink">{t('auth.any_code')}</p>
-        <button className="btn-primary w-full" disabled={digits.some((d) => !d)}>{t('auth.verify')}</button>
-        <button type="button" className="btn-link mx-auto flex" disabled={wait > 0} onClick={() => { sendCode(pending); setWait(30) }}>
+        <button className="btn-primary w-full" disabled={digits.some((d) => !d)}>
+          {t('auth.verify')}
+        </button>
+        <button
+          type="button"
+          className="btn-link mx-auto flex"
+          disabled={wait > 0}
+          onClick={() => {
+            sendCode(pending)
+            setWait(30)
+          }}
+        >
           {wait > 0 ? t('auth.resend_in', { s: wait }) : t('auth.resend')}
         </button>
       </form>

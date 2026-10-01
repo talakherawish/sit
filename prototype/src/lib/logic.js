@@ -6,8 +6,10 @@ export const REMINDERS = ['2h', '3h', '1d', 'eve']
 export const ISSUE_TYPES = ['ac', 'wifi', 'noise', 'cleanliness', 'furniture', 'other']
 export const NOTICE_TAGS = ['ac', 'wifi', 'events', 'other']
 
-export const today = (now) => split(now).date
-export const nowMin = (now) => split(now).min
+/** Calendar date ('YYYY-MM-DD') of an absolute timestamp. */
+export const dateOf = (a) => split(a).date
+/** Minutes since midnight of an absolute timestamp. */
+export const minOfDay = (a) => split(a).min
 
 export function hoursFor(data, date) {
   if (data.closed_days.some((c) => c.date === date)) return null
@@ -45,7 +47,7 @@ export function freeStarts(data, spaceId, date, now, dur = 30, excludeId) {
   const h = hoursFor(data, date)
   if (!h) return []
   let from = h.open
-  if (date === today(now)) from = Math.max(from, ceil30(nowMin(now)))
+  if (date === dateOf(now)) from = Math.max(from, ceil30(minOfDay(now)))
   const out = []
   for (let m = from; m + dur <= h.close; m += 30) if (isFree(data, spaceId, date, m, m + dur, excludeId)) out.push(m)
   return out
@@ -92,14 +94,15 @@ export function reminderAt(date, start, reminder) {
 export const activeNotices = (data, now) =>
   data.notices.filter((n) => !n.removed && n.posted_at <= now && n.expires_at > now).sort((a, b) => b.posted_at - a.posted_at)
 
-export const isPaused = (r, now) => !!r?.paused_until && r.paused_until > today(now)
+export const isPaused = (r, now) => !!r?.paused_until && r.paused_until > dateOf(now)
 
 export const startAbs = (b) => abs(b.date, b.start)
 export const endAbs = (b) => abs(b.date, b.end)
 
 export const normPhone = (p) => (p || '').replace(/\D/g, '').replace(/^0+/, '')
 
-export function staffStatus(b, now) {
+/** Booking status as reception sees it on S-01. */
+export function staffStatus(b) {
   if (b.status === 'used' || b.status === 'checked_in') return 'checked_in'
   if (b.status === 'released') return b.release_reason === 'no_checkin' ? 'no_show' : 'released'
   if (b.status === 'cancelled' || b.status === 'cancelled_by_staff') return b.status
