@@ -1,0 +1,28 @@
+{
+  "name": "sit-prototype",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check-i18n": "node scripts/check-i18n.mjs"
+  },
+  "dependencies": {
+    "i18next": "^26.4.2",
+    "immer": "^11.1.18",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-i18next": "^17.0.15",
+    "react-router-dom": "^7.18.4",
+    "react-zoom-pan-pinch": "^4.2.0",
+    "zustand": "^5.0.15"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-react": "^6.1.1",
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.3.2"
+  }
+}

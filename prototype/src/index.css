@@ -1,0 +1,51 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #24508F;
+  --color-teal: #588888;
+  --color-grey: #6B7B7A;
+  /* brand-grey darkened slightly for small text so it passes 4.5:1 on white and #F4F7F7 */
+  --color-grey-ink: #56656A;
+  --color-orange: #F5821F;
+  --color-ink: #111111;
+  --color-surface: #F4F7F7;
+  --color-red: #D64545;
+  --color-amber: #E8A33D;
+  --font-head: "Barlow Semi Condensed", "IBM Plex Sans Arabic", sans-serif;
+  --font-body: "IBM Plex Sans Arabic", sans-serif;
+}
+
+html, body {
+  font-family: var(--font-body);
+  color: var(--color-ink);
+  background: #E3E9E9;
+  line-height: 1.5;
+}
+/* Arabic headings use IBM Plex Sans Arabic (Barlow has no Arabic glyphs). */
+[dir="rtl"] .font-head { font-family: var(--font-body); }
+
+input, select, textarea { font-size: 16px; }
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-orange px-4 text-[18px] font-bold text-white transition hover:brightness-95 disabled:cursor-not-allowed disabled:bg-grey/30 disabled:text-grey-ink;
+  }
+  .btn-secondary {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-navy/40 bg-white px-4 font-semibold text-navy transition hover:bg-navy/5 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-danger {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-red/50 bg-white px-4 font-semibold text-[#a32f2f] transition hover:bg-red/5 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-link {
+    @apply inline-flex min-h-11 items-center gap-1 font-semibold text-navy underline-offset-2 hover:underline;
+  }
+  .input {
+    @apply min-h-11 w-full rounded-lg border border-grey/40 bg-white px-3 text-ink outline-none focus:border-navy focus:ring-2 focus:ring-navy/20;
+  }
+}
+
+.hatch {
+  background-image: repeating-linear-gradient(45deg, rgba(214, 69, 69, .35) 0 4px, transparent 4px 8px);
+}
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }

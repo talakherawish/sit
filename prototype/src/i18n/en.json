@@ -1,0 +1,149 @@
+{
+  "common": { "close": "Close", "back": "Back", "closed": "Closed", "switch_lang": "Switch language", "edit": "Edit", "remove": "Remove", "save": "Save", "yes": "Yes", "no": "No" },
+  "nav": { "home": "Sit home", "notifications": "Notifications", "profile": "Profile", "login": "Log in", "tabs": "Main", "map": "Map", "list": "List", "bookings": "My bookings", "report": "Report" },
+  "gate": { "title": "Log in to continue", "body": "Browsing is open to everyone. To book, see your bookings or report a problem, log in with your phone.", "signup": "Sign up", "login": "Log in" },
+  "phase": { "next": "Next", "later": "Later" },
+  "home": {
+    "how": "How do you want to work?", "seats_taken": "seats taken", "seats_aria": "{{taken}} of {{total}} seats taken in the public seating area",
+    "open_today": "Open today {{from}}–{{to}}", "closed_today": "Closed today", "posted": "posted {{time}}",
+    "n_notices_one": "{{count}} notice", "n_notices_other": "{{count}} notices", "map": "Map", "list": "List",
+    "map_hint": "Tap a room to book it. Pinch or double-tap to zoom.", "coming_soon": "Coming soon",
+    "coming_soon_body": "Virtual tour · Pricing · Online payment · Community events", "todays_status": "Today's status",
+    "rules_for": "{{zone}}: rules", "rooms_today": "Rooms today", "seats_of": "{{taken}} of {{total}} seats taken",
+    "updated_ago_one": "Updated by staff {{count}} min ago", "updated_ago_other": "Updated by staff {{count}} min ago",
+    "zone_rules": "Zone rules", "not_bookable": "Public seating can't be booked — just walk in. Staff keep this count up to date."
+  },
+  "about": { "title": "About Sit", "body": "Sit is Technopark's seat and room booking app.", "vision": "Know before you go and sit where you booked, every single time." },
+  "when": { "today_now": "Today · Now", "find": "Find a room", "title": "When?", "day": "Day", "time": "Time", "now": "Now", "show": "Show" },
+  "legend": { "free": "Free", "booked": "Booked", "match": "Matches / selected", "down": "Down" },
+  "map": {
+    "aria": "Floor plan of the Technopark ground floor", "public_aria": "Public seating, {{taken}} of {{total}} taken",
+    "room_free_aria": "{{name}}, free, {{cap}} people", "room_booked_aria": "{{name}}, booked, free from {{until}}", "room_down_aria": "{{name}}, out of service",
+    "people": "{{n}} ppl", "free": "Free", "down": "Down", "booked": "Booked", "until": "until {{time}}",
+    "zoom_plus": "Zoom in", "zoom_minus": "Zoom out", "reset": "Reset"
+  },
+  "room": {
+    "down": "Out of service", "find_another": "Find another room", "booked_until": "Booked until {{time}}", "next_free": "Next free at {{time}}",
+    "no_free_today": "No free time left today", "other_free": "Other free rooms now", "none_free": "No other rooms are free at this time",
+    "see_details": "See details", "pick_slots": "Free slots", "pick_hint": "Tap a start time, then a later one to extend.", "book_room": "Book room"
+  },
+  "feature": { "socket": "Sockets", "window": "Window", "screen": "Screen", "whiteboard": "Whiteboard", "ac": "AC" },
+  "kind": { "focus_room": "Focus room", "big_room": "Big room" },
+  "tag": { "ac": "AC", "wifi": "Wifi", "events": "Events", "other": "Other" },
+  "list": { "title": "Spaces", "focus_rooms": "Focus Rooms", "big_rooms": "Big Rooms", "free_now": "Free now", "free_from": "Free from {{time}}", "show_on_map": "Show on map", "book": "Book" },
+  "details": { "photo": "Photo {{n}} of {{room}}", "swipe": "Swipe for more photos", "size": "Size", "capacity": "Capacity", "type": "Type", "amenities": "Amenities", "free_today": "Free slots today", "book": "Book this room", "report": "Report a problem with this room" },
+  "hours": { "title": "Opening hours", "today": "today", "closed_days": "Upcoming closed days" },
+  "filter": { "title": "Find a room", "duration": "Duration", "minutes_one": "{{count}} min", "minutes_other": "{{count}} min", "size": "Size", "small": "Small (2–4)", "big": "Big (8–12)", "any": "Any", "show": "Show rooms", "results_one": "{{count}} room free", "results_other": "{{count}} rooms free" },
+  "book": {
+    "title": "Book a room", "room": "Room", "date": "Date", "start": "Start", "end": "End", "time": "Time", "taken": "taken",
+    "reason": "Reason", "choose": "Choose a reason…", "reason_required": "Pick a reason to book", "reason_other": "Tell us the reason",
+    "reminder": "Reminder", "no_reminder": "Your booking starts soon, so no reminder is needed — it's confirmed straight away.", "no_reminder_short": "None (starts soon)",
+    "reminder_hint": "Confirm from the reminder, or the room is released 1 hour before.",
+    "repeat": "Repeat", "repeat_days": "Days of week", "repeat_weekly": "Weekly", "until": "Until", "book": "Book"
+  },
+  "reason": { "study": "Study / focused work", "group_project": "Group project", "client_call": "Client call", "meeting": "Meeting", "interview": "Interview", "other": "Other" },
+  "reminder": { "2h": "2 h before", "3h": "3 h before", "1d": "1 day before", "eve": "Evening before" },
+  "taken": { "title": "Slot just taken", "body": "Someone booked {{room}} at {{time}} a moment ago.", "same_room": "Nearest free times in {{room}}", "other_rooms": "Other rooms free at {{time}}" },
+  "confirmed": { "title": "Booking confirmed", "receipt": "Receipt sent to {{email}}", "my_bookings": "My bookings", "calendar": "Add to calendar", "done": "Done", "series_one": "{{count}} booking in this series", "series_other": "{{count}} bookings in this series" },
+  "auth": {
+    "signup_title": "Sign up", "login_title": "Log in", "code_title": "Enter the code", "name": "Full name", "phone": "Phone", "prefix": "Country code", "email": "Email",
+    "exists": "You already have an account", "login_instead": "Log in instead", "later": "You can add the rest of your details later in your profile.",
+    "continue": "Continue", "have_account": "Already have an account? Log in", "login_body": "We'll text you a 4-digit code. No password needed.",
+    "no_account": "No account with this number yet.", "send_code": "Send code", "new_here": "New here? Sign up",
+    "demo_hint": "Demo numbers: Larine +970 599100201 · Mohammad +970 599100202 · Omar +970 599100203",
+    "code_sent": "We sent a code to {{phone}}.", "digit": "Digit {{n}}", "any_code": "Prototype: any 4 digits work (the real code is in the outbox).",
+    "verify": "Verify", "resend_in": "Resend in {{s}} s", "resend": "Resend code"
+  },
+  "bookings": {
+    "title": "My bookings", "upcoming": "Upcoming", "past": "Past", "none_upcoming": "No upcoming bookings.", "none_past": "No past bookings yet.",
+    "status": "Status", "series": "Repeats", "more_one": "+{{count}} more", "more_other": "+{{count}} more", "confirm_now": "Confirm or cancel now",
+    "change": "Change", "cancel": "Cancel", "started": "Can't change after it starts", "again": "Book again",
+    "cancel_title": "Cancel this booking?", "cancel_body": "The room will be freed for others and we'll email you a confirmation.", "cancel_ok": "Cancel booking",
+    "this_one": "Only this one", "whole_series": "The whole series"
+  },
+  "move": { "title": "Move booking", "free_only_one": "Free {{count}}-minute slots", "free_only_other": "Free {{count}}-minute slots", "save": "Save" },
+  "reminder_screen": {
+    "title": "Reminder", "confirm": "Confirm", "cancel": "Cancel", "rules": "How it works",
+    "rule1": "Not confirmed by 1 hour before the start? The room is released for others.",
+    "rule2": "Not checked in at reception by 15 minutes after the start? The room is released.",
+    "rule3": "Released rooms show as free on the map straight away."
+  },
+  "report": { "title": "Report an issue", "mine": "My reports", "new": "New report", "none": "You haven't reported anything.", "where": "Where", "type": "What's wrong?", "note": "Short note", "photo": "Photo (optional)", "send": "Send", "staff_reply": "Staff reply" },
+  "issue": { "ac": "AC", "wifi": "Wifi", "noise": "Noise", "cleanliness": "Cleanliness", "furniture": "Furniture", "other": "Other" },
+  "report_status": { "sent": "Sent", "seen": "Seen", "in_progress": "In progress", "fixed": "Fixed" },
+  "release_why": { "unconfirmed": "it wasn't confirmed 1 hour before", "no_checkin": "nobody checked in 15 minutes after the start" },
+  "notif": { "title": "Notifications", "none": "Nothing new.", "book_another": "Book another room", "see_report": "See report", "open_reminder": "Confirm or cancel", "see_map": "See today's status", "see_bookings": "My bookings" },
+  "rate": { "title": "Rate your visit", "body": "Thanks for coming, {{name}}! How was it?", "stars": "Your rating", "n_stars_one": "{{count}} star", "n_stars_other": "{{count}} stars", "comment": "Anything to add? (optional)", "checked_before": "Did you check Sit before coming today?", "send": "Send" },
+  "profile": { "title": "Profile", "birthday": "Birthday", "contact": "Preferred contact", "sms": "SMS", "email": "Email", "whatsapp": "WhatsApp", "language": "Language", "history": "Past bookings", "logout": "Log out" },
+  "paused": { "title": "Booking paused", "body_one": "You missed {{count}} booking this month. You can book again on {{date}}.", "body_other": "You missed {{count}} bookings this month. You can book again on {{date}}.", "rule": "Rule: {{count}} no-shows within {{days}} days pauses booking for {{pause}} days.", "browse": "You can still browse the map, rooms and today's status.", "to_map": "Back to the map" },
+  "status": {
+    "awaiting_confirmation": "Awaiting confirmation", "confirmed": "Confirmed", "checked_in": "Checked in", "used": "Used", "released": "Released",
+    "cancelled": "Cancelled", "cancelled_by_staff": "Cancelled by staff", "no_show": "No-show", "upcoming": "Upcoming",
+    "sent": "Sent", "seen": "Seen", "in_progress": "In progress", "fixed": "Fixed", "free": "Free", "booked": "Booked", "in_use": "In use", "down": "Down"
+  },
+  "staff_status": { "upcoming": "Upcoming", "checked_in": "Checked in", "released": "Released", "no_show": "No-show", "cancelled": "Cancelled", "cancelled_by_staff": "Cancelled by staff" },
+  "room_status": { "free": "Free", "booked": "Booked", "in_use": "In use", "down": "Down" },
+  "seat_source": { "manual": "Manual", "check_in": "Check-in", "check_out": "Check-out" },
+  "created_by": { "renter": "By renter", "staff": "By staff" },
+  "staff": {
+    "desk": "Reception", "nav": "Staff", "nav_today": "Today", "nav_checkin": "Check-in", "nav_notices": "Notices", "nav_reports": "Reports",
+    "nav_bookings": "Bookings", "nav_insights": "Insights", "nav_settings": "Settings", "reception_pc": "Reception computer · Technopark",
+    "open_area": "open-area seats", "reception": "Reception",
+    "device_title": "Reception computer only", "device_body": "The staff dashboard only opens on the reception computer.",
+    "today_title": "Today", "no_status": "No status posted today", "post_now": "Post now",
+    "minus": "One seat freed", "plus": "One seat taken", "counter_hint": "Renters see this number on the Sit home page.", "view_log": "View log",
+    "notices": "Notices", "post_notice": "Post notice", "no_notices": "No live notices.", "reports": "Reports", "open": "Open", "new_reports": "new reports",
+    "todays_bookings": "Today's bookings", "col_renter": "Renter", "col_room": "Room", "col_time": "Time", "col_reason": "Reason", "col_status": "Status",
+    "col_change": "Change", "col_source": "Source", "col_total": "New total", "col_staff": "Staff",
+    "rooms_now": "Rooms right now", "room_menu": "Room options", "mark_down": "Mark room down", "mark_up": "Mark room back up",
+    "checkin_title": "Check-in / check-out", "new_walkin": "New walk-in", "search": "Search by name or phone", "showing_today": "Showing today's bookers and people inside.",
+    "no_results": "No one found.", "inside": "Inside", "no_booking_today": "No booking today", "book_for": "Book for this person",
+    "check_in": "Check in", "check_out": "Check out", "walkin_hint": "Same sign-up form as the app.", "log_title": "Seat-count log"
+  },
+  "notices": {
+    "title": "Notices", "new": "New notice", "tag": "Tag", "templates": "Quick templates", "text": "Text", "room": "Affected room (optional)", "no_room": "Whole building",
+    "expires": "Expires", "exp_eod": "End of day", "exp_2h": "In 2 hours", "exp_custom": "Custom time", "daily": "This is today's daily status",
+    "daily_short": "daily status", "alert_hint": "Renters with a booking today get an alert (#24 · Next).", "post": "Post",
+    "live": "Live now", "earlier": "Earlier (hidden from renters)", "posted_at": "posted {{time}}", "until": "until {{time}}", "edited": "edited", "remove_title": "Remove this notice?"
+  },
+  "inbox": { "title": "Reports inbox", "col_time": "Time", "col_renter": "Renter", "col_place": "Place", "col_type": "Type", "col_note": "Note", "col_status": "Status", "col_reply": "Reply", "reply_ph": "Optional reply to renter" },
+  "down": { "title": "Room down", "from": "From", "to": "To", "reason": "Reason (renters see this)", "reason_ph": "e.g. AC repair", "affected_one": "{{count}} affected booking", "affected_other": "{{count}} affected bookings", "none": "No bookings in this range.", "hint": "Ticked bookings become “Cancelled by staff”; renters get an in-app alert, SMS and email.", "go": "Cancel and notify" },
+  "bookfor": { "title": "Book for someone", "who": "Who", "change": "Change", "or_create": "Or create a renter", "create": "Create and select", "what": "Booking", "pick_first": "Pick or create a renter first.", "book": "Book for {{name}}", "upcoming": "Upcoming bookings" },
+  "insights": {
+    "title": "Insights", "mock": "Mock data: 8 weeks of history plus whatever happens in this session.", "visitors": "Daily visitors to Sit", "north_star": "North Star · today",
+    "via_sit": "Visits booked via Sit", "via_sit_sub": "{{walk}}% walk-in · target >50% by month 3", "status_days": "Daily status posted", "status_days_sub": "days this month",
+    "return": "30-day return rate", "target": "target {{v}}", "rating": "Average visit rating", "n_ratings_one": "{{count}} rating", "n_ratings_other": "{{count}} ratings",
+    "checked": "Checked Sit before coming", "bookings_week": "Bookings per week", "noshows_week": "No-shows per week", "split_week": "Booked via Sit vs walk-in, per week",
+    "sit": "Booked via Sit", "walk_in": "Walk-in", "busiest": "Busiest hours", "hover": "Hover a cell for the count.", "table": "Show table", "chart": "Show chart"
+  },
+  "settings": {
+    "title": "Settings", "rooms_tab": "Rooms and hours", "noshow_tab": "No-show limit", "rule": "Rule", "count": "No-shows", "pause": "Pause length",
+    "noshows_within": "no-shows within", "days_pauses": "days pauses booking for", "days": "days", "paused": "Paused renters", "none_paused": "Nobody is paused.",
+    "until": "until {{date}}", "n_noshows_one": "{{count}} no-show", "n_noshows_other": "{{count}} no-shows", "lift": "Lift pause",
+    "rooms_title": "Rooms and hours", "readonly": "Read-only in the prototype. Data comes from mock-data.json.", "spaces": "Spaces",
+    "col_name": "Name", "col_zone": "Zone", "col_capacity": "Capacity", "col_size": "Size", "col_amenities": "Amenities", "col_photos": "Photos",
+    "public": "Public seating (not bookable)", "zone_rules": "Zone rules"
+  },
+  "toast": {
+    "series_skipped_one": "{{count}} date was skipped (closed or taken)", "series_skipped_other": "{{count}} dates were skipped (closed or taken)",
+    "calendar": "Added to your calendar", "cancel_email": "Cancelled · cancellation email sent", "moved": "Booking moved · email sent", "confirmed": "Booking confirmed",
+    "report_sent": "Report sent to staff", "thanks": "Thanks for your rating!", "checked_in_sit": "{{name}} checked in · booked via Sit",
+    "checked_in_walk": "{{name}} checked in · walk-in", "checked_out": "{{name}} checked out", "checked_out_rate": "{{name}} checked out · rating request sent",
+    "account_created": "Account created for {{name}}", "notice_posted": "Posted · live on the renter home page", "report_updated": "Report updated · renter notified",
+    "room_down": "Room marked down · renters notified", "staff_booked": "Booked for {{name}} · SMS sent"
+  },
+  "msg": {
+    "code": "Your Sit code is {{code}}. It expires in 10 minutes.",
+    "receipt_one": "Booking confirmed: {{room}}, {{date}} at {{time}}. See you there!",
+    "receipt_other": "Booking confirmed: {{room}}, {{count}} dates from {{date}} at {{time}}.",
+    "staff_booked": "Reception booked {{room}} for you on {{date}} at {{time}}.",
+    "cancelled_one": "Cancelled: {{room}}, {{date}} at {{time}}. The room is free for others.",
+    "cancelled_other": "Cancelled {{count}} bookings in {{room}} from {{date}}.",
+    "moved": "Moved: your booking is now {{room}}, {{date}} at {{time}}.",
+    "reminder": "Your room “{{room}}” is at {{time}} on {{date}}. Confirm or cancel.",
+    "released": "Your booking for {{room}} at {{time}} was released because {{why}}.",
+    "notice_alert": "{{text}} — you have a booking in {{room}} at {{time}}.",
+    "staff_cancelled": "Sorry — {{room}} is out of service ({{reason}}). Your booking on {{date}} at {{time}} was cancelled.",
+    "report_status": "Your report about {{room}} is now: {{status}}."
+  }
+}
