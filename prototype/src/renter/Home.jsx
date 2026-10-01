@@ -6,15 +6,14 @@ import { useL, useRequireLogin } from '../lib/hooks'
 import { activeNotices, dayBlocks, freeStarts, hoursFor, stateAt, nextFreeAt, dateOf, minOfDay } from '../lib/logic'
 import { hm } from '../lib/time'
 import FloorPlan from '../components/FloorPlan'
-import { ModeChips, WhenBar, useWhen } from '../components/Browse'
-import { Chip, Photo, Sheet } from '../components/ui'
+import { MapListSwitch, ModeChips, WhenBar, useWhen } from '../components/Browse'
+import { Chip, Photo, ScreenId, Sheet } from '../components/ui'
 import Icon, { TechnoparkLogo } from '../components/Icon'
 
 /** R-01 Home: interactive floor plan (landing page) */
 export default function Home() {
   const { t } = useTranslation()
   const L = useL()
-  const navigate = useNavigate()
   const data = useStore((s) => s.data)
   const now = useStore((s) => s.now)
   const mode = useStore((s) => s.mode)
@@ -33,9 +32,6 @@ export default function Home() {
     set({ selected: id })
     setRoomSheet(id)
   }
-  const closeRoom = () => {
-    setRoomSheet(null)
-  }
 
   const h = hoursFor(data, dateOf(now))
   const notices = activeNotices(data, now)
@@ -43,28 +39,40 @@ export default function Home() {
   const { taken, total } = data.seats
 
   return (
-    <div className="space-y-4 pt-3">
-      <p className="sr-only">R-01</p>
-      {/* Status strip (US-1 AC1, AC2) */}
-      <div className="space-y-2 px-4">
-        <div className="flex flex-wrap items-center gap-2">
+    <div className="space-y-5 pt-3">
+      <ScreenId id="R-01" className="px-4" />
+      {/* Status card (US-1 AC1, AC2) */}
+      <section className="mx-4 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-grey/15" aria-label={t('home.todays_status')}>
+        <div className="flex divide-x divide-grey/15 rtl:divide-x-reverse">
           <button
             onClick={() => onSelect('public')}
-            className="flex min-h-11 items-center gap-2 rounded-full bg-orange ps-1.5 pe-4 text-white"
+            className="flex min-h-16 flex-1 items-center gap-3 p-3 text-start"
             aria-label={t('home.seats_aria', { taken, total })}
           >
-            <span className="grid h-8 min-w-8 place-items-center rounded-full bg-white px-2 font-head text-[18px] font-bold text-ink">
+            <span className="rounded-full bg-orange px-3 py-0.5 font-head text-[20px] font-bold text-white" dir="ltr">
               {taken}/{total}
             </span>
-            <span className="text-[18px] font-bold">{t('home.seats_taken')}</span>
+            <span className="text-sm leading-tight">
+              <span className="block font-semibold">{t('home.seats_taken')}</span>
+              <span className="text-grey-ink">{L(data.zones[0].name)}</span>
+            </span>
           </button>
-          <Link to="/r/hours" className="flex min-h-11 items-center gap-1 rounded-full bg-white px-3 text-sm font-semibold text-navy ring-1 ring-grey/20">
-            <Icon name="clock" size={16} />
-            {h ? t('home.open_today', { from: hm(h.open), to: hm(h.close) }) : t('home.closed_today')}
+          <Link to="/r/hours" className="flex min-h-16 items-center gap-2 px-3 text-sm leading-tight text-navy">
+            <Icon name="clock" size={18} className="shrink-0" />
+            {h ? (
+              <span>
+                <span className="block font-semibold">{t('home.open')}</span>
+                <span dir="ltr">
+                  {hm(h.open)}–{hm(h.close)}
+                </span>
+              </span>
+            ) : (
+              <span className="font-semibold">{t('home.closed_today')}</span>
+            )}
           </Link>
         </div>
         {latest && (
-          <button onClick={() => setSheet('notices')} className="flex w-full items-center gap-2 rounded-lg bg-white p-3 text-start ring-1 ring-grey/20">
+          <button onClick={() => setSheet('notices')} className="flex w-full items-center gap-3 border-t border-grey/15 p-3 text-start">
             <Icon name="megaphone" className="shrink-0 text-orange" />
             <span className="min-w-0 flex-1">
               <span className="block truncate font-medium">{L(latest.text)}</span>
@@ -75,46 +83,38 @@ export default function Home() {
             <Icon name="next" size={18} className="shrink-0 text-grey-ink rtl:rotate-180" />
           </button>
         )}
-      </div>
+      </section>
 
       <ModeChips />
       <WhenBar />
 
-      <div className="px-4">
-        <div className="mb-2 grid grid-cols-2 rounded-lg bg-white p-1 ring-1 ring-grey/20" role="tablist">
-          <button role="tab" aria-selected="true" className="min-h-10 rounded-md bg-navy font-semibold text-white">
-            {t('home.map')}
-          </button>
-          <button role="tab" aria-selected="false" onClick={() => navigate('/r/list')} className="min-h-10 rounded-md font-semibold text-navy">
-            {t('home.list')}
-          </button>
+      <section className="px-4">
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <h2 className="font-head text-xl font-bold">{t('home.floor_plan')}</h2>
+          <MapListSwitch active="map" />
         </div>
-        <FloorPlan date={when.date} min={when.min} mode={mode} selected={selected} onSelect={onSelect} />
-        <p className="mt-1 text-xs text-grey-ink">{t('home.map_hint')}</p>
-      </div>
-
-      {/* Legend + zone rules */}
-      <div className="px-4">
-        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+        <FloorPlan date={when.date} min={when.min} mode={mode} selected={selected} onSelect={onSelect} hint={t('home.map_hint')} />
+        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs">
           <Legend swatch="bg-[#DCE8E8] border-teal" label={t('legend.free')} />
           <Legend swatch="bg-[#D5DCDC] border-grey" label={t('legend.booked')} lock />
           <Legend swatch="bg-white border-orange border-2" label={t('legend.match')} />
           <Legend swatch="hatch border-red" label={t('legend.down')} />
         </div>
-        <div className="mt-2 flex flex-wrap gap-2">
+        <div className="fade-x no-scrollbar -mx-4 mt-2 flex items-center gap-2 overflow-x-auto px-4">
+          <span className="shrink-0 text-sm font-semibold">{t('home.zone_rules')}</span>
           {data.zones
             .filter((z) => z.rules.length)
             .map((z) => (
               <button
                 key={z.id}
                 onClick={() => setSheet(z.id)}
-                className="flex min-h-11 items-center gap-1 rounded-full bg-white px-3 text-sm ring-1 ring-grey/20"
+                className="flex min-h-11 shrink-0 items-center gap-1 rounded-full bg-white px-3 text-sm ring-1 ring-grey/20"
               >
                 <Icon name="info" size={16} className="text-navy" /> {L(z.name)}
               </button>
             ))}
         </div>
-      </div>
+      </section>
 
       <RoomsToday />
 
@@ -153,7 +153,7 @@ export default function Home() {
         <p className="mt-3">{t('about.body')}</p>
         <p className="mt-2 text-sm text-grey-ink">{t('about.vision')}</p>
       </Sheet>
-      <RoomSheet id={roomSheet} onClose={closeRoom} onJump={onSelect} />
+      <RoomSheet id={roomSheet} onClose={() => setRoomSheet(null)} onJump={onSelect} />
     </div>
   )
 }
@@ -181,6 +181,12 @@ function RoomsToday() {
   const from = Math.max(h.open, Math.floor(minOfDay(now) / 30) * 30)
   const span = h.close - from
   if (span <= 0) return null
+  const summary = (blocks, close) => {
+    const [first, second] = blocks
+    if (first.state === 'free') return first.to === close ? t('home.free_rest') : t('home.free_until', { time: hm(first.to) })
+    const key = first.state === 'down' ? 'home.down_until' : 'home.booked_until'
+    return second ? t(`${key}_then`, { time: hm(first.to) }) : t(key, { time: hm(first.to) })
+  }
   return (
     <section className="px-4">
       <h2 className="mb-2 font-head text-xl font-bold">{t('home.rooms_today')}</h2>
@@ -193,29 +199,33 @@ function RoomsToday() {
                 <span className="font-semibold">{L(sp.label)}</span>
                 <span className="text-xs text-grey-ink">{t('map.people', { n: sp.capacity })}</span>
               </div>
-              <div className="flex h-3 overflow-hidden rounded-full" dir="ltr" aria-hidden="true">
+              <div className="flex h-2.5 gap-0.5 overflow-hidden rounded-full" dir="ltr" aria-hidden="true">
                 {blocks.map((b, i) => (
                   <span
                     key={i}
                     style={{ width: `${((b.to - b.from) / span) * 100}%` }}
-                    className={b.state === 'free' ? 'bg-teal/50' : b.state === 'down' ? 'hatch bg-white' : 'bg-grey/60'}
+                    className={b.state === 'free' ? 'bg-teal/45' : b.state === 'down' ? 'hatch bg-white' : 'bg-grey/70'}
                   />
                 ))}
               </div>
-              <p className="mt-1.5 text-sm">
-                {blocks.map((b, i) => (
-                  <span key={i} className="me-2 inline-block">
-                    <span
-                      className={b.state === 'free' ? 'font-semibold text-[#2f5656]' : b.state === 'down' ? 'font-semibold text-[#a32f2f]' : 'font-semibold'}
-                    >
-                      {t(`legend.${b.state}`)}
-                    </span>{' '}
-                    <span dir="ltr">
-                      {hm(b.from)}–{hm(b.to)}
-                    </span>
-                  </span>
-                ))}
+              <div className="mt-1 flex justify-between text-xs text-grey-ink" dir="ltr" aria-hidden="true">
+                <span>{hm(from)}</span>
+                <span>{hm(h.close)}</span>
+              </div>
+              <p className={`text-sm font-semibold ${blocks[0].state === 'free' ? 'text-[#2f5656]' : blocks[0].state === 'down' ? 'text-[#a32f2f]' : ''}`}>
+                {summary(blocks, h.close)}
               </p>
+              {blocks.some((b) => b.state !== 'free') && (
+                <p className="text-xs text-grey-ink">
+                  {t('home.taken_times')}{' '}
+                  <span dir="ltr">
+                    {blocks
+                      .filter((b) => b.state !== 'free')
+                      .map((b) => `${hm(b.from)}–${hm(b.to)}`)
+                      .join(', ')}
+                  </span>
+                </p>
+              )}
             </Link>
           )
         })}

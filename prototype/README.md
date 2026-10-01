@@ -7,6 +7,8 @@ All data is mocked in the browser: no server, no real SMS or email.
 npm install
 npm run dev        # http://localhost:5173
 npm run build      # static site in dist/ (Netlify / Vercel config included)
+npm run lint       # ESLint
+npm run format     # Prettier (also sorts Tailwind classes)
 npm run check-i18n # lists translation keys missing from en.json / ar.json
 ```
 
@@ -27,6 +29,8 @@ The clock starts at **Thu 1 Oct 2026, 09:30**. Seeded data lives in `src/data/mo
 - **Omar** — no bookings; use him for the last-minute and "slot just taken" demos.
 
 Any 4-digit code passes on R-11; the real code is in the P-03 outbox.
+
+Screen IDs (R-06, S-01…) show under each title so reviewers can match screens to the spec. Turn them off with **Show screen IDs** in P-01 before a usability test.
 
 ## Where things live
 

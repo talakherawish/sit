@@ -39,6 +39,13 @@ export function StatusChip({ status, label }) {
   )
 }
 
+/** Spec screen ID (R-06, S-01…) for reviewers. Hidden when "Show screen IDs" is off in P-01. */
+export function ScreenId({ id, className = '' }) {
+  const show = useStore((s) => s.showIds)
+  if (!id || !show) return null
+  return <p className={`font-mono text-xs text-grey-ink ${className}`}>{id}</p>
+}
+
 export function ScreenTitle({ id, title, phase, back, children }) {
   const navigate = useNavigate()
   return (
@@ -52,7 +59,7 @@ export function ScreenTitle({ id, title, phase, back, children }) {
         <h1 className="font-head text-[22px] leading-tight font-bold text-ink">
           {title} {phase && <PhaseBadge phase={phase} />}
         </h1>
-        {id && <p className="text-xs text-grey-ink">{id}</p>}
+        <ScreenId id={id} />
       </div>
       {children}
     </div>

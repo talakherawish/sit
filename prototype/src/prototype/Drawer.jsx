@@ -137,6 +137,12 @@ function Scenario() {
         />
         <Toggle label="Next booking attempt hits a just-taken slot" hint="#11 — R-06 → R-07" checked={s.justTaken} onChange={(v) => s.set({ justTaken: v })} />
         <Toggle
+          label="Show screen IDs"
+          hint="R-01, S-01… under each title — turn off for usability tests"
+          checked={s.showIds}
+          onChange={(v) => s.set({ showIds: v })}
+        />
+        <Toggle
           label="Omar is paused"
           hint="#31 — R-06 shows R-21"
           checked={!!omar.paused_until && omar.paused_until > dateOf(s.now)}

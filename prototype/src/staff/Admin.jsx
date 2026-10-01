@@ -133,7 +133,7 @@ export function Insights() {
     <>
       <StaffTitle id="S-08" title={t('insights.title')} phase="later" />
       <p className="mb-4 text-sm text-grey-ink">{t('insights.mock')}</p>
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 2xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
         <Tile north label={t('insights.visitors')} value={visitorsToday} sub={t('insights.north_star')} />
         <Tile label={t('insights.via_sit')} value={`${sitShare}%`} sub={t('insights.via_sit_sub', { walk: 100 - sitShare })} />
         <Tile label={t('insights.status_days')} value={statusDays} sub={t('insights.status_days_sub')} />

@@ -191,7 +191,7 @@ export function MoveBooking() {
         </p>
         <div>
           <p className="mb-1 text-sm font-semibold">{t('book.date')}</p>
-          <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
+          <div className="fade-x no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
             {days.map((d) => (
               <Chip
                 key={d}

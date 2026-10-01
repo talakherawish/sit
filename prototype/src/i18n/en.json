@@ -27,12 +27,14 @@
     "signup": "Sign up",
     "login": "Log in"
   },
-  "phase": { "next": "Next", "later": "Later" },
+  "phase": {
+    "next": "Next",
+    "later": "Later"
+  },
   "home": {
     "how": "How do you want to work?",
     "seats_taken": "seats taken",
     "seats_aria": "{{taken}} of {{total}} seats taken in the public seating area",
-    "open_today": "Open today {{from}}–{{to}}",
     "closed_today": "Closed today",
     "posted": "posted {{time}}",
     "n_notices_one": "{{count}} notice",
@@ -49,15 +51,38 @@
     "updated_ago_one": "Updated by staff {{count}} min ago",
     "updated_ago_other": "Updated by staff {{count}} min ago",
     "zone_rules": "Zone rules",
-    "not_bookable": "Public seating can't be booked — just walk in. Staff keep this count up to date."
+    "not_bookable": "Public seating can't be booked — just walk in. Staff keep this count up to date.",
+    "open": "Open today",
+    "floor_plan": "Floor plan",
+    "view": "View",
+    "free_rest": "Free for the rest of the day",
+    "free_until": "Free now until {{time}}",
+    "booked_until": "Booked until {{time}}",
+    "booked_until_then": "Booked until {{time}}, then free",
+    "down_until": "Out of service until {{time}}",
+    "down_until_then": "Out of service until {{time}}, then free",
+    "taken_times": "Taken:"
   },
   "about": {
     "title": "About Sit",
     "body": "Sit is Technopark's seat and room booking app.",
     "vision": "Know before you go and sit where you booked, every single time."
   },
-  "when": { "today_now": "Today · Now", "find": "Find a room", "title": "When?", "day": "Day", "time": "Time", "now": "Now", "show": "Show" },
-  "legend": { "free": "Free", "booked": "Booked", "match": "Matches / selected", "down": "Down" },
+  "when": {
+    "today_now": "Today · Now",
+    "find": "Find a room",
+    "title": "When?",
+    "day": "Day",
+    "time": "Time",
+    "now": "Now",
+    "show": "Show"
+  },
+  "legend": {
+    "free": "Free",
+    "booked": "Booked",
+    "match": "Matches / selected",
+    "down": "Down"
+  },
   "map": {
     "aria": "Floor plan of the Technopark ground floor",
     "public_aria": "Public seating, {{taken}} of {{total}} taken",
@@ -86,9 +111,23 @@
     "pick_hint": "Tap a start time, then a later one to extend.",
     "book_room": "Book room"
   },
-  "feature": { "socket": "Sockets", "window": "Window", "screen": "Screen", "whiteboard": "Whiteboard", "ac": "AC" },
-  "kind": { "focus_room": "Focus room", "big_room": "Big room" },
-  "tag": { "ac": "AC", "wifi": "Wifi", "events": "Events", "other": "Other" },
+  "feature": {
+    "socket": "Sockets",
+    "window": "Window",
+    "screen": "Screen",
+    "whiteboard": "Whiteboard",
+    "ac": "AC"
+  },
+  "kind": {
+    "focus_room": "Focus room",
+    "big_room": "Big room"
+  },
+  "tag": {
+    "ac": "AC",
+    "wifi": "Wifi",
+    "events": "Events",
+    "other": "Other"
+  },
   "list": {
     "title": "Spaces",
     "focus_rooms": "Focus Rooms",
@@ -109,7 +148,11 @@
     "book": "Book this room",
     "report": "Report a problem with this room"
   },
-  "hours": { "title": "Opening hours", "today": "today", "closed_days": "Upcoming closed days" },
+  "hours": {
+    "title": "Opening hours",
+    "today": "today",
+    "closed_days": "Upcoming closed days"
+  },
   "filter": {
     "title": "Find a room",
     "duration": "Duration",
@@ -153,7 +196,12 @@
     "interview": "Interview",
     "other": "Other"
   },
-  "reminder": { "2h": "2 h before", "3h": "3 h before", "1d": "1 day before", "eve": "Evening before" },
+  "reminder": {
+    "2h": "2 h before",
+    "3h": "3 h before",
+    "1d": "1 day before",
+    "eve": "Evening before"
+  },
   "taken": {
     "title": "Slot just taken",
     "body": "Someone booked {{room}} at {{time}} a moment ago.",
@@ -215,7 +263,12 @@
     "this_one": "Only this one",
     "whole_series": "The whole series"
   },
-  "move": { "title": "Move booking", "free_only_one": "Free {{count}}-minute slots", "free_only_other": "Free {{count}}-minute slots", "save": "Save" },
+  "move": {
+    "title": "Move booking",
+    "free_only_one": "Free {{count}}-minute slots",
+    "free_only_other": "Free {{count}}-minute slots",
+    "save": "Save"
+  },
   "reminder_screen": {
     "title": "Reminder",
     "confirm": "Confirm",
@@ -237,9 +290,24 @@
     "send": "Send",
     "staff_reply": "Staff reply"
   },
-  "issue": { "ac": "AC", "wifi": "Wifi", "noise": "Noise", "cleanliness": "Cleanliness", "furniture": "Furniture", "other": "Other" },
-  "report_status": { "sent": "Sent", "seen": "Seen", "in_progress": "In progress", "fixed": "Fixed" },
-  "release_why": { "unconfirmed": "it wasn't confirmed 1 hour before", "no_checkin": "nobody checked in 15 minutes after the start" },
+  "issue": {
+    "ac": "AC",
+    "wifi": "Wifi",
+    "noise": "Noise",
+    "cleanliness": "Cleanliness",
+    "furniture": "Furniture",
+    "other": "Other"
+  },
+  "report_status": {
+    "sent": "Sent",
+    "seen": "Seen",
+    "in_progress": "In progress",
+    "fixed": "Fixed"
+  },
+  "release_why": {
+    "unconfirmed": "it wasn't confirmed 1 hour before",
+    "no_checkin": "nobody checked in 15 minutes after the start"
+  },
   "notif": {
     "title": "Notifications",
     "none": "Nothing new.",
@@ -305,9 +373,21 @@
     "cancelled": "Cancelled",
     "cancelled_by_staff": "Cancelled by staff"
   },
-  "room_status": { "free": "Free", "booked": "Booked", "in_use": "In use", "down": "Down" },
-  "seat_source": { "manual": "Manual", "check_in": "Check-in", "check_out": "Check-out" },
-  "created_by": { "renter": "By renter", "staff": "By staff" },
+  "room_status": {
+    "free": "Free",
+    "booked": "Booked",
+    "in_use": "In use",
+    "down": "Down"
+  },
+  "seat_source": {
+    "manual": "Manual",
+    "check_in": "Check-in",
+    "check_out": "Check-out"
+  },
+  "created_by": {
+    "renter": "By renter",
+    "staff": "By staff"
+  },
   "staff": {
     "desk": "Reception",
     "nav": "Staff",

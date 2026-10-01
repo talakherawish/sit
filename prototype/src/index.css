@@ -54,6 +54,10 @@ textarea {
 .hatch {
   background-image: repeating-linear-gradient(45deg, rgba(214, 69, 69, 0.35) 0 4px, transparent 4px 8px);
 }
+/* Edge fade for horizontally scrolling rows */
+.fade-x {
+  mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 24px), transparent 100%);
+}
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }

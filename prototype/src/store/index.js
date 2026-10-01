@@ -88,6 +88,7 @@ const initial = () => ({
   renterId: null,
   lang: 'en',
   receptionDevice: true,
+  showIds: true,
   justTaken: false,
   guestId: 'guest-you',
   mode: 'browse',

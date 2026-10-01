@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useStore } from '../store'
 import { useL } from '../lib/hooks'
 import { hoursFor, dateOf, minOfDay } from '../lib/logic'
@@ -24,7 +24,7 @@ export function ModeChips() {
   return (
     <div className="px-4">
       <p className="mb-1.5 text-sm font-semibold">{t('home.how')}</p>
-      <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
+      <div className="fade-x no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
         {modes.map((m) => (
           <Chip key={m.id} active={mode === m.id} onClick={() => set({ mode: m.id, selected: null })}>
             {L(m.label)}
@@ -122,5 +122,31 @@ function WhenSheet({ open, onClose }) {
         </button>
       </div>
     </Sheet>
+  )
+}
+
+/** Compact Map / List switch shared by R-01 and R-02. */
+export function MapListSwitch({ active }) {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const opts = [
+    ['map', '/r/home', 'map'],
+    ['list', '/r/list', 'list'],
+  ]
+  return (
+    <div className="flex rounded-full bg-white p-0.5 ring-1 ring-grey/25" role="tablist" aria-label={t('home.view')}>
+      {opts.map(([k, to, icon]) => (
+        <button
+          key={k}
+          role="tab"
+          aria-selected={active === k}
+          onClick={() => active !== k && navigate(to)}
+          className={`flex min-h-10 items-center gap-1.5 rounded-full px-3.5 text-sm font-semibold ${active === k ? 'bg-navy text-white' : 'text-navy'}`}
+        >
+          <Icon name={icon} size={16} />
+          {t(`home.${k}`)}
+        </button>
+      ))}
+    </div>
   )
 }

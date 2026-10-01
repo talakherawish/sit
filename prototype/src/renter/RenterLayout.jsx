@@ -5,7 +5,7 @@ import { useStore } from '../store'
 import { useRequireLogin } from '../lib/hooks'
 import { dateOf } from '../lib/logic'
 import Icon, { SitMark } from '../components/Icon'
-import { Sheet, Toast } from '../components/ui'
+import { ScreenId, Sheet, Toast } from '../components/ui'
 
 export default function RenterLayout() {
   const loc = useLocation()
@@ -25,7 +25,7 @@ export default function RenterLayout() {
     <div className="min-h-dvh sm:grid sm:place-items-center sm:py-6">
       <div className="relative mx-auto flex h-dvh w-full max-w-[390px] flex-col overflow-hidden bg-surface sm:h-[min(844px,calc(100dvh-48px))] sm:rounded-[32px] sm:shadow-2xl sm:ring-[10px] sm:ring-ink">
         <Header />
-        <main ref={main} className="flex-1 overflow-x-hidden overflow-y-auto pb-6">
+        <main ref={main} className="no-scrollbar flex-1 overflow-x-hidden overflow-y-auto pb-6">
           <Outlet />
         </main>
         <TabBar />
@@ -119,7 +119,7 @@ function LoginGate() {
   }
   return (
     <Sheet open={!!gate} onClose={() => set({ gate: null })} title={t('gate.title')}>
-      <p className="text-xs text-grey-ink">R-09</p>
+      <ScreenId id="R-09" />
       <p className="mb-4 text-grey-ink">{t('gate.body')}</p>
       <div className="grid gap-2">
         <button className="btn-primary" onClick={() => go('/r/signup')}>

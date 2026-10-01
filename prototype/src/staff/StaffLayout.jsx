@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { fmtAbs } from '../lib/time'
 import Icon, { TechnoparkLogo } from '../components/Icon'
-import { PhaseBadge, Toast } from '../components/ui'
+import { PhaseBadge, ScreenId, Toast } from '../components/ui'
 
 const NAV = [
   { to: '/s/today', key: 'today', icon: 'home' },
@@ -30,7 +30,7 @@ export default function StaffLayout() {
     return (
       <div className="grid min-h-dvh place-items-center bg-surface p-6">
         <div className="max-w-md rounded-xl bg-white p-8 text-center shadow ring-1 ring-grey/20">
-          <p className="text-xs text-grey-ink">S-00</p>
+          <ScreenId id="S-00" />
           <Icon name="lock" size={40} className="mx-auto mb-3 text-navy" />
           <h1 className="font-head text-2xl font-bold">{t('staff.device_title')}</h1>
           <p className="mt-2 text-grey-ink">{t('staff.device_body')}</p>
@@ -106,7 +106,7 @@ export function StaffTitle({ id, title, phase, children }) {
   return (
     <div className="mb-5 flex flex-wrap items-end gap-3">
       <div className="flex-1">
-        <p className="text-xs text-grey-ink">{id}</p>
+        <ScreenId id={id} />
         <h1 className="font-head text-3xl font-bold">
           {title} {phase && <PhaseBadge phase={phase} />}
         </h1>

@@ -5,7 +5,7 @@ import { useStore } from '../store'
 import { useL, useSpaceName } from '../lib/hooks'
 import { ACTIVE, activeNotices, bookingAt, downAt, normPhone, staffStatus, dateOf, minOfDay, renter as findRenter } from '../lib/logic'
 import { fmtAbs, hm } from '../lib/time'
-import { Card, Modal, PhaseBadge, StatusChip } from '../components/ui'
+import { Card, Modal, PhaseBadge, ScreenId, StatusChip } from '../components/ui'
 import Icon from '../components/Icon'
 import { SignUpForm } from '../renter/Auth'
 import { StaffTitle } from './StaffLayout'
@@ -151,7 +151,7 @@ export function Today() {
           </Card>
           <Card>
             <h2 className="mb-3 font-head text-xl font-bold">{t('staff.rooms_now')}</h2>
-            <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 2xl:grid-cols-5">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
               {s.data.spaces.map((sp) => {
                 const st = roomStatus(sp)
                 return (
@@ -294,7 +294,8 @@ export function CheckIn() {
         <SeatCounter />
       </div>
       <Modal open={walkIn} onClose={() => setWalkIn(false)} title={t('staff.new_walkin')}>
-        <p className="mb-3 text-sm text-grey-ink">R-10 · {t('staff.walkin_hint')}</p>
+        <ScreenId id="R-10" />
+        <p className="mb-3 text-sm text-grey-ink">{t('staff.walkin_hint')}</p>
         <SignUpForm
           onExisting={(r) => {
             setQ(r.name)

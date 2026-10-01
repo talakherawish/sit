@@ -5,7 +5,7 @@ import { useStore } from '../store'
 import { useL, useRequireLogin } from '../lib/hooks'
 import { freeStarts, hoursFor, isFree, stateAt, nextFreeAt, dateOf, minOfDay } from '../lib/logic'
 import { addDays, fmtDate, hm, weekday, weekdayName, ceil30 } from '../lib/time'
-import { ModeChips, WhenBar, useWhen } from '../components/Browse'
+import { MapListSwitch, ModeChips, WhenBar, useWhen } from '../components/Browse'
 import { Card, Chip, Field, PhaseBadge, Photo, ScreenTitle, StatusChip } from '../components/ui'
 import Icon from '../components/Icon'
 
@@ -38,13 +38,8 @@ export function SpacesList() {
       <ModeChips />
       <WhenBar />
       <div className="px-4">
-        <div className="mb-3 grid grid-cols-2 rounded-lg bg-white p-1 ring-1 ring-grey/20" role="tablist">
-          <button role="tab" aria-selected="false" onClick={() => navigate('/r/home')} className="min-h-10 rounded-md font-semibold text-navy">
-            {t('home.map')}
-          </button>
-          <button role="tab" aria-selected="true" className="min-h-10 rounded-md bg-navy font-semibold text-white">
-            {t('home.list')}
-          </button>
+        <div className="mb-3 flex justify-end">
+          <MapListSwitch active="list" />
         </div>
         <Card className={hl.includes('public_seating') ? 'ring-2 ring-orange' : ''}>
           <div className="flex items-center justify-between">
