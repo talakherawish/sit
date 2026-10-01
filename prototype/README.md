@@ -3,6 +3,8 @@
 Clickable prototype of **Sit**, Technopark's seat and room booking app, built from the _Foothill Prototype Specification_ (Oct 1, 2026).
 All data is mocked in the browser: no server, no real SMS or email.
 
+**Live:** https://talakherawish.github.io/sit/ (renter app) · https://talakherawish.github.io/sit/s/today (staff dashboard)
+
 ```bash
 npm install
 npm run dev        # http://localhost:5173
@@ -14,7 +16,7 @@ npm run check-i18n # lists translation keys missing from en.json / ar.json
 
 ## Hosting
 
-Every push to `main` builds and publishes the prototype to **GitHub Pages** via `.github/workflows/deploy.yml` (one-time setup: repo **Settings → Pages → Source: GitHub Actions**). The site lives at `https://<user>.github.io/<repo>/`. Netlify and Vercel configs are included too if you prefer either.
+Every push to `main` builds and publishes the prototype to **GitHub Pages** via `.github/workflows/deploy.yml` (one-time setup: repo **Settings → Pages → Source: GitHub Actions**). The site lives at https://talakherawish.github.io/sit/. Netlify and Vercel configs are included too if you prefer either.
 
 ## Surfaces
 
