@@ -3,7 +3,8 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useRequireLogin } from '../lib/hooks'
-import { dateOf } from '../lib/logic'
+import { dateOf, minOfDay } from '../lib/logic'
+import { hm } from '../lib/time'
 import Icon, { SitMark } from '../components/Icon'
 import { ScreenId, Sheet, Toast } from '../components/ui'
 
@@ -23,56 +24,92 @@ export default function RenterLayout() {
 
   return (
     <div className="min-h-dvh sm:grid sm:place-items-center sm:py-6">
-      <div className="relative mx-auto flex h-dvh w-full max-w-[390px] flex-col overflow-hidden bg-surface sm:h-[min(844px,calc(100dvh-48px))] sm:rounded-[32px] sm:shadow-2xl sm:ring-[10px] sm:ring-ink">
-        <Header />
-        <main ref={main} className="no-scrollbar flex-1 overflow-x-hidden overflow-y-auto pb-6">
-          <Outlet />
-        </main>
-        <TabBar />
-        <LoginGate />
-        <Toast />
+      {/* iPhone bezel on desktop; full screen on a real phone */}
+      <div className="mx-auto sm:rounded-[58px] sm:bg-[#1b1b1d] sm:p-[11px] sm:shadow-[0_30px_80px_rgba(16,24,40,0.28),inset_0_0_0_1.5px_#3a3a3d]">
+        <div className="relative isolate h-dvh w-full overflow-hidden bg-white sm:h-[min(844px,calc(100dvh-70px))] sm:w-[390px] sm:rounded-[47px]">
+          <div className="absolute top-[11px] left-1/2 z-50 hidden h-[34px] w-[120px] -translate-x-1/2 rounded-full bg-black sm:block" aria-hidden="true" />
+          <TopBar />
+          <main ref={main} className="no-scrollbar absolute inset-0 overflow-x-hidden overflow-y-auto pt-[52px] pb-24 sm:pt-[104px] sm:pb-28">
+            <div key={loc.pathname} className="animate-screen">
+              <Outlet />
+            </div>
+          </main>
+          <TabBar />
+          <div className="absolute bottom-2 left-1/2 z-50 hidden h-[5px] w-[134px] -translate-x-1/2 rounded-full bg-black/85 sm:block" aria-hidden="true" />
+          <LoginGate />
+          <Toast />
+        </div>
       </div>
     </div>
   )
 }
 
-function Header() {
+/** Status bar (desktop frame only) + frosted navigation bar. Content scrolls underneath. */
+function TopBar() {
   const { t } = useTranslation()
   const lang = useStore((s) => s.lang)
+  const now = useStore((s) => s.now)
   const setLang = useStore((s) => s.setLang)
   const renterId = useStore((s) => s.renterId)
   const data = useStore((s) => s.data)
   const me = data.renters.find((r) => r.id === renterId)
   const unread = data.notifications.some((n) => n.renter_id === renterId && !n.read)
   return (
-    <header className="z-10 flex h-14 shrink-0 items-center gap-1 border-b border-grey/15 bg-white px-3">
-      <Link to="/r/home" aria-label={t('nav.home')} className="flex min-h-11 items-center">
-        <SitMark />
-      </Link>
-      <div className="flex-1" />
-      <button
-        onClick={() => setLang(lang === 'en' ? 'ar' : 'en')}
-        className="min-h-11 rounded-lg px-2.5 text-sm font-semibold text-navy"
-        aria-label={t('common.switch_lang')}
-      >
-        {lang === 'en' ? 'عربي' : 'English'}
-      </button>
-      {me && (
-        <Link to="/r/notifications" className="relative grid size-11 place-items-center text-navy" aria-label={t('nav.notifications')}>
-          <Icon name="bell" />
-          {unread && <span className="absolute end-2.5 top-2.5 size-2.5 rounded-full bg-orange ring-2 ring-white" />}
+    <header className="absolute inset-x-0 top-0 z-30 border-b border-black/[0.06] bg-white/80 backdrop-blur-xl backdrop-saturate-150">
+      <div className="hidden h-[52px] items-center justify-between px-8 pt-1 sm:flex" dir="ltr" aria-hidden="true">
+        <span className="w-14 text-center text-[16px] font-semibold tracking-tight">{hm(minOfDay(now))}</span>
+        <StatusIcons />
+      </div>
+      <div className="flex h-[52px] items-center gap-1 px-4">
+        <Link to="/r/home" aria-label={t('nav.home')} className="flex min-h-11 items-center">
+          <SitMark />
         </Link>
-      )}
-      {me ? (
-        <Link to="/r/profile" className="grid size-11 place-items-center" aria-label={t('nav.profile')}>
-          <span className="grid size-9 place-items-center rounded-full bg-navy font-semibold text-white">{me.name[0]}</span>
-        </Link>
-      ) : (
-        <Link to="/r/login" className="min-h-11 content-center rounded-lg px-3 font-semibold text-navy">
-          {t('nav.login')}
-        </Link>
-      )}
+        <div className="flex-1" />
+        <button
+          onClick={() => setLang(lang === 'en' ? 'ar' : 'en')}
+          className="min-h-11 px-2.5 text-[15px] font-medium text-navy"
+          aria-label={t('common.switch_lang')}
+        >
+          {lang === 'en' ? 'عربي' : 'EN'}
+        </button>
+        {me && (
+          <Link to="/r/notifications" className="relative grid size-11 place-items-center text-navy" aria-label={t('nav.notifications')}>
+            <Icon name="bell" />
+            {unread && <span className="absolute end-[11px] top-[10px] size-2 rounded-full bg-orange ring-2 ring-white" />}
+          </Link>
+        )}
+        {me ? (
+          <Link to="/r/profile" className="grid size-11 place-items-center" aria-label={t('nav.profile')}>
+            <span className="grid size-8 place-items-center rounded-full bg-navy text-[14px] font-semibold text-white">{me.name[0]}</span>
+          </Link>
+        ) : (
+          <Link to="/r/login" className="ms-1 min-h-9 content-center rounded-full bg-navy px-4 text-[15px] font-semibold text-white">
+            {t('nav.login')}
+          </Link>
+        )}
+      </div>
     </header>
+  )
+}
+
+function StatusIcons() {
+  return (
+    <span className="flex w-20 items-center justify-end gap-1.5 text-ink">
+      <svg width="18" height="12" viewBox="0 0 18 12" fill="currentColor">
+        <rect x="0" y="8" width="3" height="4" rx="1" />
+        <rect x="5" y="5.5" width="3" height="6.5" rx="1" />
+        <rect x="10" y="3" width="3" height="9" rx="1" />
+        <rect x="15" y="0" width="3" height="12" rx="1" />
+      </svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="currentColor">
+        <path d="M8 2.2c2.3 0 4.4.9 6 2.4l1.1-1.1A10 10 0 0 0 8 .6 10 10 0 0 0 .9 3.5L2 4.6a8.5 8.5 0 0 1 6-2.4Zm0 3.2c1.4 0 2.7.5 3.7 1.4l1.1-1.1A7 7 0 0 0 8 3.8a7 7 0 0 0-4.8 1.9l1.1 1.1c1-.9 2.3-1.4 3.7-1.4Zm0 3.2c.6 0 1.1.2 1.5.6L8 10.7 6.5 9.2c.4-.4.9-.6 1.5-.6Z" />
+      </svg>
+      <svg width="27" height="13" viewBox="0 0 27 13">
+        <rect x="0.5" y="0.5" width="23" height="12" rx="3.8" fill="none" stroke="currentColor" opacity=".4" />
+        <rect x="2" y="2" width="17" height="9" rx="2.5" fill="currentColor" />
+        <path d="M25 4.5v4c.8-.3 1.3-1.1 1.3-2s-.5-1.7-1.3-2Z" fill="currentColor" opacity=".45" />
+      </svg>
+    </span>
   )
 }
 
@@ -82,13 +119,16 @@ function TabBar() {
   const navigate = useNavigate()
   const requireLogin = useRequireLogin()
   const tabs = [
-    { key: 'map', icon: 'map', to: '/r/home', match: ['/r/home'], open: () => navigate('/r/home') },
-    { key: 'list', icon: 'list', to: '/r/list', match: ['/r/list'], open: () => navigate('/r/list') },
+    { key: 'map', icon: 'map', match: ['/r/home'], open: () => navigate('/r/home') },
+    { key: 'list', icon: 'list', match: ['/r/list'], open: () => navigate('/r/list') },
     { key: 'bookings', icon: 'calendar', match: ['/r/bookings'], open: () => requireLogin('/r/bookings') },
     { key: 'report', icon: 'flag', match: ['/r/report'], open: () => requireLogin('/r/report') },
   ]
   return (
-    <nav className="z-10 grid shrink-0 grid-cols-4 border-t border-grey/15 bg-white pb-1" aria-label={t('nav.tabs')}>
+    <nav
+      className="absolute inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-black/[0.06] bg-white/75 pb-1 backdrop-blur-xl backdrop-saturate-150 sm:pb-6"
+      aria-label={t('nav.tabs')}
+    >
       {tabs.map((tab) => {
         const active = tab.match.some((m) => pathname.startsWith(m))
         return (
@@ -96,9 +136,9 @@ function TabBar() {
             key={tab.key}
             onClick={tab.open}
             aria-current={active ? 'page' : undefined}
-            className={`flex min-h-14 flex-col items-center justify-center gap-0.5 text-xs font-medium ${active ? 'text-orange' : 'text-grey-ink'}`}
+            className={`flex min-h-[54px] flex-col items-center justify-center gap-0.5 text-[12px] font-medium transition-colors ${active ? 'text-orange' : 'text-grey-ink'}`}
           >
-            <Icon name={tab.icon} />
+            <Icon name={tab.icon} size={25} className={active ? 'stroke-[2.4]' : 'stroke-[1.8]'} />
             {t(`nav.${tab.key}`)}
           </button>
         )

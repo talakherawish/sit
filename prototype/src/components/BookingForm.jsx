@@ -4,7 +4,7 @@ import { useStore } from '../store'
 import { useL } from '../lib/hooks'
 import { REASONS, REMINDERS, hoursFor, isFree, reminderAt, dateOf, minOfDay, closedReason } from '../lib/logic'
 import { addDays, fmtDate, fmtAbs, hm, ceil30, weekdayName } from '../lib/time'
-import { Field, PhaseBadge, Chip } from './ui'
+import { Chip, Group, GroupRow, PhaseBadge, RowSelect, SectionLabel, Segmented, Switch } from './ui'
 
 /** The single booking form behind every way to book (R-06, S-07). */
 export default function BookingForm({ initial = {}, onSubmit, submitLabel, compact }) {
@@ -60,69 +60,81 @@ export default function BookingForm({ initial = {}, onSubmit, submitLabel, compa
   }
 
   return (
-    <form onSubmit={submit} className="space-y-4">
-      <Field label={t('book.room')}>
-        <select className="input" value={spaceId} onChange={(e) => setSpaceId(e.target.value)}>
-          {data.spaces.map((s) => (
-            <option key={s.id} value={s.id}>
-              {L(s.label)} · {t('map.people', { n: s.capacity })}
-            </option>
-          ))}
-        </select>
-      </Field>
-      <Field label={t('book.date')}>
-        <select className="input" value={date} onChange={(e) => setDate(e.target.value)}>
-          {days.map((d) => {
-            const closed = !hoursFor(data, d)
-            const why = closedReason(data, d)
-            return (
-              <option key={d} value={d} disabled={closed}>
-                {fmtDate(d, lang)}
-                {closed ? ` — ${t('common.closed')}${why ? ` (${L(why)})` : ''}` : ''}
+    <form onSubmit={submit} className="space-y-6">
+      <Group label={t('book.when_where')}>
+        <GroupRow label={t('book.room')} htmlFor="bf-room">
+          <RowSelect id="bf-room" value={spaceId} onChange={(e) => setSpaceId(e.target.value)}>
+            {data.spaces.map((s) => (
+              <option key={s.id} value={s.id}>
+                {L(s.label)} · {t('map.people', { n: s.capacity })}
               </option>
-            )
-          })}
-        </select>
-      </Field>
-      <div className="grid grid-cols-2 gap-3">
-        <Field label={t('book.start')}>
-          <select className="input" value={start ?? ''} onChange={(e) => setStart(+e.target.value)}>
+            ))}
+          </RowSelect>
+        </GroupRow>
+        <GroupRow label={t('book.date')} htmlFor="bf-date">
+          <RowSelect id="bf-date" value={date} onChange={(e) => setDate(e.target.value)}>
+            {days.map((d) => {
+              const closed = !hoursFor(data, d)
+              const why = closedReason(data, d)
+              return (
+                <option key={d} value={d} disabled={closed}>
+                  {fmtDate(d, lang)}
+                  {closed ? ` — ${t('common.closed')}${why ? ` (${L(why)})` : ''}` : ''}
+                </option>
+              )
+            })}
+          </RowSelect>
+        </GroupRow>
+        <GroupRow label={t('book.start')} htmlFor="bf-start">
+          <RowSelect id="bf-start" value={start ?? ''} onChange={(e) => setStart(+e.target.value)}>
             {startOpts.map((o) => (
               <option key={o.m} value={o.m} disabled={!o.ok}>
                 {hm(o.m)}
                 {!o.ok ? ` · ${t('book.taken')}` : ''}
               </option>
             ))}
-          </select>
-        </Field>
-        <Field label={t('book.end')}>
-          <select className="input" value={end ?? ''} onChange={(e) => setEnd(+e.target.value)}>
+          </RowSelect>
+        </GroupRow>
+        <GroupRow label={t('book.end')} htmlFor="bf-end">
+          <RowSelect id="bf-end" value={end ?? ''} onChange={(e) => setEnd(+e.target.value)}>
             {endOpts.map((o) => (
               <option key={o.m} value={o.m} disabled={!o.ok}>
                 {hm(o.m)}
                 {!o.ok ? ` · ${t('book.taken')}` : ''}
               </option>
             ))}
-          </select>
-        </Field>
-      </div>
-      <Field label={`${t('book.reason')} *`} error={!reason ? t('book.reason_required') : null}>
-        <select className="input" value={reason} onChange={(e) => setReason(e.target.value)} required>
-          <option value="">{t('book.choose')}</option>
-          {REASONS.map((r) => (
-            <option key={r} value={r}>
-              {t(`reason.${r}`)}
-            </option>
-          ))}
-        </select>
-      </Field>
-      {reason === 'other' && (
-        <Field label={t('book.reason_other')}>
-          <input className="input" value={reasonOther} maxLength={80} onChange={(e) => setReasonOther(e.target.value)} />
-        </Field>
-      )}
-      <fieldset>
-        <legend className="mb-1 text-sm font-medium">{t('book.reminder')}</legend>
+          </RowSelect>
+        </GroupRow>
+      </Group>
+
+      <Group label={t('book.reason')} footer={!reason ? t('book.reason_required') : null}>
+        <GroupRow label={t('book.purpose')} htmlFor="bf-reason">
+          <RowSelect id="bf-reason" value={reason} onChange={(e) => setReason(e.target.value)}>
+            <option value="">{t('book.choose')}</option>
+            {REASONS.map((r) => (
+              <option key={r} value={r}>
+                {t(`reason.${r}`)}
+              </option>
+            ))}
+          </RowSelect>
+        </GroupRow>
+        {reason === 'other' && (
+          <div className="px-4 py-1">
+            <input
+              aria-label={t('book.reason_other')}
+              placeholder={t('book.reason_other')}
+              className="min-h-11 w-full bg-transparent text-[17px] outline-none placeholder:text-grey-ink/70"
+              value={reasonOther}
+              maxLength={80}
+              onChange={(e) => setReasonOther(e.target.value)}
+              autoFocus
+            />
+          </div>
+        )}
+      </Group>
+
+      <section>
+        <SectionLabel>{t('book.reminder')}</SectionLabel>
         {remOpts.length ? (
           <div className="flex flex-wrap gap-2">
             {remOpts.map((o) => (
@@ -132,48 +144,62 @@ export default function BookingForm({ initial = {}, onSubmit, submitLabel, compa
             ))}
           </div>
         ) : (
-          <p className="rounded-lg bg-surface p-3 text-sm">{t('book.no_reminder')}</p>
+          <p className="rounded-2xl bg-surface px-4 py-3 text-[15px]">{t('book.no_reminder')}</p>
         )}
-        <p className="mt-1 text-xs text-grey-ink">{t('book.reminder_hint')}</p>
-      </fieldset>
+        <p className="mt-1.5 px-1 text-[13px] text-grey-ink">{t('book.reminder_hint')}</p>
+      </section>
 
       {!compact && (
-        <fieldset className="rounded-lg bg-white p-3 ring-1 ring-grey/20">
-          <label className="flex min-h-11 items-center justify-between gap-2">
-            <span className="font-medium">
+        <Group>
+          <div className="flex min-h-12 items-center gap-3 px-4">
+            <span className="flex-1 text-[17px]">
               {t('book.repeat')} <PhaseBadge phase="next" />
             </span>
-            <input type="checkbox" className="size-6 accent-orange" checked={repeat.on} onChange={(e) => setRepeat({ ...repeat, on: e.target.checked })} />
-          </label>
+            <Switch checked={repeat.on} onChange={(v) => setRepeat({ ...repeat, on: v })} label={t('book.repeat')} />
+          </div>
           {repeat.on && (
-            <div className="mt-2 space-y-3">
-              <div className="flex gap-2">
-                <Chip active={repeat.kind === 'days'} onClick={() => setRepeat({ ...repeat, kind: 'days' })}>
-                  {t('book.repeat_days')}
-                </Chip>
-                <Chip active={repeat.kind === 'weekly'} onClick={() => setRepeat({ ...repeat, kind: 'weekly' })}>
-                  {t('book.repeat_weekly')}
-                </Chip>
-              </div>
+            <div className="space-y-3 px-4 py-3">
+              <Segmented
+                label={t('book.repeat')}
+                value={repeat.kind}
+                onChange={(v) => setRepeat({ ...repeat, kind: v })}
+                options={[
+                  ['days', t('book.repeat_days')],
+                  ['weekly', t('book.repeat_weekly')],
+                ]}
+              />
               {repeat.kind === 'days' && (
-                <div className="flex flex-wrap gap-1.5">
-                  {[0, 1, 2, 3, 4, 6].map((wd) => (
-                    <Chip
-                      key={wd}
-                      active={repeat.days.includes(wd)}
-                      onClick={() => setRepeat({ ...repeat, days: repeat.days.includes(wd) ? repeat.days.filter((x) => x !== wd) : [...repeat.days, wd] })}
-                    >
-                      {weekdayName(wd, lang).slice(0, lang === 'ar' ? 8 : 3)}
-                    </Chip>
-                  ))}
+                <div className="flex justify-between gap-1">
+                  {[0, 1, 2, 3, 4, 6].map((wd) => {
+                    const on = repeat.days.includes(wd)
+                    return (
+                      <button
+                        type="button"
+                        key={wd}
+                        aria-pressed={on}
+                        aria-label={weekdayName(wd, lang)}
+                        onClick={() => setRepeat({ ...repeat, days: on ? repeat.days.filter((x) => x !== wd) : [...repeat.days, wd] })}
+                        className={`grid size-11 place-items-center rounded-full text-[14px] font-semibold ${on ? 'bg-ink text-white' : 'bg-white text-ink'}`}
+                      >
+                        {weekdayName(wd, lang).slice(0, lang === 'ar' ? 3 : 2)}
+                      </button>
+                    )
+                  })}
                 </div>
               )}
-              <Field label={t('book.until')}>
-                <input type="date" className="input" value={repeat.until} min={date} onChange={(e) => setRepeat({ ...repeat, until: e.target.value })} />
-              </Field>
+              <label className="flex min-h-11 items-center justify-between gap-3">
+                <span className="text-[17px]">{t('book.until')}</span>
+                <input
+                  type="date"
+                  className="bg-transparent text-end text-[17px] text-grey-ink outline-none"
+                  value={repeat.until}
+                  min={date}
+                  onChange={(e) => setRepeat({ ...repeat, until: e.target.value })}
+                />
+              </label>
             </div>
           )}
-        </fieldset>
+        </Group>
       )}
 
       <button type="submit" className="btn-primary w-full" disabled={!valid}>

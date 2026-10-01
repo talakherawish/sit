@@ -1,152 +1,354 @@
 {
   "start_now": "2026-10-01T09:30",
-  "seats": { "total": 40, "taken": 18 },
+  "seats": {
+    "total": 40,
+    "taken": 18
+  },
   "zones": [
     {
       "id": "z-public",
       "type": "public_seating",
-      "name": { "en": "Public seating", "ar": "الجلسات العامة" },
+      "name": {
+        "en": "Public seating",
+        "ar": "الجلسات العامة"
+      },
       "rules": [
-        { "en": "First come, first served — not bookable", "ar": "الأولوية لمن يحضر أولاً — غير قابلة للحجز" },
-        { "en": "Quiet side: no calls", "ar": "الجهة الهادئة: بدون مكالمات" },
-        { "en": "Don't hold a seat for more than 30 minutes while away", "ar": "لا تحجز مقعداً أكثر من 30 دقيقة أثناء غيابك" }
+        {
+          "en": "First come, first served — not bookable",
+          "ar": "الأولوية لمن يحضر أولاً — غير قابلة للحجز"
+        },
+        {
+          "en": "Quiet side: no calls",
+          "ar": "الجهة الهادئة: بدون مكالمات"
+        },
+        {
+          "en": "Don't hold a seat for more than 30 minutes while away",
+          "ar": "لا تحجز مقعداً أكثر من 30 دقيقة أثناء غيابك"
+        }
       ],
-      "map_shape": { "x": 8, "y": 84, "w": 212, "h": 134 }
+      "map_shape": {
+        "x": 4,
+        "y": 100,
+        "w": 216,
+        "h": 138
+      }
     },
     {
       "id": "z-focus",
       "type": "small_room",
-      "name": { "en": "Focus Rooms", "ar": "غرف التركيز" },
+      "name": {
+        "en": "Focus Rooms",
+        "ar": "غرف التركيز"
+      },
       "rules": [
-        { "en": "Closed door: calls are fine", "ar": "باب مغلق: المكالمات مسموحة" },
-        { "en": "Book up to 3 hours at a time", "ar": "الحجز حتى 3 ساعات في المرة" }
+        {
+          "en": "Closed door: calls are fine",
+          "ar": "باب مغلق: المكالمات مسموحة"
+        },
+        {
+          "en": "Book up to 3 hours at a time",
+          "ar": "الحجز حتى 3 ساعات في المرة"
+        }
       ],
-      "map_shape": { "x": 8, "y": 8, "w": 212, "h": 68 }
+      "map_shape": {
+        "x": 4,
+        "y": 4,
+        "w": 216,
+        "h": 96
+      }
     },
     {
       "id": "z-big",
       "type": "big_room",
-      "name": { "en": "Big Rooms", "ar": "القاعات الكبيرة" },
+      "name": {
+        "en": "Big Rooms",
+        "ar": "القاعات الكبيرة"
+      },
       "rules": [
-        { "en": "For groups and meetings", "ar": "للمجموعات والاجتماعات" },
-        { "en": "Clean the whiteboard when you leave", "ar": "امسح السبورة عند المغادرة" }
+        {
+          "en": "For groups and meetings",
+          "ar": "للمجموعات والاجتماعات"
+        },
+        {
+          "en": "Clean the whiteboard when you leave",
+          "ar": "امسح السبورة عند المغادرة"
+        }
       ],
-      "map_shape": { "x": 232, "y": 8, "w": 120, "h": 196 }
+      "map_shape": {
+        "x": 236,
+        "y": 4,
+        "w": 120,
+        "h": 208
+      }
     },
-    { "id": "z-landmarks", "type": "landmark", "name": { "en": "Landmarks", "ar": "معالم" }, "rules": [], "map_shape": null }
+    {
+      "id": "z-landmarks",
+      "type": "landmark",
+      "name": {
+        "en": "Landmarks",
+        "ar": "معالم"
+      },
+      "rules": [],
+      "map_shape": null
+    }
   ],
   "spaces": [
     {
       "id": "focus-1",
       "zone_id": "z-focus",
       "kind": "focus_room",
-      "label": { "en": "Focus Room 1", "ar": "غرفة التركيز 1" },
-      "short": { "en": "Focus 1", "ar": "تركيز 1" },
+      "label": {
+        "en": "Focus Room 1",
+        "ar": "غرفة التركيز 1"
+      },
+      "short": {
+        "en": "Focus 1",
+        "ar": "تركيز 1"
+      },
       "capacity": 2,
       "size_m2": 8,
       "features": ["socket", "window"],
       "photos": ["#588888", "#24508F", "#6B7B7A"],
-      "map_x": 8,
-      "map_y": 8,
-      "map_w": 68,
-      "map_h": 68,
+      "map_x": 4,
+      "map_y": 4,
+      "map_w": 72,
+      "map_h": 96,
       "status": "free"
     },
     {
       "id": "focus-2",
       "zone_id": "z-focus",
       "kind": "focus_room",
-      "label": { "en": "Focus Room 2", "ar": "غرفة التركيز 2" },
-      "short": { "en": "Focus 2", "ar": "تركيز 2" },
+      "label": {
+        "en": "Focus Room 2",
+        "ar": "غرفة التركيز 2"
+      },
+      "short": {
+        "en": "Focus 2",
+        "ar": "تركيز 2"
+      },
       "capacity": 3,
       "size_m2": 10,
       "features": ["socket", "screen"],
       "photos": ["#24508F", "#588888", "#F5821F"],
-      "map_x": 80,
-      "map_y": 8,
-      "map_w": 68,
-      "map_h": 68,
+      "map_x": 76,
+      "map_y": 4,
+      "map_w": 72,
+      "map_h": 96,
       "status": "free"
     },
     {
       "id": "focus-3",
       "zone_id": "z-focus",
       "kind": "focus_room",
-      "label": { "en": "Focus Room 3", "ar": "غرفة التركيز 3" },
-      "short": { "en": "Focus 3", "ar": "تركيز 3" },
+      "label": {
+        "en": "Focus Room 3",
+        "ar": "غرفة التركيز 3"
+      },
+      "short": {
+        "en": "Focus 3",
+        "ar": "تركيز 3"
+      },
       "capacity": 4,
       "size_m2": 12,
       "features": ["socket", "whiteboard", "window"],
       "photos": ["#6B7B7A", "#588888", "#24508F"],
-      "map_x": 152,
-      "map_y": 8,
-      "map_w": 68,
-      "map_h": 68,
+      "map_x": 148,
+      "map_y": 4,
+      "map_w": 72,
+      "map_h": 96,
       "status": "free"
     },
     {
       "id": "big-1",
       "zone_id": "z-big",
       "kind": "big_room",
-      "label": { "en": "Big Room 1", "ar": "القاعة الكبيرة 1" },
-      "short": { "en": "Big Room 1", "ar": "القاعة 1" },
+      "label": {
+        "en": "Big Room 1",
+        "ar": "القاعة الكبيرة 1"
+      },
+      "short": {
+        "en": "Big Room 1",
+        "ar": "القاعة 1"
+      },
       "capacity": 10,
       "size_m2": 30,
       "features": ["screen", "whiteboard", "ac", "socket"],
       "photos": ["#588888", "#F5821F", "#24508F"],
-      "map_x": 232,
-      "map_y": 8,
+      "map_x": 236,
+      "map_y": 4,
       "map_w": 120,
-      "map_h": 94,
+      "map_h": 104,
       "status": "free"
     },
     {
       "id": "big-2",
       "zone_id": "z-big",
       "kind": "big_room",
-      "label": { "en": "Big Room 2", "ar": "القاعة الكبيرة 2" },
-      "short": { "en": "Big Room 2", "ar": "القاعة 2" },
+      "label": {
+        "en": "Big Room 2",
+        "ar": "القاعة الكبيرة 2"
+      },
+      "short": {
+        "en": "Big Room 2",
+        "ar": "القاعة 2"
+      },
       "capacity": 12,
       "size_m2": 36,
       "features": ["screen", "whiteboard", "ac", "socket"],
       "photos": ["#24508F", "#6B7B7A", "#588888"],
-      "map_x": 232,
-      "map_y": 110,
+      "map_x": 236,
+      "map_y": 108,
       "map_w": 120,
-      "map_h": 94,
+      "map_h": 104,
       "status": "free"
     }
   ],
   "landmarks": [
-    { "id": "kitchen", "label": { "en": "Kitchen", "ar": "المطبخ" }, "x": 8, "y": 230, "w": 100, "h": 82 },
-    { "id": "restrooms", "label": { "en": "Restrooms", "ar": "دورات المياه" }, "x": 116, "y": 230, "w": 104, "h": 82 },
-    { "id": "reception", "label": { "en": "Reception", "ar": "الاستقبال" }, "x": 232, "y": 216, "w": 120, "h": 48 },
-    { "id": "entrance", "label": { "en": "Entrance", "ar": "المدخل" }, "x": 232, "y": 272, "w": 120, "h": 40 }
+    {
+      "id": "kitchen",
+      "label": {
+        "en": "Kitchen",
+        "ar": "المطبخ"
+      },
+      "x": 4,
+      "y": 238,
+      "w": 100,
+      "h": 88
+    },
+    {
+      "id": "restrooms",
+      "label": {
+        "en": "Restrooms",
+        "ar": "دورات المياه"
+      },
+      "x": 104,
+      "y": 238,
+      "w": 116,
+      "h": 88
+    },
+    {
+      "id": "reception",
+      "label": {
+        "en": "Reception",
+        "ar": "الاستقبال"
+      },
+      "x": 236,
+      "y": 212,
+      "w": 120,
+      "h": 114
+    },
+    {
+      "id": "entrance",
+      "label": {
+        "en": "Entrance",
+        "ar": "المدخل"
+      },
+      "x": 266,
+      "y": 322,
+      "w": 60,
+      "h": 8
+    }
   ],
   "work_modes": [
     {
       "id": "focus",
-      "label": { "en": "Focus alone", "ar": "تركيز وحدي" },
+      "label": {
+        "en": "Focus alone",
+        "ar": "تركيز وحدي"
+      },
       "highlight_zone_types": ["small_room", "public_seating"],
       "default_reason": "study"
     },
-    { "id": "call", "label": { "en": "Call", "ar": "مكالمة" }, "highlight_zone_types": ["small_room"], "default_reason": "client_call" },
-    { "id": "group", "label": { "en": "Group work", "ar": "عمل جماعي" }, "highlight_zone_types": ["big_room"], "default_reason": "group_project" },
-    { "id": "meeting", "label": { "en": "Meeting", "ar": "اجتماع" }, "highlight_zone_types": ["big_room"], "default_reason": "meeting" },
-    { "id": "browse", "label": { "en": "Just looking", "ar": "أتصفح فقط" }, "highlight_zone_types": [], "default_reason": "" }
+    {
+      "id": "call",
+      "label": {
+        "en": "Call",
+        "ar": "مكالمة"
+      },
+      "highlight_zone_types": ["small_room"],
+      "default_reason": "client_call"
+    },
+    {
+      "id": "group",
+      "label": {
+        "en": "Group work",
+        "ar": "عمل جماعي"
+      },
+      "highlight_zone_types": ["big_room"],
+      "default_reason": "group_project"
+    },
+    {
+      "id": "meeting",
+      "label": {
+        "en": "Meeting",
+        "ar": "اجتماع"
+      },
+      "highlight_zone_types": ["big_room"],
+      "default_reason": "meeting"
+    },
+    {
+      "id": "browse",
+      "label": {
+        "en": "Just looking",
+        "ar": "أتصفح فقط"
+      },
+      "highlight_zone_types": [],
+      "default_reason": ""
+    }
   ],
   "opening_hours": [
-    { "weekday": 0, "open": "08:00", "close": "18:00" },
-    { "weekday": 1, "open": "08:00", "close": "18:00" },
-    { "weekday": 2, "open": "08:00", "close": "18:00" },
-    { "weekday": 3, "open": "08:00", "close": "18:00" },
-    { "weekday": 4, "open": "08:00", "close": "18:00" },
-    { "weekday": 5, "open": null, "close": null },
-    { "weekday": 6, "open": "10:00", "close": "16:00" }
+    {
+      "weekday": 0,
+      "open": "08:00",
+      "close": "18:00"
+    },
+    {
+      "weekday": 1,
+      "open": "08:00",
+      "close": "18:00"
+    },
+    {
+      "weekday": 2,
+      "open": "08:00",
+      "close": "18:00"
+    },
+    {
+      "weekday": 3,
+      "open": "08:00",
+      "close": "18:00"
+    },
+    {
+      "weekday": 4,
+      "open": "08:00",
+      "close": "18:00"
+    },
+    {
+      "weekday": 5,
+      "open": null,
+      "close": null
+    },
+    {
+      "weekday": 6,
+      "open": "10:00",
+      "close": "16:00"
+    }
   ],
   "closed_days": [
-    { "date": "2026-10-22", "reason": { "en": "Staff training day", "ar": "يوم تدريب الموظفين" } },
-    { "date": "2026-11-15", "reason": { "en": "Independence Day", "ar": "يوم الاستقلال" } }
+    {
+      "date": "2026-10-22",
+      "reason": {
+        "en": "Staff training day",
+        "ar": "يوم تدريب الموظفين"
+      }
+    },
+    {
+      "date": "2026-11-15",
+      "reason": {
+        "en": "Independence Day",
+        "ar": "يوم الاستقلال"
+      }
+    }
   ],
   "renters": [
     {
@@ -166,7 +368,7 @@
       "phone": "+970599100202",
       "email": "mohammad@example.com",
       "language": "en",
-      "birthday": null,
+      "birthday": "1994-06-02",
       "preferred_contact": "sms",
       "no_show_count": 0,
       "paused_until": null
@@ -239,6 +441,19 @@
       "reminder": "2h",
       "series_id": "ser-moh",
       "status": "used",
+      "created_by": "renter",
+      "source": "map"
+    },
+    {
+      "id": "b-moh-call",
+      "renter_id": "mohammad",
+      "space_id": "focus-3",
+      "date": "2026-10-01",
+      "start": "13:30",
+      "end": "15:00",
+      "reason": "client_call",
+      "reminder": "3h",
+      "status": "awaiting_confirmation",
       "created_by": "renter",
       "source": "map"
     },
@@ -378,21 +593,66 @@
     }
   ],
   "visits": [
-    { "id": "v-moh", "renter_id": "mohammad", "check_in": "2026-10-01T09:02", "check_out": null, "via": "sit" },
-    { "id": "v-hala", "renter_id": "hala", "check_in": "2026-10-01T09:28", "check_out": null, "via": "sit" }
+    {
+      "id": "v-moh",
+      "renter_id": "mohammad",
+      "check_in": "2026-10-01T09:02",
+      "check_out": null,
+      "via": "sit"
+    },
+    {
+      "id": "v-hala",
+      "renter_id": "hala",
+      "check_in": "2026-10-01T09:28",
+      "check_out": null,
+      "via": "sit"
+    }
   ],
   "seat_log": [
-    { "time": "2026-10-01T08:00", "change": "0", "new_total": 0, "source": "manual", "staff": "Rana" },
-    { "time": "2026-10-01T08:35", "change": "+6", "new_total": 6, "source": "manual", "staff": "Rana" },
-    { "time": "2026-10-01T09:02", "change": "+1", "new_total": 7, "source": "check_in", "staff": "Rana" },
-    { "time": "2026-10-01T09:15", "change": "+10", "new_total": 17, "source": "manual", "staff": "Rana" },
-    { "time": "2026-10-01T09:28", "change": "+1", "new_total": 18, "source": "check_in", "staff": "Rana" }
+    {
+      "time": "2026-10-01T08:00",
+      "change": "0",
+      "new_total": 0,
+      "source": "manual",
+      "staff": "Rana"
+    },
+    {
+      "time": "2026-10-01T08:35",
+      "change": "+6",
+      "new_total": 6,
+      "source": "manual",
+      "staff": "Rana"
+    },
+    {
+      "time": "2026-10-01T09:02",
+      "change": "+1",
+      "new_total": 7,
+      "source": "check_in",
+      "staff": "Rana"
+    },
+    {
+      "time": "2026-10-01T09:15",
+      "change": "+10",
+      "new_total": 17,
+      "source": "manual",
+      "staff": "Rana"
+    },
+    {
+      "time": "2026-10-01T09:28",
+      "change": "+1",
+      "new_total": 18,
+      "source": "check_in",
+      "staff": "Rana"
+    }
   ],
   "notices": [
     {
       "id": "n-event",
       "tag": "events",
-      "text": { "en": "Event in the main hall 10:00–14:00, expect noise", "ar": "فعالية في القاعة الرئيسية 10:00–14:00، توقّع بعض الضجيج" },
+      "text": {
+        "en": "Event in the main hall 10:00–14:00, expect noise",
+        "ar": "فعالية في القاعة الرئيسية 10:00–14:00، توقّع بعض الضجيج"
+      },
       "space_id": null,
       "posted_at": "2026-10-01T08:05",
       "expires_at": "2026-10-01T18:00",
@@ -401,7 +661,10 @@
     {
       "id": "n-wifi",
       "tag": "wifi",
-      "text": { "en": "Wifi back to normal", "ar": "عاد الواي فاي للعمل بشكل طبيعي" },
+      "text": {
+        "en": "Wifi back to normal",
+        "ar": "عاد الواي فاي للعمل بشكل طبيعي"
+      },
       "space_id": null,
       "posted_at": "2026-10-01T08:40",
       "expires_at": "2026-10-01T18:00",
@@ -410,7 +673,10 @@
     {
       "id": "n-old",
       "tag": "ac",
-      "text": { "en": "AC being serviced in Big Room 2", "ar": "صيانة التكييف في القاعة الكبيرة 2" },
+      "text": {
+        "en": "AC being serviced in Big Room 2",
+        "ar": "صيانة التكييف في القاعة الكبيرة 2"
+      },
       "space_id": "big-2",
       "posted_at": "2026-09-30T08:10",
       "expires_at": "2026-09-30T18:00",
@@ -426,9 +692,18 @@
       "note": "AC not cooling in Big Room 2",
       "status": "in_progress",
       "history": [
-        { "status": "sent", "time": "2026-09-30T14:10" },
-        { "status": "seen", "time": "2026-09-30T14:40" },
-        { "status": "in_progress", "time": "2026-10-01T08:15" }
+        {
+          "status": "sent",
+          "time": "2026-09-30T14:10"
+        },
+        {
+          "status": "seen",
+          "time": "2026-09-30T14:40"
+        },
+        {
+          "status": "in_progress",
+          "time": "2026-10-01T08:15"
+        }
       ],
       "reply": "Technician booked for this afternoon."
     },
@@ -440,8 +715,14 @@
       "note": "Wifi drops on the quiet side",
       "status": "seen",
       "history": [
-        { "status": "sent", "time": "2026-09-29T10:05" },
-        { "status": "seen", "time": "2026-09-29T11:00" }
+        {
+          "status": "sent",
+          "time": "2026-09-29T10:05"
+        },
+        {
+          "status": "seen",
+          "time": "2026-09-29T11:00"
+        }
       ],
       "reply": null
     },
@@ -453,29 +734,92 @@
       "note": "Chair wobbles",
       "status": "fixed",
       "history": [
-        { "status": "sent", "time": "2026-09-25T12:00" },
-        { "status": "seen", "time": "2026-09-25T12:30" },
-        { "status": "in_progress", "time": "2026-09-26T09:00" },
-        { "status": "fixed", "time": "2026-09-26T15:00" }
+        {
+          "status": "sent",
+          "time": "2026-09-25T12:00"
+        },
+        {
+          "status": "seen",
+          "time": "2026-09-25T12:30"
+        },
+        {
+          "status": "in_progress",
+          "time": "2026-09-26T09:00"
+        },
+        {
+          "status": "fixed",
+          "time": "2026-09-26T15:00"
+        }
       ],
       "reply": "Chair replaced."
     }
   ],
   "insights": {
     "weeks": [
-      { "label": "Aug 10", "bookings": 21, "sit": 38, "walk_in": 62, "no_shows": 5 },
-      { "label": "Aug 17", "bookings": 26, "sit": 41, "walk_in": 59, "no_shows": 6 },
-      { "label": "Aug 24", "bookings": 30, "sit": 44, "walk_in": 56, "no_shows": 4 },
-      { "label": "Aug 31", "bookings": 34, "sit": 47, "walk_in": 53, "no_shows": 5 },
-      { "label": "Sep 7", "bookings": 39, "sit": 50, "walk_in": 50, "no_shows": 3 },
-      { "label": "Sep 14", "bookings": 43, "sit": 53, "walk_in": 47, "no_shows": 4 },
-      { "label": "Sep 21", "bookings": 47, "sit": 55, "walk_in": 45, "no_shows": 2 },
-      { "label": "Sep 28", "bookings": 52, "sit": 58, "walk_in": 42, "no_shows": 3 }
+      {
+        "label": "Aug 10",
+        "bookings": 21,
+        "sit": 38,
+        "walk_in": 62,
+        "no_shows": 5
+      },
+      {
+        "label": "Aug 17",
+        "bookings": 26,
+        "sit": 41,
+        "walk_in": 59,
+        "no_shows": 6
+      },
+      {
+        "label": "Aug 24",
+        "bookings": 30,
+        "sit": 44,
+        "walk_in": 56,
+        "no_shows": 4
+      },
+      {
+        "label": "Aug 31",
+        "bookings": 34,
+        "sit": 47,
+        "walk_in": 53,
+        "no_shows": 5
+      },
+      {
+        "label": "Sep 7",
+        "bookings": 39,
+        "sit": 50,
+        "walk_in": 50,
+        "no_shows": 3
+      },
+      {
+        "label": "Sep 14",
+        "bookings": 43,
+        "sit": 53,
+        "walk_in": 47,
+        "no_shows": 4
+      },
+      {
+        "label": "Sep 21",
+        "bookings": 47,
+        "sit": 55,
+        "walk_in": 45,
+        "no_shows": 2
+      },
+      {
+        "label": "Sep 28",
+        "bookings": 52,
+        "sit": 58,
+        "walk_in": 42,
+        "no_shows": 3
+      }
     ],
     "daily_visitors_history": 112,
     "status_days_this_month": 0,
     "return_rate": 46,
     "ratings": [5, 4, 4, 5, 3, 4, 5, 4, 4, 5, 4, 3],
-    "checked_before": { "yes": 31, "no": 22 }
+    "checked_before": {
+      "yes": 31,
+      "no": 22
+    }
   }
 }

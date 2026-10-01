@@ -62,6 +62,26 @@ function buildData() {
   d.messages = []
   d.notifications = [
     {
+      id: 'nt-m1',
+      renter_id: 'mohammad',
+      kind: 'notice',
+      tpl: 'notice_alert',
+      params: { text: d.notices.find((n) => n.id === 'n-event').text, spaceId: 'focus-3', time: '13:30' },
+      time: dt('2026-10-01T08:05'),
+      read: false,
+      link: '/r/home',
+    },
+    {
+      id: 'nt-m2',
+      renter_id: 'mohammad',
+      kind: 'report',
+      tpl: 'report_status',
+      params: { status: 'seen', spaceId: 'public' },
+      time: dt('2026-09-29T11:00'),
+      read: true,
+      link: '/r/reports',
+    },
+    {
       id: 'nt-1',
       renter_id: 'larine',
       kind: 'report',
@@ -85,7 +105,8 @@ const uid = (p) => `${p}-${Date.now().toString(36)}-${seq++}`
 const initial = () => ({
   data: buildData(),
   now: dt(seed.start_now),
-  renterId: null,
+  // Opens as a real, set-up account. Switch to Guest in P-01 for the browse-only story (US-1).
+  renterId: 'mohammad',
   lang: 'en',
   receptionDevice: true,
   showIds: true,

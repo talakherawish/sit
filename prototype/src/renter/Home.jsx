@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL, useRequireLogin } from '../lib/hooks'
 import { activeNotices, dayBlocks, freeStarts, hoursFor, stateAt, nextFreeAt, dateOf, minOfDay } from '../lib/logic'
-import { hm } from '../lib/time'
+import { fmtDate, hm } from '../lib/time'
 import FloorPlan from '../components/FloorPlan'
 import { MapListSwitch, ModeChips, WhenBar, useWhen } from '../components/Browse'
 import { Chip, Photo, ScreenId, Sheet } from '../components/ui'
@@ -19,6 +19,8 @@ export default function Home() {
   const mode = useStore((s) => s.mode)
   const selected = useStore((s) => s.selected)
   const set = useStore((s) => s.set)
+  const lang = useStore((s) => s.lang)
+  const renterId = useStore((s) => s.renterId)
   const when = useWhen()
   const [sheet, setSheet] = useState(null) // 'notices' | 'about' | zone id for rules | null
   const [roomSheet, setRoomSheet] = useState(null)
@@ -37,78 +39,105 @@ export default function Home() {
   const notices = activeNotices(data, now)
   const latest = notices[0]
   const { taken, total } = data.seats
+  const me = data.renters.find((r) => r.id === renterId)
+  const min = minOfDay(now)
+  const part = min < 12 * 60 ? 'morning' : min < 17 * 60 ? 'afternoon' : 'evening'
 
   return (
-    <div className="space-y-5 pt-3">
-      <ScreenId id="R-01" className="px-4" />
-      {/* Status card (US-1 AC1, AC2) */}
-      <section className="mx-4 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-grey/15" aria-label={t('home.todays_status')}>
-        <div className="flex divide-x divide-grey/15 rtl:divide-x-reverse">
-          <button
-            onClick={() => onSelect('public')}
-            className="flex min-h-16 flex-1 items-center gap-3 p-3 text-start"
-            aria-label={t('home.seats_aria', { taken, total })}
-          >
-            <span className="rounded-full bg-orange px-3 py-0.5 font-head text-[20px] font-bold text-white" dir="ltr">
-              {taken}/{total}
+    <div className="space-y-7 px-4 pt-3">
+      <header className="px-1">
+        <p className="text-[13px] font-medium tracking-[0.08em] text-grey-ink uppercase">
+          {fmtDate(dateOf(now), lang, { weekday: 'long', day: 'numeric', month: 'long' })}
+        </p>
+        <h1 className="font-head text-[34px] leading-[1.1] font-bold tracking-tight">
+          {t(`home.greeting_${part}`)}
+          {me && (
+            <span className="text-grey-ink">
+              {lang === 'ar' ? '، ' : ', '}
+              {me.name.split(' ')[0]}
             </span>
-            <span className="text-sm leading-tight">
-              <span className="block font-semibold">{t('home.seats_taken')}</span>
-              <span className="text-grey-ink">{L(data.zones[0].name)}</span>
+          )}
+        </h1>
+        <ScreenId id="R-01" className="mt-1" />
+      </header>
+
+      {/* Live seats (US-1 AC1) + hours + latest notice (US-1 AC2) */}
+      <section className="overflow-hidden rounded-[26px] bg-surface" aria-label={t('home.todays_status')}>
+        <button onClick={() => onSelect('public')} className="block w-full px-5 pt-4 pb-4 text-start" aria-label={t('home.seats_aria', { taken, total })}>
+          <span className="flex items-center gap-2 text-[13px] font-medium text-grey-ink">
+            <span className="live-dot size-2 rounded-full bg-orange" />
+            {t('home.live')} · {L(data.zones[0].name)}
+          </span>
+          <span className="mt-1 flex items-end gap-2">
+            <span className="flex items-baseline gap-1.5" dir="ltr">
+              <span className="font-head text-[64px] leading-none font-bold tracking-tight">{taken}</span>
+              <span className="font-head text-[26px] font-semibold text-grey-ink">/ {total}</span>
             </span>
-          </button>
-          <Link to="/r/hours" className="flex min-h-16 items-center gap-2 px-3 text-sm leading-tight text-navy">
-            <Icon name="clock" size={18} className="shrink-0" />
-            {h ? (
-              <span>
-                <span className="block font-semibold">{t('home.open')}</span>
-                <span dir="ltr">
-                  {hm(h.open)}–{hm(h.close)}
+            <span className="ms-auto pb-1.5 text-end text-[15px] leading-snug text-grey-ink">
+              {t('home.seats_taken')}
+              <br />
+              <span className="font-semibold text-[#2f5656]">{t('home.seats_free', { count: total - taken })}</span>
+            </span>
+          </span>
+          {/* one tick per seat */}
+          <span className="mt-3 flex h-6 items-end gap-[3px]" dir="ltr" aria-hidden="true">
+            {Array.from({ length: total }, (_, k) => (
+              <span key={k} className={`flex-1 rounded-full transition-all ${k < taken ? 'h-full bg-orange' : 'h-2.5 bg-black/[0.09]'}`} />
+            ))}
+          </span>
+        </button>
+        <div className="divide-y divide-black/[0.07] border-t border-black/[0.07]">
+          <Link to="/r/hours" className="flex min-h-12 items-center gap-3 px-5 text-[15px]">
+            <Icon name="clock" size={18} className="text-navy" />
+            <span className="flex-1">{h ? t('home.open') : t('home.closed_today')}</span>
+            {h && (
+              <span className="text-grey-ink" dir="ltr">
+                {hm(h.open)}–{hm(h.close)}
+              </span>
+            )}
+            <Icon name="next" size={16} className="text-grey-ink/60 rtl:rotate-180" />
+          </Link>
+          {latest && (
+            <button onClick={() => setSheet('notices')} className="flex min-h-14 w-full items-center gap-3 px-5 py-2.5 text-start text-[15px]">
+              <Icon name="megaphone" size={18} className="shrink-0 text-orange" />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate">{L(latest.text)}</span>
+                <span className="text-[13px] text-grey-ink">
+                  {t('home.posted', { time: hm(minOfDay(latest.posted_at)) })} · {t('home.n_notices', { count: notices.length })}
                 </span>
               </span>
-            ) : (
-              <span className="font-semibold">{t('home.closed_today')}</span>
-            )}
-          </Link>
+              <Icon name="next" size={16} className="shrink-0 text-grey-ink/60 rtl:rotate-180" />
+            </button>
+          )}
         </div>
-        {latest && (
-          <button onClick={() => setSheet('notices')} className="flex w-full items-center gap-3 border-t border-grey/15 p-3 text-start">
-            <Icon name="megaphone" className="shrink-0 text-orange" />
-            <span className="min-w-0 flex-1">
-              <span className="block truncate font-medium">{L(latest.text)}</span>
-              <span className="text-xs text-grey-ink">
-                {t('home.posted', { time: hm(minOfDay(latest.posted_at)) })} · {t('home.n_notices', { count: notices.length })}
-              </span>
-            </span>
-            <Icon name="next" size={18} className="shrink-0 text-grey-ink rtl:rotate-180" />
-          </button>
-        )}
       </section>
 
-      <ModeChips />
-      <WhenBar />
+      <section className="-mx-4 space-y-3">
+        <ModeChips />
+        <WhenBar />
+      </section>
 
-      <section className="px-4">
-        <div className="mb-2 flex items-center justify-between gap-2">
-          <h2 className="font-head text-xl font-bold">{t('home.floor_plan')}</h2>
+      <section>
+        <div className="mb-3 flex items-center justify-between gap-3 px-1">
+          <h2 className="font-head text-[24px] font-bold tracking-tight">{t('home.floor_plan')}</h2>
           <MapListSwitch active="map" />
         </div>
         <FloorPlan date={when.date} min={when.min} mode={mode} selected={selected} onSelect={onSelect} hint={t('home.map_hint')} />
-        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-xs">
+        <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 px-1 text-[13px] text-grey-ink">
           <Legend swatch="bg-[#DCE8E8] border-teal" label={t('legend.free')} />
           <Legend swatch="bg-[#D5DCDC] border-grey" label={t('legend.booked')} lock />
           <Legend swatch="bg-white border-orange border-2" label={t('legend.match')} />
           <Legend swatch="hatch border-red" label={t('legend.down')} />
         </div>
-        <div className="fade-x no-scrollbar -mx-4 mt-2 flex items-center gap-2 overflow-x-auto px-4">
-          <span className="shrink-0 text-sm font-semibold">{t('home.zone_rules')}</span>
+        <div className="fade-x no-scrollbar -mx-4 mt-3 flex items-center gap-2 overflow-x-auto px-5">
+          <span className="shrink-0 text-[15px] font-semibold">{t('home.zone_rules')}</span>
           {data.zones
             .filter((z) => z.rules.length)
             .map((z) => (
               <button
                 key={z.id}
                 onClick={() => setSheet(z.id)}
-                className="flex min-h-11 shrink-0 items-center gap-1 rounded-full bg-white px-3 text-sm ring-1 ring-grey/20"
+                className="flex min-h-11 shrink-0 items-center gap-1.5 rounded-full bg-surface px-3.5 text-[15px]"
               >
                 <Icon name="info" size={16} className="text-navy" /> {L(z.name)}
               </button>
@@ -119,39 +148,43 @@ export default function Home() {
       <RoomsToday />
 
       {/* Future scope */}
-      <div className="mx-4 rounded-lg border border-dashed border-grey/40 bg-surface p-4 text-grey-ink" aria-disabled="true">
-        <p className="font-head text-lg font-semibold">{t('home.coming_soon')}</p>
-        <p className="text-sm">{t('home.coming_soon_body')}</p>
-      </div>
+      <section className="rounded-[22px] border border-dashed border-black/15 px-5 py-4 text-grey-ink" aria-disabled="true">
+        <p className="text-[15px] font-semibold text-ink">{t('home.coming_soon')}</p>
+        <p className="mt-1 text-[15px]">{t('home.coming_soon_body')}</p>
+      </section>
 
-      <button onClick={() => setSheet('about')} className="mx-auto block min-h-11 px-4 font-head text-[14px] font-light tracking-wide text-grey-ink">
+      <button onClick={() => setSheet('about')} className="mx-auto block min-h-11 px-4 text-[13px] text-grey-ink">
         Technopark · Palestine
       </button>
 
       <Sheet open={sheet === 'notices'} onClose={() => setSheet(null)} title={t('home.todays_status')}>
-        <ul className="space-y-2">
+        <ul className="divide-y divide-black/[0.07]">
           {notices.map((n) => (
-            <li key={n.id} className="rounded-lg bg-surface p-3">
-              <span className="me-2 rounded-full bg-navy/10 px-2 py-0.5 text-xs font-semibold text-navy">{t(`tag.${n.tag}`)}</span>
-              <span className="text-xs text-grey-ink">{t('home.posted', { time: hm(minOfDay(n.posted_at)) })}</span>
-              <p className="mt-1">{L(n.text)}</p>
+            <li key={n.id} className="py-3">
+              <p className="text-[13px] text-grey-ink">
+                {t(`tag.${n.tag}`)} · {t('home.posted', { time: hm(minOfDay(n.posted_at)) })}
+              </p>
+              <p className="mt-0.5 text-[17px]">{L(n.text)}</p>
             </li>
           ))}
         </ul>
       </Sheet>
       {data.zones.map((z) => (
         <Sheet key={z.id} open={sheet === z.id} onClose={() => setSheet(null)} title={t('home.rules_for', { zone: L(z.name) })}>
-          <ul className="list-disc space-y-1 ps-5">
-            {z.rules.map((r, i) => (
-              <li key={i}>{L(r)}</li>
+          <ul className="space-y-2">
+            {z.rules.map((r, k) => (
+              <li key={k} className="flex gap-3 text-[17px]">
+                <span className="mt-2.5 size-1.5 shrink-0 rounded-full bg-teal" />
+                {L(r)}
+              </li>
             ))}
           </ul>
         </Sheet>
       ))}
       <Sheet open={sheet === 'about'} onClose={() => setSheet(null)} title={t('about.title')}>
         <TechnoparkLogo />
-        <p className="mt-3">{t('about.body')}</p>
-        <p className="mt-2 text-sm text-grey-ink">{t('about.vision')}</p>
+        <p className="mt-4 text-[17px]">{t('about.body')}</p>
+        <p className="mt-3 font-head text-[22px] leading-snug font-semibold tracking-tight text-navy">“{t('about.vision')}”</p>
       </Sheet>
       <RoomSheet id={roomSheet} onClose={() => setRoomSheet(null)} onJump={onSelect} />
     </div>
@@ -161,7 +194,7 @@ export default function Home() {
 function Legend({ swatch, label, lock }) {
   return (
     <span className="flex items-center gap-1.5">
-      <span className={`relative inline-block size-4 rounded border ${swatch}`}>
+      <span className={`relative inline-block size-3.5 rounded-[4px] border ${swatch}`}>
         {lock && <span className="absolute -end-1 -top-1 size-2 rounded-full bg-ink" />}
       </span>
       {label}
@@ -169,7 +202,7 @@ function Legend({ swatch, label, lock }) {
   )
 }
 
-/** Free / Booked blocks per room for the rest of today (US-1 AC3) */
+/** Free / Booked blocks per room for the rest of today (US-1 AC3), as one inset grouped list. */
 function RoomsToday() {
   const { t } = useTranslation()
   const L = useL()
@@ -188,44 +221,51 @@ function RoomsToday() {
     return second ? t(`${key}_then`, { time: hm(first.to) }) : t(key, { time: hm(first.to) })
   }
   return (
-    <section className="px-4">
-      <h2 className="mb-2 font-head text-xl font-bold">{t('home.rooms_today')}</h2>
-      <div className="space-y-2">
+    <section>
+      <div className="mb-3 flex items-baseline justify-between px-1">
+        <h2 className="font-head text-[24px] font-bold tracking-tight">{t('home.rooms_today')}</h2>
+        <span className="text-[13px] text-grey-ink" dir="ltr">
+          {hm(from)} → {hm(h.close)}
+        </span>
+      </div>
+      <div className="divide-y divide-black/[0.07] overflow-hidden rounded-[22px] bg-surface">
         {data.spaces.map((sp) => {
           const blocks = dayBlocks(data, sp.id, date, from)
+          const state = blocks[0].state
           return (
-            <Link key={sp.id} to={`/r/room/${sp.id}`} className="block rounded-lg bg-white p-3 ring-1 ring-grey/20">
-              <div className="mb-1.5 flex items-center justify-between">
-                <span className="font-semibold">{L(sp.label)}</span>
-                <span className="text-xs text-grey-ink">{t('map.people', { n: sp.capacity })}</span>
-              </div>
-              <div className="flex h-2.5 gap-0.5 overflow-hidden rounded-full" dir="ltr" aria-hidden="true">
-                {blocks.map((b, i) => (
-                  <span
-                    key={i}
-                    style={{ width: `${((b.to - b.from) / span) * 100}%` }}
-                    className={b.state === 'free' ? 'bg-teal/45' : b.state === 'down' ? 'hatch bg-white' : 'bg-grey/70'}
-                  />
-                ))}
-              </div>
-              <div className="mt-1 flex justify-between text-xs text-grey-ink" dir="ltr" aria-hidden="true">
-                <span>{hm(from)}</span>
-                <span>{hm(h.close)}</span>
-              </div>
-              <p className={`text-sm font-semibold ${blocks[0].state === 'free' ? 'text-[#2f5656]' : blocks[0].state === 'down' ? 'text-[#a32f2f]' : ''}`}>
-                {summary(blocks, h.close)}
-              </p>
-              {blocks.some((b) => b.state !== 'free') && (
-                <p className="text-xs text-grey-ink">
-                  {t('home.taken_times')}{' '}
-                  <span dir="ltr">
-                    {blocks
-                      .filter((b) => b.state !== 'free')
-                      .map((b) => `${hm(b.from)}–${hm(b.to)}`)
-                      .join(', ')}
+            <Link key={sp.id} to={`/r/room/${sp.id}`} className="flex items-center gap-3 px-4 py-3.5 active:bg-black/[0.03]">
+              <span className="min-w-0 flex-1">
+                <span className="flex items-baseline justify-between gap-2">
+                  <span className="text-[17px] font-semibold">{L(sp.label)}</span>
+                  <span className="text-[13px] text-grey-ink">{t('map.people', { n: sp.capacity })}</span>
+                </span>
+                <span className="mt-2 flex h-1.5 gap-[2px] overflow-hidden rounded-full" dir="ltr" aria-hidden="true">
+                  {blocks.map((b, k) => (
+                    <span
+                      key={k}
+                      style={{ width: `${((b.to - b.from) / span) * 100}%` }}
+                      className={b.state === 'free' ? 'bg-teal/40' : b.state === 'down' ? 'hatch bg-white' : 'bg-ink/70'}
+                    />
+                  ))}
+                </span>
+                <span className="mt-1.5 flex flex-wrap items-baseline gap-x-2 text-[13px]">
+                  <span className={`font-semibold ${state === 'free' ? 'text-[#2f5656]' : state === 'down' ? 'text-[#a32f2f]' : 'text-ink'}`}>
+                    {summary(blocks, h.close)}
                   </span>
-                </p>
-              )}
+                  {blocks.some((b) => b.state !== 'free') && (
+                    <span className="text-grey-ink">
+                      {t('home.taken_times')}{' '}
+                      <span dir="ltr">
+                        {blocks
+                          .filter((b) => b.state !== 'free')
+                          .map((b) => `${hm(b.from)}–${hm(b.to)}`)
+                          .join(', ')}
+                      </span>
+                    </span>
+                  )}
+                </span>
+              </span>
+              <Icon name="next" size={16} className="shrink-0 text-grey-ink/60 rtl:rotate-180" />
             </Link>
           )
         })}

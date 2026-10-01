@@ -5,7 +5,7 @@ import { useStore } from '../store'
 import { useL } from '../lib/hooks'
 import { hoursFor, dateOf, minOfDay } from '../lib/logic'
 import { addDays, fmtDate, hm, floor30 } from '../lib/time'
-import { Chip, Sheet } from './ui'
+import { Chip, Segmented, Sheet } from './ui'
 import Icon from './Icon'
 
 /** The date + time the map and list are showing. */
@@ -23,7 +23,7 @@ export function ModeChips() {
   const set = useStore((s) => s.set)
   return (
     <div className="px-4">
-      <p className="mb-1.5 text-sm font-semibold">{t('home.how')}</p>
+      <p className="mb-2 px-1 text-[15px] font-semibold">{t('home.how')}</p>
       <div className="fade-x no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
         {modes.map((m) => (
           <Chip key={m.id} active={mode === m.id} onClick={() => set({ mode: m.id, selected: null })}>
@@ -42,15 +42,12 @@ export function WhenBar() {
   const [open, setOpen] = useState(false)
   return (
     <div className="flex items-center gap-2 px-4">
-      <button
-        onClick={() => setOpen(true)}
-        className="flex min-h-11 items-center gap-2 rounded-full border border-navy/30 bg-white px-4 font-semibold text-navy"
-      >
-        <Icon name="clock" size={18} />
+      <button onClick={() => setOpen(true)} className="flex min-h-11 items-center gap-2 rounded-full bg-surface px-4 text-[15px] font-semibold text-ink">
+        <span className={`size-2 rounded-full ${when.isNow ? 'live-dot bg-orange' : 'bg-navy'}`} />
         {when.isNow ? t('when.today_now') : `${fmtDate(when.date, lang)} · ${hm(when.min)}`}
       </button>
       <div className="flex-1" />
-      <Link to="/r/filter" className="flex min-h-11 items-center gap-1 rounded-full px-3 text-sm font-semibold text-navy">
+      <Link to="/r/filter" className="flex min-h-11 items-center gap-1.5 px-2 text-[15px] font-medium text-navy">
         <Icon name="search" size={18} />
         {t('when.find')}
       </Link>
@@ -125,28 +122,20 @@ function WhenSheet({ open, onClose }) {
   )
 }
 
-/** Compact Map / List switch shared by R-01 and R-02. */
+/** Map / List segmented control shared by R-01 and R-02. */
 export function MapListSwitch({ active }) {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const opts = [
-    ['map', '/r/home', 'map'],
-    ['list', '/r/list', 'list'],
-  ]
   return (
-    <div className="flex rounded-full bg-white p-0.5 ring-1 ring-grey/25" role="tablist" aria-label={t('home.view')}>
-      {opts.map(([k, to, icon]) => (
-        <button
-          key={k}
-          role="tab"
-          aria-selected={active === k}
-          onClick={() => active !== k && navigate(to)}
-          className={`flex min-h-10 items-center gap-1.5 rounded-full px-3.5 text-sm font-semibold ${active === k ? 'bg-navy text-white' : 'text-navy'}`}
-        >
-          <Icon name={icon} size={16} />
-          {t(`home.${k}`)}
-        </button>
-      ))}
-    </div>
+    <Segmented
+      className="w-44"
+      label={t('home.view')}
+      value={active}
+      onChange={(v) => navigate(v === 'map' ? '/r/home' : '/r/list')}
+      options={[
+        ['map', t('home.map'), 'map'],
+        ['list', t('home.list'), 'list'],
+      ]}
+    />
   )
 }

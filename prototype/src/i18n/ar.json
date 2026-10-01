@@ -59,7 +59,12 @@
     "booked_until_then": "محجوزة حتى {{time}}، ثم متاحة",
     "down_until": "خارج الخدمة حتى {{time}}",
     "down_until_then": "خارج الخدمة حتى {{time}}، ثم متاحة",
-    "taken_times": "محجوزة:"
+    "taken_times": "محجوزة:",
+    "live": "مباشر",
+    "seats_free": "المقاعد المتاحة: {{count}}",
+    "greeting_morning": "صباح الخير",
+    "greeting_afternoon": "مساء الخير",
+    "greeting_evening": "مساء الخير"
   },
   "about": {
     "title": "عن Sit",
@@ -182,7 +187,9 @@
     "repeat_days": "أيام الأسبوع",
     "repeat_weekly": "أسبوعياً",
     "until": "حتى",
-    "book": "احجز"
+    "book": "احجز",
+    "when_where": "المكان والموعد",
+    "purpose": "الغرض"
   },
   "reason": {
     "study": "دراسة / عمل مركّز",
@@ -210,7 +217,8 @@
     "my_bookings": "حجوزاتي",
     "calendar": "أضف إلى التقويم",
     "done": "تم",
-    "series": "عدد الحجوزات في هذه السلسلة: {{count}}"
+    "series": "عدد الحجوزات في هذه السلسلة: {{count}}",
+    "details": "الحجز"
   },
   "auth": {
     "signup_title": "إنشاء حساب",

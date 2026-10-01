@@ -23,6 +23,7 @@ const P = {
   megaphone: 'M3 10v4h4l6 4V6L7 10H3Zm14-2a5 5 0 0 1 0 8',
   inbox: 'M3 13h5l2 3h4l2-3h5M5 5h14l2 8v6H3v-6l2-8Z',
   seat: 'M7 4v8h10M7 12l-1 8m11-8 1 8M7 16h10',
+  chevrons: 'M8 9l4-4 4 4M8 15l4 4 4-4',
 }
 
 export default function Icon({ name, className = '', size = 22, filled }) {
@@ -53,9 +54,7 @@ export function SitMark({ className = '' }) {
         <rect x="7" y="15" width="2.5" height="6" rx="1" fill="#F5821F" />
         <rect x="15" y="15" width="2.5" height="6" rx="1" fill="#F5821F" />
       </svg>
-      <span className="font-head text-[26px] leading-none font-bold text-navy" style={{ fontFamily: '"Barlow Semi Condensed", sans-serif' }}>
-        Sit
-      </span>
+      <span className="font-head text-[26px] leading-none font-bold text-navy">Sit</span>
     </span>
   )
 }
@@ -68,7 +67,7 @@ export function TechnoparkLogo({ light }) {
         <rect width="34" height="34" rx="4" fill="#588888" />
         <path d="M8 10h18M17 10v16" stroke="#fff" strokeWidth="4" strokeLinecap="round" />
       </svg>
-      <div className="leading-tight" style={{ fontFamily: '"Barlow Semi Condensed", sans-serif' }}>
+      <div className="leading-tight">
         <div className={`text-[16px] font-bold tracking-wide ${light ? 'text-white' : 'text-navy'}`}>TECHNO PARK</div>
         <div className={`text-[12px] font-light tracking-[0.2em] ${light ? 'text-white/85' : 'text-grey-ink'}`}>PALESTINE</div>
       </div>

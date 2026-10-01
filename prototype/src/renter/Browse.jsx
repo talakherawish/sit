@@ -62,7 +62,10 @@ export function SpacesList() {
                   const match = hl.includes(zt(sp.zone_id))
                   const dim = mode !== 'browse' && !match
                   return (
-                    <div key={sp.id} className={`rounded-lg bg-white ring-1 ${match ? 'ring-2 ring-orange' : 'ring-grey/20'} ${dim ? 'opacity-60' : ''}`}>
+                    <div
+                      key={sp.id}
+                      className={`rounded-2xl bg-surface ring-1 ${match ? 'ring-2 ring-orange' : 'ring-transparent'} ${dim ? 'opacity-60' : ''}`}
+                    >
                       <Link to={`/r/room/${sp.id}`} className="block p-3">
                         <div className="flex items-center justify-between gap-2">
                           <span className="font-semibold">{L(sp.label)}</span>
@@ -250,7 +253,7 @@ export function Hours() {
           <h2 className="mb-2 font-head text-xl font-bold">{t('hours.closed_days')}</h2>
           <ul className="space-y-2">
             {data.closed_days.map((c) => (
-              <li key={c.date} className="flex justify-between rounded-lg bg-white p-3 ring-1 ring-grey/20">
+              <li key={c.date} className="flex justify-between rounded-2xl bg-surface p-4">
                 <span>{L(c.reason)}</span>
                 <span className="font-semibold">{fmtDate(c.date, lang)}</span>
               </li>
@@ -362,7 +365,7 @@ export function FilterRooms() {
             <h2 className="mb-2 font-semibold">{t('filter.results', { count: results.length })}</h2>
             <div className="space-y-2">
               {results.map((sp) => (
-                <Link key={sp.id} to={`/r/room/${sp.id}`} className="flex min-h-12 items-center justify-between rounded-lg bg-white p-3 ring-1 ring-grey/20">
+                <Link key={sp.id} to={`/r/room/${sp.id}`} className="flex min-h-12 items-center justify-between rounded-2xl bg-surface p-4">
                   <span>
                     <span className="font-semibold">{L(sp.label)}</span> · {t('map.people', { n: sp.capacity })}
                   </span>

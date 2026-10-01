@@ -170,7 +170,7 @@ export function Today() {
                     <StatusChip status={st} label={t(`room_status.${st}`)} />
                     {st === 'down' && <p className="mt-1 text-sm">{sp.down.reason}</p>}
                     {menu === sp.id && (
-                      <div className="absolute end-2 top-10 z-10 w-48 rounded-lg bg-white p-1 shadow-lg ring-1 ring-grey/20">
+                      <div className="absolute end-2 top-10 z-10 w-48 rounded-xl bg-white p-1 shadow-xl ring-1 ring-black/[0.06]">
                         {sp.down ? (
                           <button
                             className="block min-h-11 w-full rounded px-3 text-start hover:bg-surface"

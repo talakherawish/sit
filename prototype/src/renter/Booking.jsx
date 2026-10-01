@@ -1,11 +1,12 @@
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL, useSpaceName } from '../lib/hooks'
-import { freeStarts, isFree, isPaused, dateOf, renter as findRenter } from '../lib/logic'
+import { ACTIVE, freeStarts, isFree, isPaused, dateOf, startAbs, renter as findRenter } from '../lib/logic'
 import { fmtDate, fmtAbs, hm, addDays } from '../lib/time'
 import BookingForm from '../components/BookingForm'
-import { Card, ScreenTitle, StatusChip } from '../components/ui'
+import { Card, Confirm, Group, GroupRow, Photo, ScreenTitle, StatusChip } from '../components/ui'
 import Icon from '../components/Icon'
 import { NeedLogin } from './RenterLayout'
 
@@ -29,7 +30,7 @@ export function Book() {
     s.set({ draft: null })
     if (skipped && ids.length) s.showToast('toast.series_skipped', { count: skipped })
     if (!ids.length) return navigate('/r/taken')
-    navigate(`/r/confirmed/${ids[0]}`, { replace: true })
+    navigate(`/r/confirmed/${ids[0]}`, { replace: true, state: { fresh: true } })
   }
 
   return (
@@ -76,7 +77,7 @@ export function SlotTaken() {
                 <button
                   key={m}
                   onClick={() => pick({ start: m, end: m + dur })}
-                  className="flex min-h-12 items-center justify-between rounded-lg bg-white px-4 ring-1 ring-grey/20"
+                  className="flex min-h-12 items-center justify-between rounded-2xl bg-surface px-4"
                 >
                   <span dir="ltr" className="font-semibold">
                     {hm(m)}–{hm(m + dur)}
@@ -94,11 +95,7 @@ export function SlotTaken() {
           <div className="grid gap-2">
             {others.length ? (
               others.map((sp) => (
-                <button
-                  key={sp.id}
-                  onClick={() => pick({ spaceId: sp.id })}
-                  className="flex min-h-12 items-center justify-between rounded-lg bg-white px-4 ring-1 ring-grey/20"
-                >
+                <button key={sp.id} onClick={() => pick({ spaceId: sp.id })} className="flex min-h-12 items-center justify-between rounded-2xl bg-surface px-4">
                   <span>
                     {L(sp.label)} · {t('map.people', { n: sp.capacity })}
                   </span>
@@ -115,62 +112,109 @@ export function SlotTaken() {
   )
 }
 
-/** R-08 Booking confirmed */
+/** R-08 Booking confirmed — also the booking detail page when opened from My bookings. */
 export function Confirmed() {
   const { id } = useParams()
+  const { state } = useLocation()
   const { t } = useTranslation()
-  const lang = useStore((s) => s.lang)
-  const data = useStore((s) => s.data)
-  const showToast = useStore((s) => s.showToast)
+  const navigate = useNavigate()
+  const s = useStore()
   const name = useSpaceName()
-  const b = data.bookings.find((x) => x.id === id)
+  const [cancelling, setCancelling] = useState(false)
+  const b = s.data.bookings.find((x) => x.id === id)
   if (!b) return <ScreenTitle id="R-08" title={t('confirmed.title')} back />
-  const me = findRenter(data, b.renter_id)
-  const series = b.series_id ? data.bookings.filter((x) => x.series_id === b.series_id).length : 0
+  const fresh = !!state?.fresh
+  const me = findRenter(s.data, b.renter_id)
+  const sp = s.data.spaces.find((x) => x.id === b.space_id)
+  const series = b.series_id ? s.data.bookings.filter((x) => x.series_id === b.series_id).length : 0
+  const active = ACTIVE.includes(b.status) && b.status !== 'used'
+  const started = s.now >= startAbs(b)
   return (
     <>
-      <ScreenTitle id="R-08" title={t('confirmed.title')} />
-      <div className="space-y-4 px-4">
-        <div className="grid size-16 place-items-center rounded-full bg-teal/20 text-[#2f5656]">
-          <Icon name="check" size={34} />
-        </div>
-        <Card>
-          <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1">
-            <dt className="text-grey-ink">{t('book.room')}</dt>
-            <dd className="font-semibold">{name(b.space_id)}</dd>
-            <dt className="text-grey-ink">{t('book.date')}</dt>
-            <dd>{fmtDate(b.date, lang)}</dd>
-            <dt className="text-grey-ink">{t('book.time')}</dt>
-            <dd dir="ltr" className="text-start">
+      <ScreenTitle id="R-08" title={fresh ? t('confirmed.title') : t('confirmed.details')} back={!fresh} />
+      <div className="space-y-6 px-4">
+        {fresh && (
+          <div className="flex items-center gap-3 px-1">
+            <span className="grid size-11 place-items-center rounded-full bg-teal text-white">
+              <Icon name="check" size={24} />
+            </span>
+            <p className="text-[15px] text-grey-ink">{t('confirmed.receipt', { email: me.email || me.phone })}</p>
+          </div>
+        )}
+        <Link to={`/r/room/${sp.id}`} className="flex items-center gap-4 rounded-2xl bg-surface p-3 active:bg-black/[0.04]">
+          <Photo color={sp.photos[0]} className="!w-24 shrink-0 !rounded-xl" label={name(sp.id)} />
+          <span className="min-w-0 flex-1">
+            <span className="block text-[17px] font-semibold">{name(sp.id)}</span>
+            <span className="block text-[15px] text-grey-ink">{t('map.people', { n: sp.capacity })}</span>
+          </span>
+          <Icon name="next" size={16} className="text-grey-ink/60 rtl:rotate-180" />
+        </Link>
+        <Group>
+          <GroupRow label={t('book.date')}>
+            <span className="text-[17px] text-grey-ink">{fmtDate(b.date, s.lang, { weekday: 'long', day: 'numeric', month: 'long' })}</span>
+          </GroupRow>
+          <GroupRow label={t('book.time')}>
+            <span className="text-[17px] text-grey-ink" dir="ltr">
               {hm(b.start)}–{hm(b.end)}
-            </dd>
-            <dt className="text-grey-ink">{t('book.reason')}</dt>
-            <dd>{b.reason === 'other' ? b.reason_other : t(`reason.${b.reason}`)}</dd>
-            <dt className="text-grey-ink">{t('book.reminder')}</dt>
-            <dd>{b.reminder_at ? fmtAbs(b.reminder_at, lang) : t('book.no_reminder_short')}</dd>
-            <dt className="text-grey-ink">{t('bookings.status')}</dt>
-            <dd>
-              <StatusChip status={b.status} />
-            </dd>
-          </dl>
-          {series > 1 && <p className="mt-2 text-sm font-medium">{t('confirmed.series', { count: series })}</p>}
-        </Card>
-        <p className="flex items-center gap-2 text-sm">
-          <Icon name="check" size={18} className="text-teal" />
-          {t('confirmed.receipt', { email: me.email || me.phone })}
-        </p>
+            </span>
+          </GroupRow>
+          <GroupRow label={t('book.reason')}>
+            <span className="truncate text-[17px] text-grey-ink">{b.reason === 'other' ? b.reason_other : t(`reason.${b.reason}`)}</span>
+          </GroupRow>
+          <GroupRow label={t('book.reminder')}>
+            <span className="text-[17px] text-grey-ink">{b.reminder_at ? fmtAbs(b.reminder_at, s.lang) : t('book.no_reminder_short')}</span>
+          </GroupRow>
+          <GroupRow label={t('bookings.status')}>
+            <StatusChip status={b.status} />
+          </GroupRow>
+        </Group>
+        {series > 1 && <p className="px-1 text-[15px] text-grey-ink">{t('confirmed.series', { count: series })}</p>}
         <div className="grid gap-2">
-          <Link to="/r/bookings" className="btn-primary">
-            {t('confirmed.my_bookings')}
-          </Link>
-          <button className="btn-secondary" onClick={() => showToast('toast.calendar')}>
+          {b.status === 'awaiting_confirmation' && b.reminder_sent && (
+            <Link to={`/r/reminder/${b.id}`} className="btn-primary">
+              {t('bookings.confirm_now')}
+            </Link>
+          )}
+          {fresh && (
+            <Link to="/r/bookings" className="btn-primary">
+              {t('confirmed.my_bookings')}
+            </Link>
+          )}
+          <button className="btn-secondary !min-h-[50px]" onClick={() => s.showToast('toast.calendar')}>
+            <Icon name="calendar" size={18} />
             {t('confirmed.calendar')}
           </button>
-          <Link to="/r/home" className="btn-secondary">
-            {t('confirmed.done')}
-          </Link>
+          {!fresh && active && !started && (
+            <div className="grid grid-cols-2 gap-2">
+              <button className="btn-secondary !min-h-[50px]" onClick={() => navigate(`/r/bookings/${b.id}/move`)}>
+                {t('bookings.change')}
+              </button>
+              <button className="btn-danger !min-h-[50px]" onClick={() => setCancelling(true)}>
+                {t('bookings.cancel')}
+              </button>
+            </div>
+          )}
+          {!fresh && active && started && <p className="px-1 text-center text-[15px] text-grey-ink">{t('bookings.started')}</p>}
+          {fresh && (
+            <Link to="/r/home" className="btn-link justify-center">
+              {t('confirmed.done')}
+            </Link>
+          )}
         </div>
       </div>
+      <Confirm
+        open={cancelling}
+        title={t('bookings.cancel_title')}
+        body={t('bookings.cancel_body')}
+        okLabel={t('bookings.cancel_ok')}
+        danger
+        onCancel={() => setCancelling(false)}
+        onOk={() => {
+          s.cancelBooking(b.id)
+          s.showToast('toast.cancel_email')
+          setCancelling(false)
+        }}
+      />
     </>
   )
 }

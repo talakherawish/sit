@@ -225,7 +225,7 @@ export function Code() {
               onKeyDown={(e) => {
                 if (e.key === 'Backspace' && !d && i > 0) refs.current[i - 1]?.focus()
               }}
-              className="size-14 rounded-lg border border-grey/40 bg-white text-center font-head text-2xl font-bold focus:border-navy focus:ring-2 focus:ring-navy/20 focus:outline-none"
+              className="size-14 rounded-2xl border-0 bg-surface text-center font-head text-2xl font-bold focus:border-navy focus:ring-2 focus:ring-navy/20 focus:outline-none"
             />
           ))}
         </div>

@@ -10,7 +10,7 @@ import { StaffTitle } from './StaffLayout'
 
 function Tile({ label, value, sub, north }) {
   return (
-    <div className={`rounded-lg bg-white p-4 ring-1 ${north ? 'ring-2 ring-orange' : 'ring-grey/15'}`}>
+    <div className={`rounded-2xl bg-surface p-4 ring-1 ${north ? 'ring-2 ring-orange' : 'ring-transparent'}`}>
       <p className="text-sm text-grey-ink">{label}</p>
       <p className="font-head text-4xl font-bold">{value}</p>
       {sub && <p className="text-xs text-grey-ink">{sub}</p>}

@@ -28,8 +28,8 @@ export default function StaffLayout() {
   if (!reception) {
     // S-00 Device check (#13)
     return (
-      <div className="grid min-h-dvh place-items-center bg-surface p-6">
-        <div className="max-w-md rounded-xl bg-white p-8 text-center shadow ring-1 ring-grey/20">
+      <div className="grid min-h-dvh place-items-center bg-white p-6">
+        <div className="max-w-md rounded-3xl bg-surface p-10 text-center">
           <ScreenId id="S-00" />
           <Icon name="lock" size={40} className="mx-auto mb-3 text-navy" />
           <h1 className="font-head text-2xl font-bold">{t('staff.device_title')}</h1>
@@ -43,7 +43,7 @@ export default function StaffLayout() {
   }
 
   return (
-    <div className="flex min-h-dvh bg-surface">
+    <div className="flex min-h-dvh bg-white">
       <aside className="sticky top-0 flex h-dvh w-64 shrink-0 flex-col bg-navy text-white">
         <div className="border-b border-white/15 p-5">
           <TechnoparkLogo light />

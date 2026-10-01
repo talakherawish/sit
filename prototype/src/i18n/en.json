@@ -61,7 +61,13 @@
     "booked_until_then": "Booked until {{time}}, then free",
     "down_until": "Out of service until {{time}}",
     "down_until_then": "Out of service until {{time}}, then free",
-    "taken_times": "Taken:"
+    "taken_times": "Taken:",
+    "live": "Live",
+    "seats_free_one": "{{count}} seat free",
+    "seats_free_other": "{{count}} seats free",
+    "greeting_morning": "Good morning",
+    "greeting_afternoon": "Good afternoon",
+    "greeting_evening": "Good evening"
   },
   "about": {
     "title": "About Sit",
@@ -186,7 +192,9 @@
     "repeat_days": "Days of week",
     "repeat_weekly": "Weekly",
     "until": "Until",
-    "book": "Book"
+    "book": "Book",
+    "when_where": "When and where",
+    "purpose": "Purpose"
   },
   "reason": {
     "study": "Study / focused work",
@@ -215,7 +223,8 @@
     "calendar": "Add to calendar",
     "done": "Done",
     "series_one": "{{count}} booking in this series",
-    "series_other": "{{count}} bookings in this series"
+    "series_other": "{{count}} bookings in this series",
+    "details": "Booking"
   },
   "auth": {
     "signup_title": "Sign up",
@@ -399,7 +408,7 @@
     "nav_insights": "Insights",
     "nav_settings": "Settings",
     "reception_pc": "Reception computer · Technopark",
-    "open_area": "open-area seats",
+    "open_area": "Open-area seats",
     "reception": "Reception",
     "device_title": "Reception computer only",
     "device_body": "The staff dashboard only opens on the reception computer.",

@@ -22,10 +22,10 @@ npm run check-i18n # lists translation keys missing from en.json / ar.json
 
 ## Demo start state
 
-The clock starts at **Thu 1 Oct 2026, 09:30**. Seeded data lives in `src/data/mock-data.json`; "Reset all data" in P-01 reloads it.
+The clock starts at **Thu 1 Oct 2026, 09:30**, and the app opens logged in as **Mohammad** with a lived-in account (bookings, alerts, reports, profile). Pick **Guest** in P-01 for the browse-without-an-account story (US-1). Seeded data lives in `src/data/mock-data.json`; "Reset all data" in P-01 reloads it.
 
 - **Larine** (Arabic) — Big Room 2 today 15:00–17:00, awaiting confirmation, reminder 2 h before; one AC report in progress.
-- **Mohammad** — recurring Focus Room 1, Sun–Thu 09:00–10:00, checked in today.
+- **Mohammad** — recurring Focus Room 1, Sun–Thu 09:00–10:00 (checked in today), plus a client call in Focus Room 3 at 13:30 awaiting confirmation.
 - **Omar** — no bookings; use him for the last-minute and "slot just taken" demos.
 
 Any 4-digit code passes on R-11; the real code is in the P-03 outbox.
@@ -46,9 +46,19 @@ src/
   prototype/            P-01 … P-04 drawer
 ```
 
+## Look and feel
+
+iOS idiom on a white page: a bezel-and-Dynamic-Island phone frame on desktop, frosted nav and tab bars, large titles, inset grouped lists and forms, segmented controls, switches, bottom sheets and alerts. The floor plan is drawn as an architectural plan (walls, door swings, windows, furniture; one circle per public seat).
+
+Two deliberate departures from the spec's _Visual design_ section, made on request:
+
+- **Fonts:** the system font (SF Pro on Apple devices), then **Inter** from Google Fonts, then **IBM Plex Sans Arabic** for Arabic — instead of Barlow Semi Condensed.
+- **Corners:** iOS radii (12–28 px) instead of 8 px.
+
+Brand colours are unchanged; text is #1D1D1F with #6E6E73 for secondary text (5:1 on white), and cards use a #F5F5F7 fill.
+
 ## Choices the spec left open
 
 - **Daily status nudge (S-01):** the "No status posted today" banner clears when staff post a notice ticked _This is today's daily status_ (on by default for the first post of the day). The two seeded morning notices are ad-hoc, so the banner shows at start, as US-6 expects.
 - **Time simulator (P-02)** jumps relative to a _target booking_ you pick (defaults to the logged-in persona's next booking, else Larine's), so US-4 works for Larine or Mohammad. Time only moves forward; use Reset to go back.
-- **Secondary text colour:** brand-grey `#6B7B7A` is 4.4:1 on white, just under the 4.5:1 rule, so small text uses a slightly darker `#56656A`. Brand-grey is still used for borders and disabled states.
 - **Placeholders to swap:** the Technopark logo (`TechnoparkLogo` in `components/Icon.jsx`) and room photos (`Photo` in `components/ui.jsx`) are drawn stand-ins; room names, counts and hours are placeholders.

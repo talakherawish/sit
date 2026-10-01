@@ -148,15 +148,14 @@ export function Notifications() {
       <div className="space-y-2 px-4">
         {!list.length && <Empty>{t('notif.none')}</Empty>}
         {list.map((n) => (
-          <article key={n.id} className={`rounded-lg bg-white p-3 ring-1 ${unread.has(n.id) ? 'ring-2 ring-orange' : 'ring-grey/20'}`}>
-            <p className="text-xs text-grey-ink">{fmtAbs(n.time, s.lang)}</p>
-            <p>{tpl(n.tpl, n.params)}</p>
-            {n.link && (
-              <Link to={n.link} className="btn-link">
-                {action(n)}
-              </Link>
-            )}
-          </article>
+          <Link key={n.id} to={n.link || '/r/home'} className="flex gap-3 rounded-2xl bg-surface p-4 active:bg-black/[0.05]">
+            <span className={`mt-2 size-2 shrink-0 rounded-full ${unread.has(n.id) ? 'bg-orange' : 'bg-transparent'}`} aria-hidden="true" />
+            <span className="min-w-0 flex-1">
+              <span className="block text-[13px] text-grey-ink">{fmtAbs(n.time, s.lang)}</span>
+              <span className="block text-[16px]">{tpl(n.tpl, n.params)}</span>
+              <span className="mt-1 block text-[15px] font-medium text-navy">{action(n)}</span>
+            </span>
+          </Link>
         ))}
       </div>
     </>
@@ -290,9 +289,13 @@ export function Profile() {
         <section>
           <h2 className="mb-2 font-head text-xl font-bold">{t('profile.history')}</h2>
           {!past.length && <Empty>{t('bookings.none_past')}</Empty>}
-          <ul className="space-y-2">
+          <div className="space-y-2">
             {past.map((b) => (
-              <li key={b.id} className="flex items-center justify-between gap-2 rounded-lg bg-white p-3 ring-1 ring-grey/20">
+              <Link
+                key={b.id}
+                to={`/r/confirmed/${b.id}`}
+                className="flex items-center justify-between gap-2 rounded-2xl bg-surface p-4 active:bg-black/[0.05]"
+              >
                 <span>
                   {name(b.space_id)}
                   <br />
@@ -304,9 +307,9 @@ export function Profile() {
                   </span>
                 </span>
                 <StatusChip status={b.status} />
-              </li>
+              </Link>
             ))}
-          </ul>
+          </div>
         </section>
         <div className="flex flex-wrap gap-2">
           <Link to="/r/reports" className="btn-secondary flex-1">
