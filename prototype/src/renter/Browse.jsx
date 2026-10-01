@@ -5,12 +5,15 @@ import { useStore } from '../store'
 import { useL, useRequireLogin } from '../lib/hooks'
 import { freeStarts, hoursFor, isFree, stateAt, nextFreeAt, dateOf, minOfDay } from '../lib/logic'
 import { addDays, fmtDate, hm, weekday, weekdayName, ceil30 } from '../lib/time'
+import { AmenityList, AmenitySheet } from '../components/Amenities'
+import { DayStrip } from '../components/Calendar'
 import { MapListSwitch, ModeChips, WhenBar, useWhen } from '../components/Browse'
 import { Card, Chip, Field, PhaseBadge, Photo, ScreenTitle, StatusChip } from '../components/ui'
 import Icon from '../components/Icon'
 
 /** R-02 Spaces list */
 export function SpacesList() {
+  const [amenity, setAmenity] = useState(null)
   const { t } = useTranslation()
   const L = useL()
   const navigate = useNavigate()
@@ -102,7 +105,12 @@ export function SpacesList() {
             </div>
           </section>
         ))}
+        <section className="mt-6">
+          <h2 className="mb-2 font-head text-xl font-bold">{t('amenity.title')}</h2>
+          <AmenityList onOpen={setAmenity} />
+        </section>
       </div>
+      {amenity && <AmenitySheet id={amenity} onClose={() => setAmenity(null)} />}
     </div>
   )
 }
@@ -117,9 +125,11 @@ export function RoomDetails() {
   const now = useStore((s) => s.now)
   const set = useStore((s) => s.set)
   const [photo, setPhoto] = useState(0)
+  const [day, setDay] = useState(null)
+  const lang = useStore((s) => s.lang)
   const sp = data.spaces.find((s) => s.id === id)
   if (!sp) return <ScreenTitle id="R-03" title="—" back />
-  const date = dateOf(now)
+  const date = day || dateOf(now)
   const slots = freeStarts(data, id, date, now, 30)
   const book = (start) => {
     set({
@@ -186,7 +196,12 @@ export function RoomDetails() {
           </ul>
         </Card>
         <section>
-          <h2 className="mb-2 font-semibold">{t('details.free_today')}</h2>
+          <h2 className="mb-2 px-1 text-[15px] font-semibold">
+            {t('details.free_on', { date: fmtDate(date, lang, { weekday: 'long', day: 'numeric', month: 'short' }) })}
+          </h2>
+          <div className="mb-3">
+            <DayStrip value={date} onChange={setDay} />
+          </div>
           <div className="flex flex-wrap gap-2">
             {slots.length ? (
               slots.map((m) => (
@@ -225,9 +240,11 @@ export function Hours() {
   const data = useStore((s) => s.data)
   const now = useStore((s) => s.now)
   const todayWd = weekday(dateOf(now))
+  const [amenity, setAmenity] = useState(null)
   return (
     <>
       <ScreenTitle id="R-04" title={t('hours.title')} back />
+      {amenity && <AmenitySheet id={amenity} onClose={() => setAmenity(null)} />}
       <div className="space-y-4 px-4">
         <Card>
           <table className="w-full">
@@ -249,6 +266,10 @@ export function Hours() {
             </tbody>
           </table>
         </Card>
+        <section>
+          <h2 className="mb-2 px-1 text-[15px] font-semibold">{t('amenity.title')}</h2>
+          <AmenityList onOpen={setAmenity} />
+        </section>
         <section>
           <h2 className="mb-2 font-head text-xl font-bold">{t('hours.closed_days')}</h2>
           <ul className="space-y-2">

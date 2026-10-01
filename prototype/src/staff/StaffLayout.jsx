@@ -44,56 +44,65 @@ export default function StaffLayout() {
 
   return (
     <div className="flex min-h-dvh bg-white">
-      <aside className="sticky top-0 flex h-dvh w-64 shrink-0 flex-col bg-navy text-white">
-        <div className="border-b border-white/15 p-5">
-          <TechnoparkLogo light />
+      {/* Source-list sidebar, macOS style */}
+      <aside className="sticky top-0 flex h-dvh w-64 shrink-0 flex-col border-e border-black/[0.06] bg-surface">
+        <div className="px-5 pt-6 pb-5">
+          <TechnoparkLogo />
         </div>
-        <p className="px-5 pt-4 pb-2 font-head text-lg font-semibold">Sit · {t('staff.desk')}</p>
-        <nav className="flex-1 space-y-1 px-3" aria-label={t('staff.nav')}>
+        <p className="px-5 pb-2 text-[13px] font-medium text-grey-ink">Sit · {t('staff.desk')}</p>
+        <nav className="flex-1 space-y-0.5 px-3" aria-label={t('staff.nav')}>
           {NAV.map((n) => (
             <NavLink
               key={n.key}
               to={n.to}
               className={({ isActive }) =>
-                `flex min-h-11 items-center gap-3 rounded-lg px-3 font-medium ${isActive || (n.match && pathname.startsWith(n.match)) ? 'bg-white text-navy' : 'text-white hover:bg-white/10'}`
+                `flex min-h-10 items-center gap-3 rounded-[10px] px-3 text-[15px] ${
+                  isActive || (n.match && pathname.startsWith(n.match)) ? 'bg-black/[0.07] font-semibold text-ink' : 'text-ink hover:bg-black/[0.04]'
+                }`
               }
             >
-              <Icon name={n.icon} size={20} />
+              <Icon name={n.icon} size={19} className="text-navy" />
               <span className="flex-1">{t(`staff.nav_${n.key}`)}</span>
-              {n.key === 'reports' && newReports > 0 && <span className="rounded-full bg-orange px-2 text-xs font-bold text-white">{newReports}</span>}
-              {n.phase && <span className="rounded-full bg-white/20 px-2 text-xs">{t(`phase.${n.phase}`)}</span>}
+              {n.key === 'reports' && newReports > 0 && (
+                <span className="grid h-5 min-w-5 place-items-center rounded-full bg-orange px-1.5 text-[12px] font-semibold text-white">{newReports}</span>
+              )}
+              {n.phase && <PhaseBadge phase={n.phase} />}
             </NavLink>
           ))}
         </nav>
-        <p className="p-5 text-xs text-white/80">{t('staff.reception_pc')}</p>
+        <p className="px-5 py-5 text-[12px] text-grey-ink">{t('staff.reception_pc')}</p>
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-20 flex h-16 items-center gap-4 border-b border-grey/15 bg-white px-6">
-          <span className="text-sm text-grey-ink">{fmtAbs(now, lang)}</span>
+        <header className="sticky top-0 z-20 flex h-14 items-center gap-3 border-b border-black/[0.06] bg-white/80 px-8 backdrop-blur-xl backdrop-saturate-150">
+          <span className="text-[13px] text-grey-ink">{fmtAbs(now, lang)}</span>
           <div className="flex-1" />
           <NavLink
             to="/s/today"
-            className="flex items-center gap-2 rounded-full bg-orange/10 px-4 py-1.5 ring-1 ring-orange"
+            className="flex min-h-9 items-center gap-2 rounded-full bg-surface px-3.5"
             aria-label={t('home.seats_aria', { taken: seats.taken, total: seats.total })}
           >
-            <Icon name="seat" size={20} className="text-orange" />
-            <span className="font-head text-xl font-bold" dir="ltr">
+            <span className="size-2 rounded-full bg-orange" aria-hidden="true" />
+            <span className="text-[15px] font-semibold tabular-nums" dir="ltr">
               {seats.taken} / {seats.total}
             </span>
-            <span className="text-sm">{t('staff.open_area')}</span>
+            <span className="text-[13px] text-grey-ink">{t('staff.open_area')}</span>
           </NavLink>
           <button
             onClick={() => setLang(lang === 'en' ? 'ar' : 'en')}
-            className="min-h-11 rounded-lg px-3 font-semibold text-navy"
+            className="min-h-9 rounded-full px-3 text-[15px] font-medium text-navy hover:bg-black/[0.04]"
             aria-label={t('common.switch_lang')}
           >
             {lang === 'en' ? 'عربي' : 'English'}
           </button>
-          <span className="flex items-center gap-2 text-sm">
-            <span className="grid size-9 place-items-center rounded-full bg-teal font-semibold text-white">R</span>Rana · {t('staff.reception')}
+          <span className="flex items-center gap-2 text-[13px] text-grey-ink">
+            <span className="grid size-8 place-items-center rounded-full bg-teal text-[14px] font-semibold text-white">R</span>
+            <span>
+              <span className="block text-[14px] font-medium text-ink">Rana</span>
+              {t('staff.reception')}
+            </span>
           </span>
         </header>
-        <main className="flex-1 p-6">
+        <main key={pathname} className="animate-screen w-full max-w-[1320px] flex-1 px-8 py-7">
           <Outlet />
         </main>
       </div>
@@ -104,12 +113,12 @@ export default function StaffLayout() {
 
 export function StaffTitle({ id, title, phase, children }) {
   return (
-    <div className="mb-5 flex flex-wrap items-end gap-3">
+    <div className="mb-6 flex flex-wrap items-end gap-3">
       <div className="flex-1">
-        <ScreenId id={id} />
-        <h1 className="font-head text-3xl font-bold">
+        <h1 className="font-head text-[34px] leading-tight font-bold">
           {title} {phase && <PhaseBadge phase={phase} />}
         </h1>
+        <ScreenId id={id} className="mt-0.5" />
       </div>
       {children}
     </div>

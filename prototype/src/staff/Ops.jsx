@@ -6,7 +6,7 @@ import { useL, useSpaceName } from '../lib/hooks'
 import { ACTIVE, NOTICE_TAGS, hoursFor, normPhone, startAbs, dateOf, minOfDay, renter as findRenter } from '../lib/logic'
 import { abs, fmtAbs, fmtDate, hm, parseHm, addDays } from '../lib/time'
 import BookingForm from '../components/BookingForm'
-import { Card, Chip, Confirm, Field, StatusChip } from '../components/ui'
+import { Card, Chip, Confirm, Field, StatusChip, Switch } from '../components/ui'
 import { StaffTitle } from './StaffLayout'
 
 const TEMPLATES = {
@@ -122,10 +122,10 @@ export function Notices() {
               )}
             </div>
           </fieldset>
-          <label className="flex min-h-11 items-center gap-2">
-            <input type="checkbox" className="size-5 accent-orange" checked={daily} onChange={(e) => setDaily(e.target.checked)} />
-            {t('notices.daily')}
-          </label>
+          <div className="flex min-h-11 items-center justify-between gap-3">
+            <span className="text-[15px]">{t('notices.daily')}</span>
+            <Switch checked={daily} onChange={setDaily} label={t('notices.daily')} />
+          </div>
           <p className="text-sm text-grey-ink">{t('notices.alert_hint')}</p>
           <button className="btn-primary w-full" disabled={!valid} onClick={post}>
             {t('notices.post')}
@@ -135,7 +135,7 @@ export function Notices() {
           <Card>
             <h2 className="mb-2 font-head text-xl font-bold">{t('notices.live')}</h2>
             {!live.length && <p className="text-grey-ink">{t('staff.no_notices')}</p>}
-            <ul className="divide-y divide-grey/15">
+            <ul className="divide-y divide-black/[0.06]">
               {live.map((n) => (
                 <li key={n.id} className="flex flex-wrap items-center gap-3 py-3">
                   <div className="min-w-60 flex-1">
@@ -186,7 +186,7 @@ export function Notices() {
               ))}
             </ul>
           </Card>
-          <Card className="bg-surface">
+          <Card>
             <h2 className="mb-2 font-head text-xl font-bold text-grey-ink">{t('notices.earlier')}</h2>
             <ul className="space-y-1 text-grey-ink">
               {earlier.map((n) => (
@@ -226,8 +226,8 @@ export function ReportsInbox() {
       <StaffTitle id="S-05" title={t('inbox.title')} phase="next" />
       <Card>
         <table className="w-full">
-          <thead className="text-sm text-grey-ink">
-            <tr className="border-b border-grey/20">
+          <thead className="text-[13px] font-medium text-grey-ink">
+            <tr className="border-b border-black/[0.08]">
               {['time', 'renter', 'place', 'type', 'note', 'status', 'reply', ''].map((c) => (
                 <th key={c} className="py-2 text-start">
                   {c && t(`inbox.col_${c}`)}
@@ -240,7 +240,7 @@ export function ReportsInbox() {
               const e = edits[r.id] || { status: r.status, reply: r.reply || '' }
               const dirty = e.status !== r.status || e.reply !== (r.reply || '')
               return (
-                <tr key={r.id} className={`border-b border-grey/10 align-top ${r.status === 'sent' ? 'bg-orange/5' : ''}`}>
+                <tr key={r.id} className={`border-b border-black/[0.06] align-top ${r.status === 'sent' ? 'bg-orange/5' : ''}`}>
                   <td className="py-3 text-sm">{fmtAbs(r.history[0].time, s.lang)}</td>
                   <td className="font-medium">{findRenter(s.data, r.renter_id)?.name}</td>
                   <td>{name(r.space_id)}</td>
@@ -446,7 +446,7 @@ export function BookFor() {
                 {results.map((x) => (
                   <li key={x.id}>
                     <button
-                      className="flex min-h-11 w-full items-center justify-between rounded px-2 text-start hover:bg-surface"
+                      className="flex min-h-11 w-full items-center justify-between rounded px-2 text-start hover:bg-black/[0.03]"
                       onClick={() => setRenterId(x.id)}
                     >
                       <span>{x.name}</span>
@@ -502,7 +502,7 @@ export function BookFor() {
         <table className="w-full">
           <tbody>
             {upcoming.map((b) => (
-              <tr key={b.id} className="border-b border-grey/10">
+              <tr key={b.id} className="border-b border-black/[0.06]">
                 <td className="py-2 font-medium">{findRenter(s.data, b.renter_id).name}</td>
                 <td>{name(b.space_id)}</td>
                 <td>

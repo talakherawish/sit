@@ -118,8 +118,8 @@ export function Today() {
             <h2 className="mb-2 font-head text-xl font-bold">{t('staff.todays_bookings')}</h2>
             <div className="overflow-x-auto">
               <table className="w-full text-start">
-                <thead className="text-sm text-grey-ink">
-                  <tr className="border-b border-grey/20">
+                <thead className="text-[13px] font-medium text-grey-ink">
+                  <tr className="border-b border-black/[0.08]">
                     <th className="py-2 text-start">{t('staff.col_renter')}</th>
                     <th className="text-start">{t('staff.col_room')}</th>
                     <th className="text-start">{t('staff.col_time')}</th>
@@ -132,7 +132,11 @@ export function Today() {
                     const r = findRenter(s.data, b.renter_id)
                     const st = staffStatus(b)
                     return (
-                      <tr key={b.id} onClick={() => navigate(`/s/checkin?renter=${r.id}`)} className="cursor-pointer border-b border-grey/10 hover:bg-surface">
+                      <tr
+                        key={b.id}
+                        onClick={() => navigate(`/s/checkin?renter=${r.id}`)}
+                        className="cursor-pointer border-b border-black/[0.06] hover:bg-black/[0.03]"
+                      >
                         <td className="py-2.5 font-medium">{r.name}</td>
                         <td>{name(b.space_id)}</td>
                         <td dir="ltr" className="text-start">
@@ -155,7 +159,7 @@ export function Today() {
               {s.data.spaces.map((sp) => {
                 const st = roomStatus(sp)
                 return (
-                  <div key={sp.id} className={`relative rounded-lg p-3 ring-1 ${st === 'down' ? 'hatch ring-red' : 'bg-surface ring-grey/20'}`}>
+                  <div key={sp.id} className={`relative rounded-lg p-3 ring-1 ${st === 'down' ? 'hatch ring-red' : 'bg-white ring-transparent'}`}>
                     <div className="flex items-start justify-between gap-1">
                       <span className="font-semibold">{L(sp.label)}</span>
                       <button
@@ -173,7 +177,7 @@ export function Today() {
                       <div className="absolute end-2 top-10 z-10 w-48 rounded-xl bg-white p-1 shadow-xl ring-1 ring-black/[0.06]">
                         {sp.down ? (
                           <button
-                            className="block min-h-11 w-full rounded px-3 text-start hover:bg-surface"
+                            className="block min-h-11 w-full rounded px-3 text-start hover:bg-black/[0.03]"
                             onClick={() => {
                               s.markRoomUp(sp.id)
                               setMenu(null)
@@ -183,7 +187,7 @@ export function Today() {
                           </button>
                         ) : (
                           <button
-                            className="block min-h-11 w-full rounded px-3 text-start text-[#a32f2f] hover:bg-surface"
+                            className="block min-h-11 w-full rounded px-3 text-start text-[#a32f2f] hover:bg-black/[0.03]"
                             onClick={() => navigate(`/s/room-down?space=${sp.id}`)}
                           >
                             {t('staff.mark_down')}
@@ -244,7 +248,7 @@ export function CheckIn() {
             <input className="input !ps-11 !text-lg" autoFocus placeholder={t('staff.search')} value={q} onChange={(e) => setQ(e.target.value)} />
           </label>
           {!ql && <p className="mt-2 text-sm text-grey-ink">{t('staff.showing_today')}</p>}
-          <ul className="mt-3 divide-y divide-grey/15" aria-live="polite">
+          <ul className="mt-3 divide-y divide-black/[0.06]" aria-live="polite">
             {!results.length && <li className="py-4 text-grey-ink">{t('staff.no_results')}</li>}
             {results.map((r) => {
               const isIn = open.has(r.id)
@@ -327,8 +331,8 @@ export function SeatLog() {
       </StaffTitle>
       <Card>
         <table className="w-full">
-          <thead className="text-sm text-grey-ink">
-            <tr className="border-b border-grey/20">
+          <thead className="text-[13px] font-medium text-grey-ink">
+            <tr className="border-b border-black/[0.08]">
               <th className="py-2 text-start">{t('staff.col_time')}</th>
               <th className="text-start">{t('staff.col_change')}</th>
               <th className="text-start">{t('staff.col_source')}</th>
@@ -338,7 +342,7 @@ export function SeatLog() {
           </thead>
           <tbody>
             {[...log].reverse().map((l, i) => (
-              <tr key={i} className="border-b border-grey/10">
+              <tr key={i} className="border-b border-black/[0.06]">
                 <td className="py-2">{fmtAbs(l.time, lang)}</td>
                 <td className="font-semibold" dir="ltr">
                   {l.change}

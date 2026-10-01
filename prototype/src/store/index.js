@@ -9,6 +9,9 @@ const dt = (s) => (s ? abs(s.slice(0, 10), parseHm(s.slice(11, 16))) : null)
 function buildData() {
   const d = structuredClone(seed)
   d.opening_hours = d.opening_hours.map((o) => ({ ...o, open: o.open && parseHm(o.open), close: o.close && parseHm(o.close) }))
+  d.amenities.forEach((a) => {
+    if (Array.isArray(a.hours)) a.hours = a.hours.map((o) => ({ ...o, open: o.open && parseHm(o.open), close: o.close && parseHm(o.close) }))
+  })
   const fixBooking = (b) => {
     b.start = parseHm(b.start)
     b.end = parseHm(b.end)
@@ -211,11 +214,12 @@ export const useStore = create(
       const ids = []
       let skipped = 0
       set((s) => {
-        const dates = [f.date]
+        const dates = f.dates?.length ? [...f.dates] : [f.date]
         let seriesId = null
+        if (dates.length > 1) seriesId = uid('series')
         if (f.repeat?.on) {
-          seriesId = uid('series')
-          for (let d = addDays(f.date, 1); d <= f.repeat.until; d = addDays(d, 1)) {
+          seriesId = seriesId || uid('series')
+          for (let d = addDays(dates[dates.length - 1], 1); d <= f.repeat.until; d = addDays(d, 1)) {
             const wd = weekday(d)
             if (f.repeat.kind === 'weekly' ? wd === weekday(f.date) : f.repeat.days.includes(wd)) dates.push(d)
           }

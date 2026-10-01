@@ -150,14 +150,15 @@
     "capacity": "Capacity",
     "type": "Type",
     "amenities": "Amenities",
-    "free_today": "Free slots today",
     "book": "Book this room",
-    "report": "Report a problem with this room"
+    "report": "Report a problem with this room",
+    "free_on": "Free times · {{date}}"
   },
   "hours": {
     "title": "Opening hours",
     "today": "today",
-    "closed_days": "Upcoming closed days"
+    "closed_days": "Upcoming closed days",
+    "today_cap": "Today"
   },
   "filter": {
     "title": "Find a room",
@@ -194,7 +195,14 @@
     "until": "Until",
     "book": "Book",
     "when_where": "When and where",
-    "purpose": "Purpose"
+    "purpose": "Purpose",
+    "days": "Days",
+    "days_summary_one": "{{count}} day picked · free on {{free}}",
+    "days_summary_other": "{{count}} days picked · free on {{free}}",
+    "pick_days": "Pick one or more days.",
+    "times_for": "Times shown for {{date}}. Days where the room is taken at this time are skipped.",
+    "book_n_one": "Book {{count}} day",
+    "book_n_other": "Book {{count}} days"
   },
   "reason": {
     "study": "Study / focused work",
@@ -594,5 +602,26 @@
     "notice_alert": "{{text}} — you have a booking in {{room}} at {{time}}.",
     "staff_cancelled": "Sorry — {{room}} is out of service ({{reason}}). Your booking on {{date}} at {{time}} was cancelled.",
     "report_status": "Your report about {{room}} is now: {{status}}."
+  },
+  "amenity": {
+    "title": "Amenities",
+    "open_until": "Open · until {{time}}",
+    "opens": "Closed · opens {{when}}",
+    "closed": "Closed",
+    "offers": "What's here",
+    "hours": "This week"
+  },
+  "cal": {
+    "view": "Calendar view",
+    "week": "Week",
+    "month": "Month",
+    "prev": "Previous",
+    "next": "Next",
+    "free": "Free",
+    "taken": "Not free",
+    "free_at_time": "Free at this time",
+    "unavailable": "Not available",
+    "pick_day": "Pick a day",
+    "today": "Today"
   }
 }

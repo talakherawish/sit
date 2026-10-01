@@ -2,7 +2,7 @@ import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL } from '../lib/hooks'
-import { stateAt, nextFreeAt } from '../lib/logic'
+import { amenityStatus, stateAt, nextFreeAt } from '../lib/logic'
 import { hm } from '../lib/time'
 import Icon from './Icon'
 
@@ -27,6 +27,8 @@ export default function FloorPlan({ date, min, mode, selected, onSelect, hint })
   const { taken, total } = data.seats
   const pub = data.zones.find((z) => z.type === 'public_seating')
   const lm = Object.fromEntries(data.landmarks.map((l) => [l.id, l]))
+  const cafe = data.amenities.find((a) => a.id === 'cafeteria')
+  const cafeOpen = useStore((s) => amenityStatus(s.data, cafe, s.now).open)
   const pubOn = selected === 'public' || hl.includes('public_seating')
   const dimPub = mode !== 'browse' && !pubOn
 
@@ -147,8 +149,14 @@ export default function FloorPlan({ date, min, mode, selected, onSelect, hint })
                   )
                 })}
 
-                <Kitchen {...lm.kitchen} label={L(lm.kitchen.label)} />
-                <Restrooms {...lm.restrooms} label={L(lm.restrooms.label)} />
+                <g {...press('cafeteria')} aria-label={L(lm.cafeteria.label)} opacity={mode !== 'browse' && selected !== 'cafeteria' ? 0.55 : 1}>
+                  <Cafeteria {...lm.cafeteria} label={L(lm.cafeteria.label)} open={cafeOpen} />
+                  {selected === 'cafeteria' && <SelectRing {...lm.cafeteria} />}
+                </g>
+                <g {...press('restrooms')} aria-label={L(lm.restrooms.label)} opacity={mode !== 'browse' && selected !== 'restrooms' ? 0.55 : 1}>
+                  <Restrooms {...lm.restrooms} label={L(lm.restrooms.label)} />
+                  {selected === 'restrooms' && <SelectRing {...lm.restrooms} />}
+                </g>
                 <Lobby {...lm.reception} label={L(lm.reception.label)} entrance={L(lm.entrance.label)} />
 
                 {/* Façade: thick exterior wall, windows, entrance opening */}
@@ -270,19 +278,35 @@ function MeetingTable({ x, y }) {
   )
 }
 
-function Kitchen({ x, y, w, h, label }) {
+/** Cafeteria: service counter along the wall, three café tables, an open/closed dot by the name. */
+function Cafeteria({ x, y, w, h, label, open }) {
+  const table = (cx, cy) => (
+    <g key={cx}>
+      <circle cx={cx} cy={cy} r="6.5" fill="#fff" stroke={FURN} strokeWidth="1.2" />
+      <circle cx={cx - 10} cy={cy} r="3.2" fill="#fff" stroke={FURN} strokeWidth="1.1" />
+      <circle cx={cx + 10} cy={cy} r="3.2" fill="#fff" stroke={FURN} strokeWidth="1.1" />
+    </g>
+  )
   return (
-    <g aria-hidden="true">
-      <rect x={x} y={y} width={w} height={h} fill="#fff" />
-      <path d={`M${x + 4} ${y + 26} h12 v42 h48 v12 h-60 Z`} fill="#F2F2F5" stroke={FURN} strokeWidth="1.2" />
-      <circle cx={x + 10} cy={y + 40} r="3.5" fill="none" stroke={HAIR} strokeWidth="1.2" />
+    <g>
+      <rect x={x} y={y} width={w} height={h} fill="#FBF8F3" />
+      <rect x={x + 4} y={y + h - 16} width={w - 8} height="12" rx="2" fill="#F2EEE7" stroke={FURN} strokeWidth="1.2" />
+      <circle cx={x + 16} cy={y + h - 10} r="2.6" fill="none" stroke={HAIR} strokeWidth="1.1" />
+      {table(x + 21, y + 54)}
+      {table(x + 51, y + 54)}
+      {table(x + 81, y + 54)}
       <rect x={x} y={y} width={w} height={h} fill="none" stroke={WALL} strokeWidth="3" />
       <Door x={x + 84} y={y} side="top" />
-      <text x={x + 58} y={y + 50} textAnchor="middle" fontSize="12.5" fill={SUB}>
+      <circle cx={x + 12} cy={y + 30} r="3" fill={open ? TEAL : SEAT_TAKEN} />
+      <text x={x + 19} y={y + 34} fontSize="12.5" fontWeight="600" fill={TEXT}>
         {label}
       </text>
     </g>
   )
+}
+
+function SelectRing({ x, y, w, h }) {
+  return <rect x={x + 4} y={y + 4} width={w - 8} height={h - 8} rx="6" fill="none" stroke={ORANGE} strokeWidth="2.5" />
 }
 
 function Restrooms({ x, y, w, h, label }) {
@@ -293,7 +317,7 @@ function Restrooms({ x, y, w, h, label }) {
     </g>
   )
   return (
-    <g aria-hidden="true">
+    <g>
       <rect x={x} y={y} width={w} height={h} fill="#fff" />
       <line x1={x + w / 2} x2={x + w / 2} y1={y + 52} y2={y + h} stroke={WALL} strokeWidth="2" />
       {wc(x + w / 4)}

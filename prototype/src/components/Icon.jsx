@@ -23,6 +23,10 @@ const P = {
   megaphone: 'M3 10v4h4l6 4V6L7 10H3Zm14-2a5 5 0 0 1 0 8',
   inbox: 'M3 13h5l2 3h4l2-3h5M5 5h14l2 8v6H3v-6l2-8Z',
   seat: 'M7 4v8h10M7 12l-1 8m11-8 1 8M7 16h10',
+  cup: 'M5 8h11v6a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5V8Zm11 2h1.5a2.5 2.5 0 0 1 0 5H16M8 2v3m3-3v3',
+  drop: 'M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11Z',
+  wifi: 'M2 9a15 15 0 0 1 20 0M5.5 12.5a10 10 0 0 1 13 0M9 16a5 5 0 0 1 6 0M12 19.5h.01',
+  printer: 'M7 9V3h10v6M7 17H4v-7h16v7h-3M7 14h10v7H7z',
   chevrons: 'M8 9l4-4 4 4M8 15l4 4 4-4',
 }
 

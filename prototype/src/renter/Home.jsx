@@ -6,6 +6,8 @@ import { useL, useRequireLogin } from '../lib/hooks'
 import { activeNotices, dayBlocks, freeStarts, hoursFor, stateAt, nextFreeAt, dateOf, minOfDay } from '../lib/logic'
 import { fmtDate, hm } from '../lib/time'
 import FloorPlan from '../components/FloorPlan'
+import { DayStrip } from '../components/Calendar'
+import { AmenitySheet, useAmenityLine } from '../components/Amenities'
 import { MapListSwitch, ModeChips, WhenBar, useWhen } from '../components/Browse'
 import { Chip, Photo, ScreenId, Sheet } from '../components/ui'
 import Icon, { TechnoparkLogo } from '../components/Icon'
@@ -97,6 +99,7 @@ export default function Home() {
             )}
             <Icon name="next" size={16} className="text-grey-ink/60 rtl:rotate-180" />
           </Link>
+          <CafeteriaRow onOpen={onSelect} />
           {latest && (
             <button onClick={() => setSheet('notices')} className="flex min-h-14 w-full items-center gap-3 px-5 py-2.5 text-start text-[15px]">
               <Icon name="megaphone" size={18} className="shrink-0 text-orange" />
@@ -186,8 +189,26 @@ export default function Home() {
         <p className="mt-4 text-[17px]">{t('about.body')}</p>
         <p className="mt-3 font-head text-[22px] leading-snug font-semibold tracking-tight text-navy">“{t('about.vision')}”</p>
       </Sheet>
-      <RoomSheet id={roomSheet} onClose={() => setRoomSheet(null)} onJump={onSelect} />
+      {data.amenities.some((a) => a.id === roomSheet) ? (
+        <AmenitySheet id={roomSheet} onClose={() => setRoomSheet(null)} />
+      ) : (
+        <RoomSheet id={roomSheet} onClose={() => setRoomSheet(null)} onJump={onSelect} />
+      )}
     </div>
+  )
+}
+
+function CafeteriaRow({ onOpen }) {
+  const L = useL()
+  const cafe = useStore((s) => s.data.amenities.find((a) => a.id === 'cafeteria'))
+  const line = useAmenityLine()(cafe)
+  return (
+    <button onClick={() => onOpen('cafeteria')} className="flex min-h-12 w-full items-center gap-3 px-5 text-start text-[15px]">
+      <Icon name="cup" size={18} className="text-navy" />
+      <span className="flex-1">{L(cafe.name)}</span>
+      <span className={line.open ? 'font-medium text-[#2f5656]' : 'text-grey-ink'}>{line.text}</span>
+      <Icon name="next" size={16} className="text-grey-ink/60 rtl:rotate-180" />
+    </button>
   )
 }
 
@@ -286,7 +307,11 @@ function RoomSheet({ id, onClose, onJump }) {
   const set = useStore((s) => s.set)
   const when = useWhen()
   const [range, setRange] = useState(null)
-  useEffect(() => setRange(null), [id])
+  const [day, setDay] = useState(null)
+  useEffect(() => {
+    setRange(null)
+    setDay(null)
+  }, [id])
   if (!id) return null
 
   if (id === 'public') {
@@ -355,7 +380,8 @@ function RoomSheet({ id, onClose, onJump }) {
     )
   }
 
-  const starts = freeStarts(data, id, when.date, now, 30)
+  const slotDay = day || when.date
+  const starts = freeStarts(data, id, slotDay, now, 30)
   const inRange = (m) => range && m >= range.start && m < range.end
   const tap = (m) => {
     if (range && m >= range.start && m + 30 > range.end) {
@@ -367,7 +393,7 @@ function RoomSheet({ id, onClose, onJump }) {
   }
   const book = () => {
     const modeObj = data.work_modes.find((m) => m.id === mode)
-    set({ draft: { spaceId: id, date: when.date, start: range?.start, end: range?.end, reason: modeObj?.default_reason || '', source: 'map' } })
+    set({ draft: { spaceId: id, date: slotDay, start: range?.start, end: range?.end, reason: modeObj?.default_reason || '', source: 'map' } })
     onClose()
     requireLogin('/r/book')
   }
@@ -382,6 +408,15 @@ function RoomSheet({ id, onClose, onJump }) {
           <p className="text-grey-ink">{sp.features.map((f) => t(`feature.${f}`)).join(' · ')}</p>
           <p className="mt-1 font-semibold text-[#2f5656]">{t('map.free')}</p>
         </div>
+      </div>
+      <div className="mb-3">
+        <DayStrip
+          value={slotDay}
+          onChange={(d) => {
+            setDay(d)
+            setRange(null)
+          }}
+        />
       </div>
       <p className="mb-1 text-sm font-semibold">{t('room.pick_slots')}</p>
       <p className="mb-2 text-xs text-grey-ink">{t('room.pick_hint')}</p>

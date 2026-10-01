@@ -108,3 +108,25 @@ export function staffStatus(b) {
   if (b.status === 'cancelled' || b.status === 'cancelled_by_staff') return b.status
   return 'upcoming'
 }
+
+/** Opening hours of an amenity on a date; 'building' amenities follow the building. */
+export function amenityHoursFor(data, a, date) {
+  const building = hoursFor(data, date)
+  if (!building || a.hours === 'building') return building
+  const h = a.hours.find((o) => o.weekday === weekday(date))
+  return h && h.open !== null ? { open: h.open, close: h.close } : null
+}
+
+/** Open now? If not, the next opening (date + minute) within two weeks. */
+export function amenityStatus(data, a, now) {
+  const date = dateOf(now)
+  const min = minOfDay(now)
+  const h = amenityHoursFor(data, a, date)
+  if (h && min >= h.open && min < h.close) return { open: true, until: h.close }
+  for (let i = 0; i < 14; i++) {
+    const d = addDays(date, i)
+    const hh = amenityHoursFor(data, a, d)
+    if (hh && (i > 0 || min < hh.open)) return { open: false, next: { date: d, min: hh.open } }
+  }
+  return { open: false }
+}

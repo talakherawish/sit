@@ -41,7 +41,7 @@ function Bars({ title, rows, valueKey, color = '#24508F', unit = '' }) {
         <table className="w-full text-sm">
           <tbody>
             {rows.map((r) => (
-              <tr key={r.label} className="border-b border-grey/10">
+              <tr key={r.label} className="border-b border-black/[0.06]">
                 <td className="py-1">{r.label}</td>
                 <td className="text-end font-semibold">
                   {r[valueKey]}
@@ -165,7 +165,7 @@ export function Insights() {
             <table className="w-full text-sm">
               <tbody>
                 {weeks.map((w) => (
-                  <tr key={w.label} className="border-b border-grey/10">
+                  <tr key={w.label} className="border-b border-black/[0.06]">
                     <td className="py-1">{w.label}</td>
                     <td className="text-end">
                       {w.sit}% / {w.walk_in}%
@@ -282,7 +282,7 @@ export function NoShowSettings() {
         <Card>
           <h2 className="mb-3 font-head text-xl font-bold">{t('settings.paused')}</h2>
           {!paused.length && <p className="text-grey-ink">{t('settings.none_paused')}</p>}
-          <ul className="divide-y divide-grey/15">
+          <ul className="divide-y divide-black/[0.06]">
             {paused.map((r) => (
               <li key={r.id} className="flex items-center justify-between py-2">
                 <span>
@@ -315,7 +315,7 @@ export function RoomSettings() {
           <h2 className="mb-2 font-head text-xl font-bold">{t('settings.spaces')}</h2>
           <table className="w-full text-sm">
             <thead className="text-grey-ink">
-              <tr className="border-b border-grey/20">
+              <tr className="border-b border-black/[0.08]">
                 {['name', 'zone', 'capacity', 'size', 'amenities', 'photos'].map((c) => (
                   <th key={c} className="py-2 text-start">
                     {t(`settings.col_${c}`)}
@@ -324,7 +324,7 @@ export function RoomSettings() {
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-grey/10">
+              <tr className="border-b border-black/[0.06]">
                 <td className="py-2 font-medium">{L(s.data.zones[0].name)}</td>
                 <td>{t('settings.public')}</td>
                 <td>{s.data.seats.total}</td>
@@ -333,7 +333,7 @@ export function RoomSettings() {
                 <td>—</td>
               </tr>
               {s.data.spaces.map((sp) => (
-                <tr key={sp.id} className="border-b border-grey/10">
+                <tr key={sp.id} className="border-b border-black/[0.06]">
                   <td className="py-2 font-medium">{L(sp.label)}</td>
                   <td>{L(s.data.zones.find((z) => z.id === sp.zone_id).name)}</td>
                   <td>{sp.capacity}</td>
@@ -366,7 +366,7 @@ export function RoomSettings() {
           <table className="w-full text-sm">
             <tbody>
               {s.data.opening_hours.map((o) => (
-                <tr key={o.weekday} className="border-b border-grey/10">
+                <tr key={o.weekday} className="border-b border-black/[0.06]">
                   <td className="py-1.5">{weekdayName(o.weekday, s.lang)}</td>
                   <td className="text-end" dir="ltr">
                     {o.open !== null ? `${hm(o.open)}–${hm(o.close)}` : t('common.closed')}

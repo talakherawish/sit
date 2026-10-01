@@ -206,10 +206,10 @@
   ],
   "landmarks": [
     {
-      "id": "kitchen",
+      "id": "cafeteria",
       "label": {
-        "en": "Kitchen",
-        "ar": "المطبخ"
+        "en": "Cafeteria",
+        "ar": "الكافتيريا"
       },
       "x": 4,
       "y": 238,
@@ -821,5 +821,137 @@
       "yes": 31,
       "no": 22
     }
-  }
+  },
+  "amenities": [
+    {
+      "id": "cafeteria",
+      "icon": "cup",
+      "on_map": true,
+      "name": {
+        "en": "Cafeteria",
+        "ar": "الكافتيريا"
+      },
+      "where": {
+        "en": "Ground floor, next to the public seating",
+        "ar": "الطابق الأرضي، بجانب الجلسات العامة"
+      },
+      "hours": [
+        {
+          "weekday": 0,
+          "open": "08:30",
+          "close": "15:30"
+        },
+        {
+          "weekday": 1,
+          "open": "08:30",
+          "close": "15:30"
+        },
+        {
+          "weekday": 2,
+          "open": "08:30",
+          "close": "15:30"
+        },
+        {
+          "weekday": 3,
+          "open": "08:30",
+          "close": "15:30"
+        },
+        {
+          "weekday": 4,
+          "open": "08:30",
+          "close": "15:30"
+        },
+        {
+          "weekday": 5,
+          "open": null,
+          "close": null
+        },
+        {
+          "weekday": 6,
+          "open": "10:00",
+          "close": "14:00"
+        }
+      ],
+      "offers": [
+        {
+          "en": "Coffee, tea and fresh juice",
+          "ar": "قهوة وشاي وعصير طازج"
+        },
+        {
+          "en": "Sandwiches and snacks",
+          "ar": "سندويشات ووجبات خفيفة"
+        },
+        {
+          "en": "Microwave and fridge for your own food",
+          "ar": "ميكروويف وثلاجة لطعامك الخاص"
+        },
+        {
+          "en": "Seats for 12",
+          "ar": "جلسات تتسع لـ 12 شخصاً"
+        }
+      ]
+    },
+    {
+      "id": "restrooms",
+      "icon": "drop",
+      "on_map": true,
+      "name": {
+        "en": "Restrooms",
+        "ar": "دورات المياه"
+      },
+      "where": {
+        "en": "Ground floor, behind the public seating",
+        "ar": "الطابق الأرضي، خلف الجلسات العامة"
+      },
+      "hours": "building",
+      "offers": [
+        {
+          "en": "Women's and men's",
+          "ar": "للنساء وللرجال"
+        },
+        {
+          "en": "Step-free access",
+          "ar": "دخول بدون درج"
+        }
+      ]
+    },
+    {
+      "id": "wifi",
+      "icon": "wifi",
+      "name": {
+        "en": "Wi-Fi",
+        "ar": "الواي فاي"
+      },
+      "where": {
+        "en": "Network “Technopark-Guest” — password at reception",
+        "ar": "الشبكة «Technopark-Guest» — كلمة المرور في الاستقبال"
+      },
+      "hours": "building",
+      "offers": [
+        {
+          "en": "Free for everyone in the building",
+          "ar": "مجاني لكل من في المبنى"
+        }
+      ]
+    },
+    {
+      "id": "printer",
+      "icon": "printer",
+      "name": {
+        "en": "Printing",
+        "ar": "الطباعة"
+      },
+      "where": {
+        "en": "At reception",
+        "ar": "في الاستقبال"
+      },
+      "hours": "building",
+      "offers": [
+        {
+          "en": "Black & white and colour, ask the desk",
+          "ar": "أبيض وأسود وملوّن، اسأل الاستقبال"
+        }
+      ]
+    }
+  ]
 }

@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL } from '../lib/hooks'
-import { REASONS, REMINDERS, hoursFor, isFree, reminderAt, dateOf, minOfDay, closedReason } from '../lib/logic'
+import { REASONS, REMINDERS, hoursFor, isFree, reminderAt, dateOf, minOfDay } from '../lib/logic'
 import { addDays, fmtDate, fmtAbs, hm, ceil30, weekdayName } from '../lib/time'
+import CalendarPicker from './Calendar'
 import { Chip, Group, GroupRow, PhaseBadge, RowSelect, SectionLabel, Segmented, Switch } from './ui'
 
 /** The single booking form behind every way to book (R-06, S-07). */
@@ -17,7 +18,9 @@ export default function BookingForm({ initial = {}, onSubmit, submitLabel, compa
   const days = useMemo(() => Array.from({ length: 21 }, (_, i) => addDays(dateOf(now), i)), [now])
   const firstOpen = days.find((d) => hoursFor(data, d))
   const [spaceId, setSpaceId] = useState(initial.spaceId || data.spaces[0].id)
+  // `date` is the day whose free times the start/end pickers show; `dates` are all days being booked.
   const [date, setDate] = useState(initial.date && hoursFor(data, initial.date) ? initial.date : firstOpen)
+  const [dates, setDates] = useState([initial.date && hoursFor(data, initial.date) ? initial.date : firstOpen])
   const [start, setStart] = useState(initial.start ?? null)
   const [end, setEnd] = useState(initial.end ?? null)
   const [reason, setReason] = useState(initial.reason || '')
@@ -46,17 +49,30 @@ export default function BookingForm({ initial = {}, onSubmit, submitLabel, compa
     if (e !== end) setEnd(e)
   }, [spaceId, date, start, end, now]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const remOpts = start === null ? [] : REMINDERS.map((k) => ({ k, at: reminderAt(date, start, k) })).filter((o) => o.at > now)
+  const sorted = [...dates].sort()
+  const firstDate = sorted[0] || date
+  const remOpts = start === null ? [] : REMINDERS.map((k) => ({ k, at: reminderAt(firstDate, start, k) })).filter((o) => o.at > now)
+  const freeDays = start === null || end === null ? [] : sorted.filter((d) => isFree(data, spaceId, d, start, end))
+  const toggleDay = (d) => {
+    if (dates.includes(d)) {
+      const rest = dates.filter((x) => x !== d)
+      setDates(rest)
+      if (d === date && rest.length) setDate([...rest].sort()[0])
+    } else {
+      setDates([...dates, d])
+      setDate(d)
+    }
+  }
   useEffect(() => {
     if (!remOpts.some((o) => o.k === reminder)) setReminder(remOpts[0]?.k ?? null)
-  }, [date, start, now]) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [firstDate, start, now]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const valid = start !== null && end > start && isFree(data, spaceId, date, start, end) && reason && (reason !== 'other' || reasonOther.trim())
+  const valid = start !== null && end > start && freeDays.length > 0 && reason && (reason !== 'other' || reasonOther.trim())
 
   const submit = (e) => {
     e.preventDefault()
     if (!valid) return
-    onSubmit({ spaceId, date, start, end, reason, reasonOther: reasonOther.trim(), reminder, repeat: repeat.on ? repeat : null })
+    onSubmit({ spaceId, date: firstDate, dates: sorted, start, end, reason, reasonOther: reasonOther.trim(), reminder, repeat: repeat.on ? repeat : null })
   }
 
   return (
@@ -71,20 +87,17 @@ export default function BookingForm({ initial = {}, onSubmit, submitLabel, compa
             ))}
           </RowSelect>
         </GroupRow>
-        <GroupRow label={t('book.date')} htmlFor="bf-date">
-          <RowSelect id="bf-date" value={date} onChange={(e) => setDate(e.target.value)}>
-            {days.map((d) => {
-              const closed = !hoursFor(data, d)
-              const why = closedReason(data, d)
-              return (
-                <option key={d} value={d} disabled={closed}>
-                  {fmtDate(d, lang)}
-                  {closed ? ` — ${t('common.closed')}${why ? ` (${L(why)})` : ''}` : ''}
-                </option>
-              )
-            })}
-          </RowSelect>
-        </GroupRow>
+      </Group>
+
+      <section>
+        <SectionLabel>{t('book.days')}</SectionLabel>
+        <CalendarPicker spaceId={spaceId} start={start} end={end} selected={dates} focus={date} onToggle={toggleDay} />
+        <p className="mt-1.5 px-1 text-[13px] text-grey-ink">
+          {dates.length ? t('book.days_summary', { count: dates.length, free: freeDays.length }) : t('book.pick_days')}
+        </p>
+      </section>
+
+      <Group label={t('book.time')} footer={t('book.times_for', { date: fmtDate(date, lang, { weekday: 'long', day: 'numeric', month: 'long' }) })}>
         <GroupRow label={t('book.start')} htmlFor="bf-start">
           <RowSelect id="bf-start" value={start ?? ''} onChange={(e) => setStart(+e.target.value)}>
             {startOpts.map((o) => (
@@ -203,7 +216,7 @@ export default function BookingForm({ initial = {}, onSubmit, submitLabel, compa
       )}
 
       <button type="submit" className="btn-primary w-full" disabled={!valid}>
-        {submitLabel || t('book.book')}
+        {submitLabel || (freeDays.length > 1 ? t('book.book_n', { count: freeDays.length }) : t('book.book'))}
       </button>
     </form>
   )
