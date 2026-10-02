@@ -28,6 +28,10 @@ Every push to `main` builds and publishes the prototype to **GitHub Pages** via 
 
 Open the prototype panel by **tapping the Technopark logo three times**, pressing **Ctrl + .** (⌘ + . on a Mac), or adding `?panel` to the URL. It has no visible tab so the app looks like the real thing.
 
+**Add to home screen:** open the live link on a phone and use Share → Add to Home Screen (iPhone) or Install app (Android); it gets the Technopark icon and opens full screen.
+
+Why each design choice was made, and which UX principle it follows: [10-presentation/ai-refined/design-decisions.md](../10-presentation/ai-refined/design-decisions.md).
+
 ## Demo start state
 
 The clock starts at **Thu 1 Oct 2026, 09:30**, and the app opens logged in as **Tala** with a lived-in account (bookings, alerts, reports, profile). Pick **Guest** in P-01 for the browse-without-an-account story (US-1). Seeded data lives in `src/data/mock-data.json`; "Reset all data" in P-01 reloads it.

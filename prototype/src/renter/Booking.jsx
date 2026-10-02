@@ -3,18 +3,20 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL, useSpaceName } from '../lib/hooks'
-import { ACTIVE, freeStarts, isFree, isPaused, dateOf, startAbs, renter as findRenter } from '../lib/logic'
+import { ACTIVE, REASONS, REMINDERS, freeStarts, hoursFor, isFree, isPaused, dateOf, reminderAt, startAbs, renter as findRenter } from '../lib/logic'
 import { fmtDate, fmtAbs, hm, addDays } from '../lib/time'
 import BookingForm from '../components/BookingForm'
-import { Card, Confirm, Group, GroupRow, Photo, ScreenTitle, StatusChip } from '../components/ui'
+import { Card, Chip, Confirm, Group, GroupRow, Photo, ScreenTitle, SectionLabel, StatusChip } from '../components/ui'
+import { useDuration } from '../components/DayTimeline'
 import Icon from '../components/Icon'
 import { NeedLogin } from './RenterLayout'
 
-/** R-06 Book a room */
+/** R-06 Book a room. With a room and time already picked it is a one-screen review; otherwise the full form. */
 export function Book() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const s = useStore()
+  const [full, setFull] = useState(false)
   const me = findRenter(s.data, s.renterId)
   if (!me) return <NeedLogin returnTo="/r/book" />
   if (isPaused(me, s.now)) return <Paused />
@@ -28,18 +30,140 @@ export function Book() {
     }
     const { ids, skipped } = s.createBooking({ ...f, renterId: me.id }, { source })
     s.set({ draft: null })
-    if (skipped && ids.length) s.showToast('toast.series_skipped', { count: skipped })
     if (!ids.length) return navigate('/r/taken')
     navigate(`/r/confirmed/${ids[0]}`, { replace: true, state: { fresh: true } })
+    // Undo takes the booking(s) straight back.
+    s.showToast(skipped ? 'toast.series_skipped' : 'toast.booked', { count: skipped }, () => {
+      useStore.getState().removeBookings(ids)
+      navigate('/r/home', { replace: true })
+    })
+  }
+
+  const d = s.draft
+  const quick = !full && d?.spaceId && d.start != null && d.end != null
+  return (
+    <>
+      <ScreenTitle id="R-06" title={quick ? t('review.title') : t('book.title')} back />
+      <div className="px-4">
+        {quick ? (
+          <QuickReview draft={d} onSubmit={submit} onEdit={() => setFull(true)} />
+        ) : (
+          <BookingForm key={JSON.stringify(d)} initial={d || {}} onSubmit={submit} />
+        )}
+      </div>
+    </>
+  )
+}
+
+/** Short path: everything already chosen on the room sheet is shown as a summary; only the purpose is asked. */
+function QuickReview({ draft, onSubmit, onEdit }) {
+  const { t } = useTranslation()
+  const L = useL()
+  const dur = useDuration()
+  const data = useStore((s) => s.data)
+  const now = useStore((s) => s.now)
+  const lang = useStore((s) => s.lang)
+  const [reason, setReason] = useState(draft.reason || '')
+  const [other, setOther] = useState('')
+  const [reminder, setReminder] = useState(null)
+  const sp = data.spaces.find((x) => x.id === draft.spaceId)
+  const dates = [...new Set(draft.dates?.length ? draft.dates : [draft.date])].filter((x) => hoursFor(data, x)).sort()
+  const free = dates.filter((x) => isFree(data, sp.id, x, draft.start, draft.end))
+  const skipped = dates.filter((x) => !free.includes(x))
+  const remOpts = free.length ? REMINDERS.map((k) => ({ k, at: reminderAt(free[0], draft.start, k) })).filter((o) => o.at > now) : []
+  const valid = free.length > 0 && reason && (reason !== 'other' || other.trim())
+  const send = (e) => {
+    e.preventDefault()
+    if (!valid) return
+    onSubmit({ spaceId: sp.id, date: free[0], dates: free, start: draft.start, end: draft.end, reason, reasonOther: other.trim(), reminder, repeat: null })
   }
 
   return (
-    <>
-      <ScreenTitle id="R-06" title={t('book.title')} back />
-      <div className="px-4">
-        <BookingForm key={JSON.stringify(s.draft)} initial={s.draft || {}} onSubmit={submit} />
+    <form onSubmit={send} className="space-y-6 pb-4">
+      <section className="overflow-hidden rounded-[22px] bg-surface">
+        <div className="flex items-center gap-3 p-4">
+          <Photo color={sp.photos[0]} className="!w-20 shrink-0 !rounded-xl" label={L(sp.label)} />
+          <div>
+            <p className="text-[19px] font-semibold">{L(sp.label)}</p>
+            <p className="text-[13px] text-grey-ink">
+              {t('map.people', { n: sp.capacity })} · {sp.features.map((f) => t(`feature.${f}`)).join(' · ')}
+            </p>
+          </div>
+        </div>
+        <div className="divide-y divide-black/[0.07] border-t border-black/[0.07]">
+          <div className="flex min-h-12 items-center gap-3 px-4">
+            <Icon name="clock" size={18} className="text-navy" />
+            <span className="flex-1 text-[17px] font-semibold" dir="ltr">
+              {hm(draft.start)}–{hm(draft.end)}
+            </span>
+            <span className="text-[15px] text-grey-ink">{dur(draft.end - draft.start)}</span>
+          </div>
+          <div className="flex items-start gap-3 px-4 py-3">
+            <Icon name="calendar" size={18} className="mt-1 text-navy" />
+            <div className="flex flex-1 flex-wrap gap-1.5">
+              {free.map((x) => (
+                <span key={x} className="rounded-full bg-white px-3 py-1 text-[15px] font-medium">
+                  {fmtDate(x, lang, { weekday: 'short', day: 'numeric', month: 'short' })}
+                </span>
+              ))}
+            </div>
+          </div>
+          {skipped.length > 0 && (
+            <p className="bg-amber/15 px-4 py-2.5 text-[13px] text-[#7a4f00]">
+              {t('review.skipped', { days: skipped.map((x) => fmtDate(x, lang, { weekday: 'short', day: 'numeric' })).join(', ') })}
+            </p>
+          )}
+        </div>
+      </section>
+
+      <section>
+        <SectionLabel>{t('review.purpose')}</SectionLabel>
+        <div className="flex flex-wrap gap-2">
+          {REASONS.map((r) => (
+            <Chip key={r} active={reason === r} onClick={() => setReason(r)}>
+              {t(`reason.${r}`)}
+            </Chip>
+          ))}
+        </div>
+        {reason === 'other' && (
+          <input
+            className="input mt-2"
+            aria-label={t('book.reason_other')}
+            placeholder={t('book.reason_other')}
+            value={other}
+            maxLength={80}
+            onChange={(e) => setOther(e.target.value)}
+            autoFocus
+          />
+        )}
+      </section>
+
+      <section>
+        <SectionLabel>{t('book.reminder')}</SectionLabel>
+        {remOpts.length ? (
+          <div className="flex flex-wrap gap-2">
+            {remOpts.map((o) => (
+              <Chip key={o.k} active={reminder === o.k} onClick={() => setReminder(reminder === o.k ? null : o.k)}>
+                {t(`reminder.${o.k}`)}
+              </Chip>
+            ))}
+          </div>
+        ) : (
+          <p className="rounded-2xl bg-surface px-4 py-3 text-[15px]">{t('book.no_reminder')}</p>
+        )}
+        <p className="mt-1.5 px-1 text-[13px] text-grey-ink">{t('book.reminder_hint')}</p>
+      </section>
+
+      <div className="space-y-2">
+        <button type="submit" className="btn-primary w-full" disabled={!valid}>
+          {free.length > 1 ? t('review.confirm_n', { count: free.length }) : t('review.confirm')}
+        </button>
+        {!reason && <p className="text-center text-[13px] text-grey-ink">{t('book.reason_required')}</p>}
+        <button type="button" className="btn-link mx-auto flex" onClick={onEdit}>
+          {t('review.edit')}
+        </button>
       </div>
-    </>
+    </form>
   )
 }
 
@@ -210,8 +334,7 @@ export function Confirmed() {
         danger
         onCancel={() => setCancelling(false)}
         onOk={() => {
-          s.cancelBooking(b.id)
-          s.showToast('toast.cancel_email')
+          s.cancelWithUndo(b.id)
           setCancelling(false)
         }}
       />

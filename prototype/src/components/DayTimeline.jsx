@@ -5,7 +5,7 @@ import { dateOf, hoursFor, minOfDay, stateAt } from '../lib/logic'
 import { ceil30, hm } from '../lib/time'
 import Icon from './Icon'
 
-const ROW = 30 // px per half hour
+const ROW = 44 // px per half hour: Apple's minimum touch target
 
 /** "1 h 30 min" style duration. */
 export function useDuration() {
@@ -33,8 +33,10 @@ export default function DayTimeline({ spaceId, date, range, onChange }) {
   if (!h) return <p className="rounded-2xl bg-surface px-4 py-3 text-grey-ink">{t('common.closed')}</p>
 
   const firstBookable = date === dateOf(now) ? Math.max(h.open, ceil30(minOfDay(now))) : h.open
+  // Today, hide whole hours that have already gone so the list starts near now.
+  const from = Math.max(h.open, Math.floor(firstBookable / 60) * 60)
   const slots = []
-  for (let m = h.open; m < h.close; m += 30) {
+  for (let m = from; m < h.close; m += 30) {
     const st = stateAt(data, spaceId, date, m)
     if (st.state === 'booked') slots.push({ m, kind: st.booking.renter_id === renterId ? 'mine' : 'booked', key: st.booking.id })
     else if (st.state === 'down') slots.push({ m, kind: 'down', key: 'down' })
@@ -67,10 +69,10 @@ export default function DayTimeline({ spaceId, date, range, onChange }) {
     onChange({ start: m, end: m + 30 })
   }
 
-  const top = (m) => ((m - h.open) / 30) * ROW
+  const top = (m) => ((m - from) / 30) * ROW
   const height = top(h.close)
   const hours = []
-  for (let m = Math.ceil(h.open / 60) * 60; m <= h.close; m += 60) hours.push(m)
+  for (let m = Math.ceil(from / 60) * 60; m <= h.close; m += 60) hours.push(m)
   const span = (a, b) => (
     <span dir="ltr">
       {hm(a)}–{hm(b)}
@@ -143,7 +145,7 @@ export default function DayTimeline({ spaceId, date, range, onChange }) {
               <span
                 key={`f${b.from}`}
                 className="pointer-events-none absolute start-3 flex items-center gap-1.5 text-[13px] font-medium text-[#2f5656]"
-                style={{ top: top(b.from) + 7 }}
+                style={{ top: top(b.from) + 13 }}
               >
                 <span className="size-1.5 rounded-full bg-teal" />
                 {t('timeline.free')} · {span(b.from, b.to)}
@@ -151,7 +153,7 @@ export default function DayTimeline({ spaceId, date, range, onChange }) {
             ) : (
               <div
                 key={`${b.key}${b.from}`}
-                className={`absolute inset-x-1.5 flex items-start gap-1.5 overflow-hidden rounded-lg px-2.5 pt-[6px] text-[13px] font-medium ${BLOCK[b.kind]}`}
+                className={`absolute inset-x-1.5 flex items-start gap-1.5 overflow-hidden rounded-lg px-2.5 pt-[12px] text-[13px] font-medium ${BLOCK[b.kind]}`}
                 style={{ top: top(b.from) + 2, height: top(b.to) - top(b.from) - 4 }}
               >
                 {b.kind === 'booked' && <Icon name="lock" size={14} className="mt-[2px] shrink-0" />}
@@ -164,7 +166,7 @@ export default function DayTimeline({ spaceId, date, range, onChange }) {
 
           {range && (
             <div
-              className="pointer-events-none absolute inset-x-1.5 flex items-start rounded-lg bg-navy px-2.5 pt-[6px] text-[13px] font-semibold text-white shadow-[0_2px_8px_rgba(36,80,143,0.35)]"
+              className="pointer-events-none absolute inset-x-1.5 flex items-start rounded-lg bg-navy px-2.5 pt-[12px] text-[13px] font-semibold text-white shadow-[0_2px_8px_rgba(36,80,143,0.35)]"
               style={{ top: top(range.start) + 2, height: top(range.end) - top(range.start) - 4 }}
             >
               <span>

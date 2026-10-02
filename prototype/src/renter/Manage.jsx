@@ -47,8 +47,7 @@ export function MyBookings() {
   const more = (sid) => upcoming.filter((b) => b.series_id === sid).length - 1
 
   const doCancel = () => {
-    s.cancelBooking(cancel.id, whole)
-    s.showToast('toast.cancel_email')
+    s.cancelWithUndo(cancel.id, whole)
     setCancel(null)
     setWhole(false)
   }
@@ -279,8 +278,7 @@ export function Reminder() {
               <button
                 className="btn-danger"
                 onClick={() => {
-                  s.cancelBooking(b.id)
-                  s.showToast('toast.cancel_email')
+                  s.cancelWithUndo(b.id)
                 }}
               >
                 {t('reminder_screen.cancel')}

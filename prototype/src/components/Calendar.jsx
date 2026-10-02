@@ -91,7 +91,7 @@ export default function CalendarPicker({ spaceId, start, end, selected, focus, o
           const outside = view === 'month' && !sameMonth(d, cursor)
           const h = hoursFor(data, d)
           const disabled = d < today || d > last || !h
-          const free = !disabled && start !== null && end !== null && isFree(data, spaceId, d, start, end)
+          const free = !disabled && !!spaceId && start !== null && end !== null && isFree(data, spaceId, d, start, end)
           const on = selected.includes(d)
           const isFocus = focus === d
           return (
@@ -115,25 +115,27 @@ export default function CalendarPicker({ spaceId, start, end, selected, focus, o
               </span>
               {view === 'week' ? (
                 <span className={`text-[12px] ${!h ? 'text-grey-ink' : free ? 'font-medium text-[#2f5656]' : 'text-grey-ink'}`}>
-                  {!h ? t('common.closed') : disabled ? '' : free ? t('cal.free') : t('cal.taken')}
+                  {!h ? t('common.closed') : disabled || !spaceId ? '' : free ? t('cal.free') : t('cal.taken')}
                 </span>
               ) : (
-                <span className={`size-1.5 rounded-full ${disabled ? 'bg-transparent' : free ? 'bg-teal' : 'bg-grey/50'}`} aria-hidden="true" />
+                <span className={`size-1.5 rounded-full ${disabled || !spaceId ? 'bg-transparent' : free ? 'bg-teal' : 'bg-grey/50'}`} aria-hidden="true" />
               )}
             </button>
           )
         })}
       </div>
-      <div className="mt-2 flex items-center gap-4 px-1 text-[12px] text-grey-ink">
-        <span className="flex items-center gap-1.5">
-          <span className="size-1.5 rounded-full bg-teal" />
-          {t('cal.free_at_time')}
-        </span>
-        <span className="flex items-center gap-1.5">
-          <span className="size-1.5 rounded-full bg-grey/50" />
-          {t('cal.taken')}
-        </span>
-      </div>
+      {spaceId && (
+        <div className="mt-2 flex items-center gap-4 px-1 text-[12px] text-grey-ink">
+          <span className="flex items-center gap-1.5">
+            <span className="size-1.5 rounded-full bg-teal" />
+            {t('cal.free_at_time')}
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="size-1.5 rounded-full bg-grey/50" />
+            {t('cal.taken')}
+          </span>
+        </div>
+      )}
     </div>
   )
 }

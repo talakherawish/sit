@@ -1,16 +1,16 @@
 import { useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL, useRequireLogin } from '../lib/hooks'
 import { hoursFor, isFree, stateAt, nextFreeAt, dateOf, minOfDay } from '../lib/logic'
 import { addDays, fmtDate, hm, weekday, weekdayName, ceil30 } from '../lib/time'
 import { AmenityList, AmenitySheet } from '../components/Amenities'
-import { DayStrip } from '../components/Calendar'
+import CalendarPicker, { DayStrip } from '../components/Calendar'
 import { WhenBar, useWhen } from '../components/Browse'
 import RoomSheet from '../components/RoomSheet'
 import DayTimeline from '../components/DayTimeline'
-import { Card, Chip, Field, PhaseBadge, Photo, ScreenTitle, SectionLabel, StatusChip } from '../components/ui'
+import { Card, Chip, Group, GroupRow, PhaseBadge, Photo, RowSelect, ScreenTitle, SectionLabel, Segmented, StatusChip } from '../components/ui'
 import Icon from '../components/Icon'
 
 /** R-02 Rooms: the same rooms as the map, as a list. Tapping one opens the same booking sheet. */
@@ -255,118 +255,233 @@ export function Hours() {
   )
 }
 
-/** R-05 Filter rooms (#27, Next) */
+/** R-05 Find a room: one day, a weekly or monthly pattern, or any days you pick; results update as you go. */
 export function FilterRooms() {
   const { t } = useTranslation()
   const L = useL()
+  const requireLogin = useRequireLogin()
   const lang = useStore((s) => s.lang)
   const data = useStore((s) => s.data)
   const now = useStore((s) => s.now)
-  const days = Array.from({ length: 14 }, (_, i) => addDays(dateOf(now), i)).filter((d) => hoursFor(data, d))
-  const [date, setDate] = useState(days[0])
-  const [start, setStart] = useState(ceil30(minOfDay(now)))
+  const mode = useStore((s) => s.mode)
+  const set = useStore((s) => s.set)
+  const today = dateOf(now)
+  const firstOpen = Array.from({ length: 14 }, (_, i) => addDays(today, i)).find((d) => hoursFor(data, d))
+  const openWeekdays = data.opening_hours.filter((o) => o.open !== null && o.open !== false).map((o) => o.weekday)
+
+  const [pattern, setPattern] = useState('one') // one | weekly | monthly | pick
+  const [day, setDay] = useState(firstOpen)
+  const [weekdays, setWeekdays] = useState([weekday(firstOpen)])
+  const [weeks, setWeeks] = useState(4)
+  const [dom, setDom] = useState(Number(firstOpen.slice(8)))
+  const [months, setMonths] = useState(3)
+  const [picked, setPicked] = useState([firstOpen])
+  const [start, setStart] = useState(null)
   const [dur, setDur] = useState(60)
   const [size, setSize] = useState('any')
-  const [shown, setShown] = useState(false)
-  const h = hoursFor(data, date)
+
+  const dates = (() => {
+    if (pattern === 'one') return [day]
+    if (pattern === 'pick') return [...picked].sort()
+    const out = []
+    if (pattern === 'weekly') {
+      for (let i = 0; i < weeks * 7; i++) {
+        const d = addDays(today, i)
+        if (weekdays.includes(weekday(d)) && hoursFor(data, d)) out.push(d)
+      }
+    } else {
+      const [y, m] = today.split('-').map(Number)
+      for (let i = 0; i < months; i++) {
+        const dt = new Date(Date.UTC(y, m - 1 + i, dom))
+        if (dt.getUTCDate() !== dom) continue // e.g. the 31st in a 30-day month
+        const d = dt.toISOString().slice(0, 10)
+        if (d >= today && hoursFor(data, d)) out.push(d)
+      }
+    }
+    return out
+  })()
+
+  const first = dates[0]
+  const h = first && hoursFor(data, first)
   const times = []
-  if (h) for (let m = h.open; m < h.close; m += 30) if (date !== dateOf(now) || m >= ceil30(minOfDay(now))) times.push(m)
+  if (h) for (let m = h.open; m + dur <= h.close; m += 30) if (first !== today || m >= ceil30(minOfDay(now))) times.push(m)
   const st = times.includes(start) ? start : times[0]
-  const results = data.spaces.filter(
-    (sp) =>
-      (size === 'any' || (size === 'small' ? sp.kind === 'focus_room' : sp.kind === 'big_room')) && st !== undefined && isFree(data, sp.id, date, st, st + dur),
-  )
+  const rooms = data.spaces
+    .filter((sp) => size === 'any' || (size === 'small' ? sp.kind === 'focus_room' : sp.kind === 'big_room'))
+    .map((sp) => ({ sp, free: st === undefined ? [] : dates.filter((d) => isFree(data, sp.id, d, st, st + dur)) }))
+    .filter((r) => r.free.length)
+    .sort((a, b) => b.free.length - a.free.length)
+
+  const book = ({ sp, free }) => {
+    const reason = data.work_modes.find((m) => m.id === mode)?.default_reason || ''
+    set({ draft: { spaceId: sp.id, date: free[0], dates: free, start: st, end: st + dur, reason, source: 'filter' } })
+    requireLogin('/r/book')
+  }
+  const short = (d) => fmtDate(d, lang, { weekday: 'short', day: 'numeric', month: 'short' })
+
   return (
     <>
       <ScreenTitle id="R-05" title={t('filter.title')} phase="next" back />
-      <div className="space-y-4 px-4">
-        <Field label={t('book.date')}>
-          <select
-            className="input"
-            value={date}
-            onChange={(e) => {
-              setDate(e.target.value)
-              setShown(false)
-            }}
-          >
-            {days.map((d) => (
-              <option key={d} value={d}>
-                {fmtDate(d, lang)}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <div className="grid grid-cols-2 gap-3">
-          <Field label={t('book.start')}>
-            <select
-              className="input"
-              value={st}
-              onChange={(e) => {
-                setStart(+e.target.value)
-                setShown(false)
-              }}
-            >
+      <div className="space-y-6 px-4 pb-4">
+        <section>
+          <SectionLabel>{t('filter.days')}</SectionLabel>
+          <Segmented
+            className="mb-3"
+            label={t('filter.days')}
+            value={pattern}
+            onChange={setPattern}
+            options={[
+              ['one', t('filter.p_one')],
+              ['weekly', t('filter.p_weekly')],
+              ['monthly', t('filter.p_monthly')],
+              ['pick', t('filter.p_pick')],
+            ]}
+          />
+
+          {pattern === 'one' && <DayStrip value={day} onChange={setDay} />}
+
+          {pattern === 'weekly' && (
+            <div className="space-y-3 rounded-2xl bg-surface p-4">
+              <p className="text-[15px]">{t('filter.every')}</p>
+              <div className="flex justify-between gap-1">
+                {openWeekdays.map((wd) => {
+                  const on = weekdays.includes(wd)
+                  return (
+                    <button
+                      type="button"
+                      key={wd}
+                      aria-pressed={on}
+                      aria-label={weekdayName(wd, lang)}
+                      onClick={() => setWeekdays(on ? weekdays.filter((x) => x !== wd) : [...weekdays, wd])}
+                      className={`grid size-11 place-items-center rounded-full text-[14px] font-semibold ${on ? 'bg-navy text-white' : 'bg-white text-ink'}`}
+                    >
+                      {weekdayName(wd, lang).slice(0, lang === 'ar' ? 3 : 2)}
+                    </button>
+                  )
+                })}
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-[15px]">{t('filter.for')}</span>
+                <Segmented
+                  className="w-56"
+                  label={t('filter.for')}
+                  value={String(weeks)}
+                  onChange={(v) => setWeeks(+v)}
+                  options={[2, 4, 8].map((n) => [String(n), t('filter.n_weeks', { count: n })])}
+                />
+              </div>
+            </div>
+          )}
+
+          {pattern === 'monthly' && (
+            <div className="space-y-3 rounded-2xl bg-surface p-4">
+              <label className="flex items-center justify-between gap-3">
+                <span className="text-[15px]">{t('filter.on_day')}</span>
+                <select className="min-h-11 rounded-xl bg-white px-3 text-[17px]" value={dom} onChange={(e) => setDom(+e.target.value)}>
+                  {Array.from({ length: 31 }, (_, i) => i + 1).map((n) => (
+                    <option key={n} value={n}>
+                      {n}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-[15px]">{t('filter.for')}</span>
+                <Segmented
+                  className="w-56"
+                  label={t('filter.for')}
+                  value={String(months)}
+                  onChange={(v) => setMonths(+v)}
+                  options={[2, 3, 6].map((n) => [String(n), t('filter.n_months', { count: n })])}
+                />
+              </div>
+            </div>
+          )}
+
+          {pattern === 'pick' && (
+            <>
+              <CalendarPicker
+                spaceId={null}
+                start={null}
+                end={null}
+                selected={picked}
+                focus={picked[picked.length - 1]}
+                onToggle={(d) => setPicked(picked.includes(d) ? (picked.length > 1 ? picked.filter((x) => x !== d) : picked) : [...picked, d])}
+              />
+              <p className="mt-1.5 px-1 text-[13px] text-grey-ink">{t('filter.pick_hint')}</p>
+            </>
+          )}
+
+          {pattern !== 'one' && (
+            <p className="mt-2 px-1 text-[13px] text-grey-ink">
+              {dates.length
+                ? `${t('filter.n_days', { count: dates.length })}: ${dates.slice(0, 5).map(short).join(', ')}${dates.length > 5 ? ` +${dates.length - 5}` : ''}`
+                : t('filter.no_days')}
+            </p>
+          )}
+        </section>
+
+        <Group label={t('book.time')}>
+          <GroupRow label={t('book.start')} htmlFor="fr-start">
+            <RowSelect id="fr-start" value={st ?? ''} onChange={(e) => setStart(+e.target.value)}>
               {times.map((m) => (
                 <option key={m} value={m}>
                   {hm(m)}
                 </option>
               ))}
-            </select>
-          </Field>
-          <Field label={t('filter.duration')}>
-            <select
-              className="input"
-              value={dur}
-              onChange={(e) => {
-                setDur(+e.target.value)
-                setShown(false)
-              }}
-            >
+            </RowSelect>
+          </GroupRow>
+          <GroupRow label={t('filter.duration')} htmlFor="fr-dur">
+            <RowSelect id="fr-dur" value={dur} onChange={(e) => setDur(+e.target.value)}>
               {[30, 60, 90, 120, 180].map((d) => (
                 <option key={d} value={d}>
                   {t('filter.minutes', { count: d })}
                 </option>
               ))}
-            </select>
-          </Field>
-        </div>
-        <fieldset>
-          <legend className="mb-1 text-sm font-medium">{t('filter.size')}</legend>
+            </RowSelect>
+          </GroupRow>
+        </Group>
+
+        <section>
+          <SectionLabel>{t('filter.size')}</SectionLabel>
           <div className="flex gap-2">
-            {['small', 'big', 'any'].map((k) => (
-              <Chip
-                key={k}
-                active={size === k}
-                onClick={() => {
-                  setSize(k)
-                  setShown(false)
-                }}
-              >
+            {['any', 'small', 'big'].map((k) => (
+              <Chip key={k} active={size === k} onClick={() => setSize(k)}>
                 {t(`filter.${k}`)}
               </Chip>
             ))}
           </div>
-        </fieldset>
-        <button className="btn-primary w-full" onClick={() => setShown(true)}>
-          {t('filter.show')}
-        </button>
-        {shown && (
-          <section aria-live="polite">
-            <h2 className="mb-2 font-semibold">{t('filter.results', { count: results.length })}</h2>
-            <div className="space-y-2">
-              {results.map((sp) => (
-                <Link key={sp.id} to={`/r/room/${sp.id}`} className="flex min-h-12 items-center justify-between rounded-2xl bg-surface p-4">
-                  <span>
-                    <span className="font-semibold">{L(sp.label)}</span> · {t('map.people', { n: sp.capacity })}
-                  </span>
-                  <span className="text-sm" dir="ltr">
-                    {hm(st)}–{hm(st + dur)}
-                  </span>
-                </Link>
-              ))}
+        </section>
+
+        <section aria-live="polite">
+          <SectionLabel>{dates.length ? t('filter.results', { count: rooms.length }) : t('filter.no_days')}</SectionLabel>
+          {rooms.length ? (
+            <div className="divide-y divide-black/[0.07] overflow-hidden rounded-2xl bg-surface">
+              {rooms.map((r) => {
+                const all = r.free.length === dates.length
+                return (
+                  <div key={r.sp.id} className="flex items-center gap-3 px-4 py-3">
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[17px] font-semibold">{L(r.sp.label)}</span>
+                      <span className={`block text-[13px] ${all ? 'font-medium text-[#2f5656]' : 'text-[#7a4f00]'}`}>
+                        {dates.length === 1
+                          ? `${t('map.people', { n: r.sp.capacity })} · ${hm(st)}–${hm(st + dur)}`
+                          : all
+                            ? t('filter.free_all', { count: dates.length })
+                            : t('filter.free_some', { free: r.free.length, total: dates.length })}
+                      </span>
+                    </span>
+                    <button className="btn-secondary !min-h-10 shrink-0" onClick={() => book(r)}>
+                      {r.free.length > 1 ? t('room.book_days', { count: r.free.length }) : t('list.book')}
+                    </button>
+                  </div>
+                )
+              })}
             </div>
-          </section>
-        )}
+          ) : (
+            dates.length > 0 && <p className="rounded-2xl bg-surface px-4 py-3 text-grey-ink">{t('filter.none')}</p>
+          )}
+        </section>
       </div>
     </>
   )

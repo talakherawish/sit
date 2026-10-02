@@ -8,7 +8,8 @@
     "remove": "Remove",
     "save": "Save",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "undo": "Undo"
   },
   "nav": {
     "home": "Sit home",
@@ -135,7 +136,8 @@
     "free_now": "Free now",
     "free_from": "Free from {{time}}",
     "intro": "The same rooms as the map, as a list. Tap one to see its day and book it.",
-    "walk_in": "Walk-in seating"
+    "walk_in": "Walk-in seating",
+    "book": "Book"
   },
   "details": {
     "photo": "Photo {{n}} of {{room}}",
@@ -163,9 +165,28 @@
     "small": "Small (2–4)",
     "big": "Big (8–12)",
     "any": "Any",
-    "show": "Show rooms",
     "results_one": "{{count}} room free",
-    "results_other": "{{count}} rooms free"
+    "results_other": "{{count}} rooms free",
+    "days": "Days",
+    "p_one": "One day",
+    "p_weekly": "Weekly",
+    "p_monthly": "Monthly",
+    "p_pick": "Pick days",
+    "every": "Every",
+    "for": "For",
+    "n_weeks_one": "{{count}} week",
+    "n_weeks_other": "{{count}} weeks",
+    "n_months_one": "{{count}} month",
+    "n_months_other": "{{count}} months",
+    "on_day": "On day of the month",
+    "pick_hint": "Tap any days you want, in any week.",
+    "n_days_one": "{{count}} day",
+    "n_days_other": "{{count}} days",
+    "no_days": "No open days match. Try other days.",
+    "free_all_one": "Free on the day",
+    "free_all_other": "Free on all {{count}} days",
+    "free_some": "Free on {{free}} of {{total}} days",
+    "none": "No room is free at this time. Try another time or size."
   },
   "book": {
     "title": "Book a room",
@@ -606,7 +627,9 @@
     "notice_posted": "Posted · live on the renter home page",
     "report_updated": "Report updated · renter notified",
     "room_down": "Room marked down · renters notified",
-    "staff_booked": "Booked for {{name}} · SMS sent"
+    "staff_booked": "Booked for {{name}} · SMS sent",
+    "undone": "Undone",
+    "booked": "Booked"
   },
   "msg": {
     "code": "Your Sit code is {{code}}. It expires in 10 minutes.",
@@ -669,5 +692,14 @@
     "dur_hm": "{{h}} h {{m}} min",
     "dur_h": "{{h}} h",
     "dur_m": "{{m}} min"
+  },
+  "review": {
+    "title": "Review booking",
+    "purpose": "What's it for?",
+    "confirm": "Confirm booking",
+    "confirm_n_one": "Confirm {{count}} booking",
+    "confirm_n_other": "Confirm {{count}} bookings",
+    "edit": "Change room, days or time",
+    "skipped": "Not free at this time on {{days}}, so those days are skipped."
   }
 }

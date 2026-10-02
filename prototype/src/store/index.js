@@ -139,7 +139,30 @@ export const useStore = create(
     reset: () => set(() => ({ ...initial(), drawerOpen: get().drawerOpen, drawerTab: get().drawerTab })),
     setLang: (lang) => set({ lang }),
     set: (patch) => set(patch),
-    showToast: (key, params = {}) => set({ toast: { key, params, id: Date.now() } }),
+    // `undo` (optional) puts an Undo button on the toast; it runs the function and confirms with "Undone".
+    showToast: (key, params = {}, undo = null) => set({ toast: { key, params, id: Date.now(), undo } }),
+
+    /** Cancel, then offer Undo: restores the previous statuses of every booking that was cancelled. */
+    cancelWithUndo: (id, whole = false) => {
+      const before = get().data.bookings.map((b) => [b.id, b.status])
+      get().cancelBooking(id, whole)
+      const changed = new Map(before.filter(([bid, st]) => get().data.bookings.find((b) => b.id === bid)?.status !== st))
+      get().showToast('toast.cancel_email', {}, () =>
+        set((s) => {
+          s.data.bookings.forEach((b) => {
+            if (changed.has(b.id)) b.status = changed.get(b.id)
+          })
+          logEvent(s, 'booking_cancel_undone', { visitor_id: s.renterId })
+        }),
+      )
+    },
+
+    /** Take back bookings that were just made (Undo on the confirmation toast). */
+    removeBookings: (ids) =>
+      set((s) => {
+        s.data.bookings = s.data.bookings.filter((b) => !ids.includes(b.id))
+        logEvent(s, 'booking_undone', { visitor_id: s.renterId })
+      }),
 
     loginAs: (renterId) =>
       set((s) => {

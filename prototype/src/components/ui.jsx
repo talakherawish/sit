@@ -243,14 +243,14 @@ export function Confirm({ open, title, body, okLabel, onOk, onCancel, danger, ch
   )
 }
 
-/** HUD-style toast: dark frosted capsule near the top. */
+/** HUD-style toast: dark frosted capsule near the top, with Undo when the action can be taken back. */
 export function Toast({ fixed }) {
   const toast = useStore((s) => s.toast)
   const set = useStore((s) => s.set)
   const { t } = useTranslation()
   useEffect(() => {
     if (!toast) return
-    const id = setTimeout(() => set({ toast: null }), 3200)
+    const id = setTimeout(() => set({ toast: null }), toast.undo ? 6000 : 3200)
     return () => clearTimeout(id)
   }, [toast, set])
   if (!toast) return null
@@ -258,10 +258,23 @@ export function Toast({ fixed }) {
     <div className={`${fixed ? 'fixed top-20' : 'absolute top-24'} pointer-events-none inset-x-0 z-50 flex justify-center px-6`} role="status">
       <div
         key={toast.id}
-        className="animate-drop flex items-center gap-2 rounded-full bg-[#1c1c1e]/90 px-5 py-3 text-[15px] text-white shadow-xl backdrop-blur-xl"
+        className="animate-drop pointer-events-auto flex items-center gap-2 rounded-full bg-[#1c1c1e]/90 py-2 ps-5 pe-2 text-[15px] text-white shadow-xl backdrop-blur-xl"
       >
-        <Icon name="check" size={18} className="text-[#7fd1c3]" />
-        {t(toast.key, toast.params)}
+        <Icon name="check" size={18} className="shrink-0 text-[#7fd1c3]" />
+        <span className="py-1">{t(toast.key, toast.params)}</span>
+        {toast.undo ? (
+          <button
+            className="ms-1 min-h-9 rounded-full bg-white/15 px-3.5 font-semibold text-white active:bg-white/25"
+            onClick={() => {
+              toast.undo()
+              set({ toast: { key: 'toast.undone', params: {}, id: Date.now() } })
+            }}
+          >
+            {t('common.undo')}
+          </button>
+        ) : (
+          <span className="w-3" />
+        )}
       </div>
     </div>
   )
