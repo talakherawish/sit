@@ -59,7 +59,6 @@ function TopBar() {
   const data = useStore((s) => s.data)
   const me = data.renters.find((r) => r.id === renterId)
   const pn = usePersonName()
-  const unread = data.notifications.some((n) => n.renter_id === renterId && !n.read)
   return (
     <header className="absolute inset-x-0 top-0 z-30 border-b border-black/[0.06] bg-white/80 pt-[var(--app-top)] backdrop-blur-xl backdrop-saturate-150 sm:pt-0">
       <div className="hidden h-[52px] items-center justify-between px-8 pt-1 sm:flex" dir="ltr" aria-hidden="true">
@@ -72,25 +71,17 @@ function TopBar() {
         </Link>
         <div className="flex-1" />
         {/* Signed-in renters change language in their profile; guests get a quick switch here */}
-        {!me && (
-          <button
-            onClick={() => setLang(lang === 'en' ? 'ar' : 'en')}
-            className="min-h-11 px-2.5 text-[15px] font-medium text-navy"
-            aria-label={t('common.switch_lang')}
-          >
-            {lang === 'en' ? 'عربي' : 'EN'}
-          </button>
-        )}
-        {me && (
-          <Link to="/r/notifications" className="relative grid size-11 place-items-center text-navy" aria-label={t('nav.notifications')}>
-            <Icon name="bell" />
-            {unread && <span className="absolute end-[11px] top-[10px] size-2 rounded-full bg-red ring-2 ring-white" />}
-          </Link>
-        )}
+        <button
+          onClick={() => setLang(lang === 'en' ? 'ar' : 'en')}
+          className="min-h-11 px-2.5 text-[15px] font-medium text-navy"
+          aria-label={t('common.switch_lang')}
+        >
+          {lang === 'en' ? 'عربي' : 'EN'}
+        </button>
         {me ? (
-          <Link to="/r/profile" className="grid size-11 place-items-center" aria-label={t('nav.profile')}>
+          <span className="grid size-11 place-items-center" title={pn(me)}>
             <span className="grid size-8 place-items-center rounded-full bg-navy text-[14px] font-semibold text-white">{pn(me)[0]}</span>
-          </Link>
+          </span>
         ) : (
           <Link to="/r/login" className="ms-1 min-h-9 content-center rounded-full bg-navy px-4 text-[15px] font-semibold text-white">
             {t('nav.login')}
@@ -131,11 +122,10 @@ function TabBar() {
     { key: 'map', icon: 'map', match: ['/r/home'], open: () => navigate('/r/home') },
     { key: 'list', icon: 'list', match: ['/r/list'], open: () => navigate('/r/list') },
     { key: 'bookings', icon: 'calendar', match: ['/r/bookings'], open: () => requireLogin('/r/bookings') },
-    { key: 'report', icon: 'flag', match: ['/r/report'], open: () => requireLogin('/r/report') },
   ]
   return (
     <nav
-      className="absolute inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-black/[0.06] bg-white/75 pb-1 backdrop-blur-xl backdrop-saturate-150 sm:pb-6"
+      className="absolute inset-x-0 bottom-0 z-30 grid grid-cols-3 border-t border-black/[0.06] bg-white/75 pb-1 backdrop-blur-xl backdrop-saturate-150 sm:pb-6"
       aria-label={t('nav.tabs')}
     >
       {tabs.map((tab) => {

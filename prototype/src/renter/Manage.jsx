@@ -5,7 +5,7 @@ import { useStore } from '../store'
 import { useSpaceName, useTemplate } from '../lib/hooks'
 import { ACTIVE, endAbs, freeStarts, hoursFor, startAbs, dateOf, minOfDay, renter as findRenter } from '../lib/logic'
 import { addDays, fmtDate, hm } from '../lib/time'
-import { Chip, Confirm, Empty, PhaseBadge, ScreenTitle, Segmented, StatusChip } from '../components/ui'
+import { Chip, Confirm, Empty, ScreenTitle, Segmented, StatusChip } from '../components/ui'
 import Icon from '../components/Icon'
 import { NeedLogin } from './RenterLayout'
 
@@ -107,7 +107,7 @@ export function MyBookings() {
                 </Link>
                 {b.series_id && tab === 'upcoming' && (
                   <p className="mt-1 text-sm">
-                    <span className="font-medium">{t('bookings.series')}</span> <PhaseBadge phase="next" />
+                    <span className="font-medium">{t('bookings.series')}</span>
                     {more(b.series_id) > 0 && !expanded[b.series_id] && (
                       <button className="btn-link ms-2 !min-h-0" onClick={() => setExpanded({ ...expanded, [b.series_id]: true })}>
                         {t('bookings.more', { count: more(b.series_id) })}
@@ -141,7 +141,7 @@ export function MyBookings() {
                   </>
                 )}
                 {b.status === 'cancelled_by_staff' && tab === 'upcoming' && (
-                  <Link to="/r/filter" className="btn-link">
+                  <Link to="/r/list" className="btn-link">
                     {t('notif.book_another')}
                   </Link>
                 )}

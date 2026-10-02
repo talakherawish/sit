@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
@@ -17,7 +16,7 @@ const BLOCK = {
 
 /**
  * Staff view of every room's opening day at once: one row per room, bookings as labelled blocks,
- * a "now" line, past time shaded. Click a booking to check its renter in; click free time to book for someone.
+ * a "now" line, past time shaded. Click a booking to check its renter in.
  */
 export default function RoomsDay() {
   const { t } = useTranslation()
@@ -25,7 +24,6 @@ export default function RoomsDay() {
   const L = useL()
   const navigate = useNavigate()
   const s = useStore()
-  const [menu, setMenu] = useState(null)
   const date = dateOf(s.now)
   const h = hoursFor(s.data, date)
   if (!h) return <p className="rounded-2xl bg-surface px-5 py-4 text-grey-ink">{t('common.closed')}</p>
@@ -34,7 +32,6 @@ export default function RoomsDay() {
   const nowMin = minOfDay(s.now)
   const hours = []
   for (let m = Math.ceil(h.open / 60) * 60; m <= h.close; m += 60) hours.push(m)
-  const bookFrom = (spId, m) => navigate(`/s/book-for?space=${spId}&date=${date}&start=${m}`)
 
   return (
     <div className="rounded-[22px] bg-surface p-5">
@@ -47,10 +44,6 @@ export default function RoomsDay() {
               {t(`status.${k}`)}
             </span>
           ))}
-          <span className="flex items-center gap-1.5">
-            <span className="hatch size-3 rounded-[4px] ring-1 ring-red/40" />
-            {t('timeline.down')}
-          </span>
         </div>
       </div>
 
@@ -84,36 +77,6 @@ export default function RoomsDay() {
                   </span>
                   <span className="block text-[12px] text-grey-ink">{t('map.people', { n: sp.capacity })}</span>
                 </span>
-                <button
-                  className="grid size-9 shrink-0 place-items-center rounded-full text-navy hover:bg-black/[0.05]"
-                  onClick={() => setMenu(menu === sp.id ? null : sp.id)}
-                  aria-label={t('staff.room_menu')}
-                  aria-expanded={menu === sp.id}
-                >
-                  ⋯
-                </button>
-                {menu === sp.id && (
-                  <div className="absolute start-24 top-11 z-20 w-52 rounded-xl bg-white p-1 shadow-xl ring-1 ring-black/[0.08]">
-                    {sp.down ? (
-                      <button
-                        className="block min-h-11 w-full rounded-lg px-3 text-start hover:bg-black/[0.04]"
-                        onClick={() => {
-                          s.markRoomUp(sp.id)
-                          setMenu(null)
-                        }}
-                      >
-                        {t('staff.mark_up')}
-                      </button>
-                    ) : (
-                      <button
-                        className="block min-h-11 w-full rounded-lg px-3 text-start text-[#a32f2f] hover:bg-black/[0.04]"
-                        onClick={() => navigate(`/s/room-down?space=${sp.id}`)}
-                      >
-                        {t('staff.mark_down')}
-                      </button>
-                    )}
-                  </div>
-                )}
               </div>
 
               <div className="relative h-16 flex-1" dir="ltr">
@@ -124,17 +87,6 @@ export default function RoomsDay() {
                 {nowMin > h.open && (
                   <span className="absolute inset-y-0 left-0 bg-black/[0.035]" style={{ width: pct(Math.min(nowMin, h.close)) }} aria-hidden="true" />
                 )}
-                {/* free half-hours: click to book for someone */}
-                {free.map((m) => (
-                  <button
-                    key={m}
-                    className="absolute inset-y-1 rounded-md hover:bg-navy/[0.07]"
-                    style={{ left: pct(m), width: `${(30 / span) * 100}%` }}
-                    onClick={() => bookFrom(sp.id, m)}
-                    aria-label={t('staff.book_slot', { room: L(sp.label), time: hm(m) })}
-                    title={t('staff.book_slot', { room: L(sp.label), time: hm(m) })}
-                  />
-                ))}
                 {down && (
                   <div
                     className="hatch absolute inset-y-2 flex items-center overflow-hidden rounded-lg px-2 text-[12px] font-medium text-[#a32f2f] ring-1 ring-red/40"

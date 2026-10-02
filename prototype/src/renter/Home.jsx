@@ -134,7 +134,7 @@ export default function Home() {
 
         {/* Book without the map: days, time, size, then pick a room */}
         <div className="mt-auto pt-2">
-          <Link to="/r/filter" className="btn-primary w-full">
+          <Link to="/r/list" className="btn-primary w-full">
             <Icon name="calendar" size={20} />
             {t('home.book_cta')}
           </Link>

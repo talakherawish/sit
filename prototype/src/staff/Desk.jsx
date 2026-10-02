@@ -5,7 +5,7 @@ import { useStore } from '../store'
 import { useL, useSpaceName, STAFF, usePersonName } from '../lib/hooks'
 import { ACTIVE, activeNotices, normPhone, staffStatus, dateOf, endAbs, minOfDay, startAbs, renter as findRenter } from '../lib/logic'
 import { fmtAbs, hm } from '../lib/time'
-import { Card, Confirm, Modal, PhaseBadge, ScreenId, StatusChip } from '../components/ui'
+import { Card, Confirm, Modal, ScreenId, StatusChip } from '../components/ui'
 import Icon from '../components/Icon'
 import { SignUpForm } from '../renter/Auth'
 import { StaffTitle } from './StaffLayout'
@@ -99,7 +99,6 @@ export function Today() {
   }
   const bookings = s.data.bookings.filter((b) => b.date === date).sort(order[sort])
   const notices = activeNotices(s.data, s.now)
-  const newReports = s.data.reports.filter((r) => r.status === 'sent').length
 
   return (
     <>
@@ -142,17 +141,6 @@ export function Today() {
               <p className="text-grey-ink">{t('staff.no_notices')}</p>
             )}
           </section>
-
-          <Link to="/s/reports" className="flex items-center gap-4 rounded-[22px] bg-surface p-5 hover:bg-black/[0.04]">
-            <span className="font-head text-[40px] leading-none font-bold">{newReports}</span>
-            <span className="flex-1">
-              <span className="block text-[17px] font-semibold">
-                {t('staff.reports')} <PhaseBadge phase="next" />
-              </span>
-              <span className="text-[13px] text-grey-ink">{t('staff.new_reports')}</span>
-            </span>
-            <Icon name="next" size={18} className="text-grey-ink/60 rtl:rotate-180" />
-          </Link>
         </div>
 
         <div className="min-w-0 space-y-6">
@@ -313,9 +301,6 @@ export function CheckIn() {
                     </ul>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <Link to={`/s/book-for?renter=${r.id}`} className="btn-secondary">
-                      {t('staff.book_for')}
-                    </Link>
                     {visit ? (
                       <button className="btn-secondary min-w-36" onClick={() => doOut(r)}>
                         {t('staff.check_out')}

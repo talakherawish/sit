@@ -3,12 +3,12 @@ import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL } from '../lib/hooks'
 import { ACTIVE, REASONS, REMINDERS, hoursFor, isFree, reminderAt, dateOf, minOfDay } from '../lib/logic'
-import { addDays, fmtDate, fmtAbs, hm, ceil30, weekdayName } from '../lib/time'
+import { addDays, fmtDate, fmtAbs, hm, ceil30 } from '../lib/time'
 import CalendarPicker from './Calendar'
-import { Chip, Group, GroupRow, PhaseBadge, RowSelect, SectionLabel, Segmented, Switch } from './ui'
+import { Chip, Group, GroupRow, RowSelect, SectionLabel } from './ui'
 
 /** The single booking form behind every way to book (R-06, S-07). */
-export default function BookingForm({ initial = {}, onSubmit, submitLabel, compact, renterId }) {
+export default function BookingForm({ initial = {}, onSubmit, submitLabel, renterId }) {
   const { t } = useTranslation()
   const L = useL()
   const lang = useStore((s) => s.lang)
@@ -29,7 +29,6 @@ export default function BookingForm({ initial = {}, onSubmit, submitLabel, compa
   const [reason, setReason] = useState(initial.reason || '')
   const [reasonOther, setReasonOther] = useState(initial.reasonOther || '')
   const [reminder, setReminder] = useState(null)
-  const [repeat, setRepeat] = useState({ on: false, kind: 'days', days: [], until: addDays(dateOf(now), 28) })
 
   const h = hoursFor(data, date)
   const earliest = date === dateOf(now) ? ceil30(minOfDay(now)) : 0
@@ -81,7 +80,7 @@ export default function BookingForm({ initial = {}, onSubmit, submitLabel, compa
   const submit = (e) => {
     e.preventDefault()
     if (!valid) return
-    onSubmit({ spaceId, date: firstDate, dates: sorted, start, end, reason, reasonOther: reasonOther.trim(), reminder, repeat: repeat.on ? repeat : null })
+    onSubmit({ spaceId, date: firstDate, dates: sorted, start, end, reason, reasonOther: reasonOther.trim(), reminder, repeat: null })
   }
 
   return (
@@ -183,59 +182,6 @@ export default function BookingForm({ initial = {}, onSubmit, submitLabel, compa
         )}
         <p className="mt-1.5 px-1 text-[13px] text-grey-ink">{t('book.reminder_hint')}</p>
       </section>
-
-      {!compact && (
-        <Group>
-          <div className="flex min-h-12 items-center gap-3 px-4">
-            <span className="flex-1 text-[17px]">
-              {t('book.repeat')} <PhaseBadge phase="next" />
-            </span>
-            <Switch checked={repeat.on} onChange={(v) => setRepeat({ ...repeat, on: v })} label={t('book.repeat')} />
-          </div>
-          {repeat.on && (
-            <div className="space-y-3 px-4 py-3">
-              <Segmented
-                label={t('book.repeat')}
-                value={repeat.kind}
-                onChange={(v) => setRepeat({ ...repeat, kind: v })}
-                options={[
-                  ['days', t('book.repeat_days')],
-                  ['weekly', t('book.repeat_weekly')],
-                ]}
-              />
-              {repeat.kind === 'days' && (
-                <div className="flex justify-between gap-1">
-                  {[0, 1, 2, 3, 4, 6].map((wd) => {
-                    const on = repeat.days.includes(wd)
-                    return (
-                      <button
-                        type="button"
-                        key={wd}
-                        aria-pressed={on}
-                        aria-label={weekdayName(wd, lang)}
-                        onClick={() => setRepeat({ ...repeat, days: on ? repeat.days.filter((x) => x !== wd) : [...repeat.days, wd] })}
-                        className={`grid size-11 place-items-center rounded-full text-[14px] font-semibold ${on ? 'bg-ink text-white' : 'bg-white text-ink'}`}
-                      >
-                        {weekdayName(wd, lang).slice(0, lang === 'ar' ? 3 : 2)}
-                      </button>
-                    )
-                  })}
-                </div>
-              )}
-              <label className="flex min-h-11 items-center justify-between gap-3">
-                <span className="text-[17px]">{t('book.until')}</span>
-                <input
-                  type="date"
-                  className="bg-transparent text-end text-[17px] text-grey-ink outline-none"
-                  value={repeat.until}
-                  min={date}
-                  onChange={(e) => setRepeat({ ...repeat, until: e.target.value })}
-                />
-              </label>
-            </div>
-          )}
-        </Group>
-      )}
 
       <button type="submit" className="btn-primary w-full" disabled={!valid}>
         {submitLabel || (freeDays.length > 1 ? t('book.book_n', { count: freeDays.length }) : t('book.book'))}

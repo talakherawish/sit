@@ -10,9 +10,6 @@ const NAV = [
   { to: '/s/today', key: 'today', icon: 'home' },
   { to: '/s/checkin', key: 'checkin', icon: 'door' },
   { to: '/s/notices', key: 'notices', icon: 'megaphone' },
-  { to: '/s/reports', key: 'reports', icon: 'inbox', phase: 'next' },
-  { to: '/s/book-for', key: 'bookings', icon: 'calendar', phase: 'next' },
-  { to: '/s/insights', key: 'insights', icon: 'chart', phase: 'later' },
   { to: '/s/settings/rooms', key: 'settings', icon: 'gear', match: '/s/settings' },
 ]
 

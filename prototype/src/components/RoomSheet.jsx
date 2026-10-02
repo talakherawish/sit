@@ -95,7 +95,7 @@ function BookableRoomSheet({ id, onClose, onJump, initialDay, initialRange }) {
         title={L(sp.label)}
         subtitle={meta}
         footer={
-          <button className="btn-primary w-full" onClick={() => navigate('/r/filter')}>
+          <button className="btn-primary w-full" onClick={() => navigate('/r/list')}>
             {t('room.find_another')}
           </button>
         }

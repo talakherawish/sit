@@ -1,13 +1,11 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
 import { useStore } from '../store'
 import { useL } from '../lib/hooks'
 import { hoursFor, dateOf, minOfDay } from '../lib/logic'
 import { fmtDate, hm, floor30 } from '../lib/time'
 import { Chip, Sheet, TimeGrid } from './ui'
 import { DayStrip } from './Calendar'
-import Icon from './Icon'
 
 /** The date + time the map and list are showing. */
 export function useWhen() {
@@ -51,10 +49,6 @@ export function WhenBar() {
         {when.isNow ? t('when.today_now') : `${fmtDate(when.date, lang)} · ${hm(when.min)}`}
       </button>
       <div className="flex-1" />
-      <Link to="/r/filter" className="flex min-h-11 items-center gap-1.5 px-2 text-[15px] font-medium text-navy">
-        <Icon name="search" size={18} />
-        {t('when.find')}
-      </Link>
       <WhenSheet open={open} onClose={() => setOpen(false)} />
     </div>
   )

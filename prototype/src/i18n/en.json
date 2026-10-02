@@ -61,7 +61,7 @@
     "until": "Until {{time}}",
     "opens_at": "Opens {{time}}",
     "book_cta": "Book a room",
-    "book_cta_hint": "Choose days, time and size. No map needed."
+    "book_cta_hint": "See every room and its free times. No map needed."
   },
   "about": {
     "title": "About Sit",
@@ -501,7 +501,7 @@
     "walkin_hint": "Same sign-up form as the app.",
     "log_title": "Seat-count log",
     "rooms_today": "Rooms today",
-    "rooms_today_hint": "The teal line is now ({{time}}). Click a booking to check its renter in, or free time to book for someone.",
+    "rooms_today_hint": "The teal line is now ({{time}}). Click a booking to check its renter in.",
     "book_slot": "Book {{room}} at {{time}} for someone",
     "sort_time": "Time",
     "sort_room": "Room",
@@ -717,8 +717,7 @@
     "panel": "Time & scenarios",
     "reset": "Reset demo",
     "renter": "Renter app · Tala",
-    "staff": "Reception dashboard · Rana",
-    "narrow": "The side-by-side demo needs a wider screen. Open each view on its own:"
+    "staff": "Reception dashboard · Rana"
   },
   "rooms_cal": {
     "day_view": "Day view",

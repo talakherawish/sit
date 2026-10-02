@@ -32,7 +32,7 @@ export default function Demo() {
     const fit = () => {
       const el = stage.current
       if (!el) return
-      const w = el.clientWidth - 48
+      const w = el.clientWidth - 24
       const h = el.clientHeight - 64 // room for the labels
       setScale(Math.min(1, w / (PHONE_W + GAP + DESK.w), h / Math.max(PHONE_H, DESK_H)))
     }
@@ -64,18 +64,7 @@ export default function Demo() {
         </button>
       </header>
 
-      {/* Narrow screens: the side-by-side view doesn't fit, so offer the two links instead. */}
-      <div className="flex flex-1 flex-col items-center justify-center gap-3 p-6 text-center lg:hidden">
-        <p className="max-w-sm text-[15px] text-grey-ink">{t('demo.narrow')}</p>
-        <a className="btn-primary w-64" href={`${BASE}r/home`}>
-          {t('demo.renter')}
-        </a>
-        <a className="btn-secondary w-64" href={`${BASE}s/today`}>
-          {t('demo.staff')}
-        </a>
-      </div>
-
-      <div ref={stage} className="hidden min-h-0 flex-1 items-center justify-center overflow-hidden lg:flex" dir="ltr">
+      <div ref={stage} className="flex min-h-0 flex-1 items-center justify-center overflow-hidden" dir="ltr">
         <div className="flex items-start" style={{ gap: GAP * scale }}>
           <figure>
             <div style={{ width: PHONE_W * scale, height: PHONE_H * scale }}>

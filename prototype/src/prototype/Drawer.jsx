@@ -167,7 +167,6 @@ function ScreenIndex() {
     ['R-02', '/r/list'],
     ['R-03', '/r/room/big-1'],
     ['R-04', '/r/hours'],
-    ['R-05', '/r/filter'],
     ['R-06', '/r/book'],
     ['R-07', '/r/taken'],
     ['R-10', '/r/signup'],
@@ -175,19 +174,10 @@ function ScreenIndex() {
     ['R-12', '/r/login'],
     ['R-13', '/r/bookings'],
     ['R-15', '/r/reminder/b-leen'],
-    ['R-16', '/r/report'],
-    ['R-17', '/r/reports'],
-    ['R-18', '/r/notifications'],
-    ['R-19', '/r/rate'],
-    ['R-20', '/r/profile'],
     ['S-01', '/s/today'],
     ['S-02', '/s/checkin'],
     ['S-03', '/s/seat-log'],
     ['S-04', '/s/notices'],
-    ['S-05', '/s/reports'],
-    ['S-06', '/s/room-down'],
-    ['S-07', '/s/book-for'],
-    ['S-08', '/s/insights'],
     ['S-10', '/s/settings/rooms'],
   ]
   return (
@@ -204,7 +194,6 @@ function ScreenIndex() {
 
 function TimeSim() {
   const s = useStore()
-  const navigate = useNavigate()
   const name = useSpaceName()
   const targets = s.data.bookings.filter((b) => ACTIVE.includes(b.status) && endAbs(b) > s.now).sort((a, b) => startAbs(a) - startAbs(b))
   const preferred = targets.find((b) => b.renter_id === s.renterId && b.status !== 'used') || targets.find((b) => b.id === 'b-leen') || targets[0]
@@ -221,20 +210,6 @@ function TimeSim() {
     let d = addDays(date, 1)
     while (!hoursFor(s.data, d)) d = addDays(d, 1)
     return abs(d, hoursFor(s.data, d).open)
-  }
-  const afterCheckout = () => {
-    const st = useStore.getState()
-    let rid = Object.keys(st.pendingRating)[0]
-    if (!rid) {
-      rid = target?.renter_id || 'leen'
-      const open = st.data.visits.find((v) => v.renter_id === rid && !v.check_out)
-      if (open) st.checkOut(rid)
-      else st.set({ pendingRating: { ...st.pendingRating, [rid]: null } })
-    }
-    st.setNow(st.now + 5)
-    st.loginAs(rid)
-    navigate('/r/rate')
-    setLast(`After checkout → R-19 for ${findRenter(st.data, rid).name}`)
   }
 
   const jumps = target
@@ -281,10 +256,6 @@ function TimeSim() {
               <span className="text-xs font-normal text-grey-ink">{hint}</span>
             </button>
           ))}
-          <button className="btn-secondary !justify-between" onClick={afterCheckout}>
-            <span>After checkout</span>
-            <span className="text-xs font-normal text-grey-ink">Opens R-19</span>
-          </button>
         </div>
       </Section>
       <Section title="Nudge">
