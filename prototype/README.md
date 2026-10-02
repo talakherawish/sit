@@ -32,7 +32,7 @@ Open the prototype panel by **tapping the Technopark logo three times**, pressin
 
 **Add to home screen:** open the live link on a phone and use Share → Add to Home Screen (iPhone) or Install app (Android); it gets the Technopark icon and opens full screen.
 
-Why each design choice was made, and which UX principle it follows: [10-presentation/ai-refined/design-decisions.md](../10-presentation/ai-refined/design-decisions.md).
+Why each design choice was made, and which UX principle it follows: [AI-USAGE-LOG.pdf](../AI-USAGE-LOG.pdf) (part 3, design decisions).
 
 **Staff and renter stay in sync:** bookings, check-ins, seats, notices, reports and the simulated clock are shared between every open tab of the same browser (and kept across reloads), so a check-in on the staff dashboard shows up straight away in the renter app. There is no server, so two _different_ devices (e.g. staff laptop and your phone) do not share data. "Reset all data" in P-01 resets every tab.
 
