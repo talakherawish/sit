@@ -298,6 +298,10 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
 /* reception sidebar count and inbox table */
 .nv .cnt{margin-left:auto;min-width:13px;height:13px;padding:0 3px;border-radius:99px;background:var(--ink);color:var(--sheet);font:700 7px/13px var(--f-mono);text-align:center}
 .tbl td.wrap{white-space:normal}
+.nbar{position:absolute;z-index:3;top:38px;left:8px;right:8px;display:flex;gap:7px;align-items:flex-start;padding:8px;border:1.3px solid var(--ink);border-radius:14px;background:var(--sheet);box-shadow:0 6px 18px rgba(0,0,0,.16)}
+.nbar .sq{flex:none;width:22px;height:22px;border-radius:6px;background:var(--ink)}
+.bell-dot{position:relative}
+.bell-dot::after{content:"";position:absolute;top:-3px;right:-3px;width:5px;height:5px;border-radius:50%;background:var(--ink);box-shadow:0 0 0 1.5px var(--sheet)}
 .tbl.inbox{table-layout:fixed;font-size:7.5px}
 .tbl.inbox td{white-space:normal;vertical-align:middle}
 .tbl.inbox .field{display:flex;width:100%;font-size:7.5px}
@@ -374,7 +378,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
   <ul class="facts">
     <li><b>Renter app</b> · phone</li>
     <li><b>Reception</b> · desktop</li>
-    <li><b>7 flows</b> · 25 frames</li>
+    <li><b>7 flows</b> · 27 frames</li>
     <li>Screen IDs match the prototype</li>
   </ul>
   <p class="hint-keys">Use the bar above, the Next button at the end of each flow, or the ← → keys.</p>
@@ -432,7 +436,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
   <div class="strip" tabindex="0" role="region" aria-label="Flow 1 frames">
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o"></span><span class="av"></span></div>
         <div class="wf-body">
           <div class="h1">Good morning, Tala</div>
           <div class="card rel">
@@ -486,7 +490,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o"></span><span class="av"></span></div>
         <div class="backdrop"><span class="t w60"></span><span class="t w90"></span><span class="t w45"></span></div>
         <div class="sheet">
           <div class="grab"></div>
@@ -516,7 +520,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o"></span><span class="av"></span></div>
         <div class="backdrop"><span class="t w60"></span><span class="t w90"></span><span class="t w45"></span></div>
         <div class="sheet">
           <div class="grab"></div>
@@ -564,7 +568,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
   <div class="strip" tabindex="0" role="region" aria-label="Flow 2 frames">
     <figure class="step">
       <div class="wf" style="min-height:0">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o"></span><span class="av"></span></div>
         <div class="wf-body">
           <div class="h2">Floor plan</div>
           <span class="sm">Tap a room to see its day and book it.</span>
@@ -592,7 +596,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o"></span><span class="av"></span></div>
         <div class="backdrop" style="height:34px"><span class="t w60"></span></div>
         <div class="sheet">
           <div class="grab"></div>
@@ -620,7 +624,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o"></span><span class="av"></span></div>
         <div class="backdrop" style="height:34px"><span class="t w60"></span></div>
         <div class="sheet">
           <div class="grab"></div>
@@ -646,7 +650,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o"></span><span class="av"></span></div>
         <div class="wf-body">
           <span class="back">Back</span>
           <div class="h1">Review booking</div>
@@ -672,7 +676,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o"></span><span class="av"></span></div>
         <div class="toast">✓ Booked <u>Undo</u><i class="pin">8</i></div>
         <div class="wf-body">
           <div class="row" style="margin-top:22px"><span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--ink);font-size:11px">✓</span><span class="h1">Booking confirmed</span></div>
@@ -720,7 +724,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
   <div class="strip" tabindex="0" role="region" aria-label="Flow 3 frames">
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o"></span><span class="av"></span></div>
         <div class="wf-body">
           <div class="h1">Rooms</div>
           <span class="sm">Every room on one day. Tap a free time to book it.</span>
@@ -748,7 +752,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o"></span><span class="av"></span></div>
         <div class="backdrop" style="height:34px"><span class="t w60"></span></div>
         <div class="sheet">
           <div class="grab"></div>
@@ -780,7 +784,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
   <div class="strip" tabindex="0" role="region" aria-label="Rooms list frame">
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o"></span><span class="av"></span></div>
         <div class="wf-body">
           <div class="h1">Rooms</div>
           <div class="seg"><span>Day view</span><span class="on">List</span></div>
@@ -829,7 +833,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
   <div class="strip" tabindex="0" role="region" aria-label="Flow 4 frames">
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o"></span><span class="av"></span></div>
         <div class="backdrop" style="height:24px"></div>
         <div class="sheet">
           <div class="grab"></div>
@@ -862,7 +866,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o"></span><span class="av"></span></div>
         <div class="wf-body">
           <span class="back">Back</span>
           <div class="h1">Review booking</div>
@@ -906,7 +910,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
   <div class="strip" tabindex="0" role="region" aria-label="Flow 5 frames">
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o"></span><span class="av"></span></div>
         <div class="wf-body">
           <span class="back">Back</span>
           <div class="h1">Reminder</div>
@@ -933,7 +937,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o"></span><span class="av"></span></div>
         <div class="wf-body">
           <div class="h1">My bookings</div>
           <div class="seg"><span class="on">Upcoming</span><span>Past</span></div>
@@ -960,7 +964,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o"></span><span class="av"></span></div>
         <div class="wf-body">
           <div class="h1">My bookings</div>
           <div class="seg"><span class="on">Upcoming</span><span>Past</span></div>
@@ -987,7 +991,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o"></span><span class="av"></span></div>
         <div class="toast">Cancelled · email sent <u>Undo</u><i class="pin">7</i></div>
         <div class="wf-body" style="padding-top:34px">
           <div class="h1">My bookings</div>
@@ -1023,7 +1027,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
     <div>
       <p class="eyebrow">Flow 6 · Renter app and reception</p>
       <h2 id="h-f6">Report a problem</h2>
-      <p class="intro">The AC is loud and the quiet side isn't quiet. Tala reports both at once, reception replies, and she sees the status change.</p>
+      <p class="intro">The AC is loud and the quiet side isn't quiet. Tala reports both at once, reception replies, and an alert tells her straight away.</p>
     </div>
     <div class="tally"><b>3</b><span>taps to send a report</span></div>
   </div>
@@ -1031,7 +1035,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
   <div class="strip" tabindex="0" role="region" aria-label="Flow 6 frames">
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o"></span><span class="av"></span></div>
         <div class="wf-body">
           <div class="row btw"><span class="h1">Report an issue</span><span class="lnk" style="font-size:8.5px">My reports</span></div>
           <span class="lab">Where</span>
@@ -1054,7 +1058,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o"></span><span class="av"></span></div>
         <div class="toast">✓ Report sent to staff<i class="pin">4</i></div>
         <div class="wf-body" style="padding-top:34px">
           <span class="back">Back</span>
@@ -1113,9 +1117,34 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
 
     <div class="arrow"><span class="act">Set Seen, write a reply, Save</span><span class="shaft"></span><span class="tap">+3 clicks</span></div>
 
+    <div class="arrow sys"><span class="act">Alert reaches Tala, wherever she is</span><span class="shaft"></span><span class="tap">0 taps</span></div>
+
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o bell-dot"></span><span class="av"></span><i class="pin" style="top:2px;right:30px">8</i></div>
+        <div class="nbar">
+          <span class="sq"></span>
+          <div class="col grow"><div class="row btw"><b>Report</b><span class="sm">now</span></div><span>Your report about Public seating is now: Seen.</span></div>
+          <span class="touch" style="left:50%;top:50%"></span>
+          <i class="pin">7</i>
+        </div>
+        <div class="wf-body">
+          <div class="h1" style="opacity:.35">Good morning, Tala</div>
+          <div class="card" style="opacity:.6"><span class="t w45"></span><div class="row btw"><span class="num">18</span><span class="t w30"></span></div><div class="ticks"></div></div>
+          <div class="g3" style="opacity:.6"><div class="tile"><span class="t w60"></span><span class="t w90"></span></div><div class="tile"><span class="t w60"></span><span class="t w90"></span></div><div class="tile"><span class="t w60"></span><span class="t w90"></span></div></div>
+          <div class="box" style="opacity:.6"><span class="t w75"></span><span class="t w45"></span></div>
+          <div class="btn pri big" style="margin-top:8px;opacity:.6">Book a room</div>
+        </div>
+        <div class="wf-tabs"><span class="on">Map</span><span>Rooms</span><span>My bookings</span><span>Report</span></div>
+      </div>
+      <figcaption><span class="sn">4</span><span><b>Alert</b><span class="sid">R-01</span><br><span class="cap">Drops in over whatever screen is open.</span></span></figcaption>
+    </figure>
+
+    <div class="arrow"><span class="act">Tap the alert</span><span class="shaft"></span><span class="tap">+1</span></div>
+
+    <figure class="step">
+      <div class="wf">
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o"></span><span class="av"></span></div>
         <div class="wf-body">
           <span class="back">Back</span>
           <div class="h1">My reports</div>
@@ -1124,7 +1153,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
             <div class="row btw"><span class="b">AC, Noise · Public seating</span><span class="chip" style="font-size:7.5px">Seen</span></div>
             <div class="col" style="padding-left:7px;border-left:2px solid var(--fill-2)"><span class="sm"><b style="color:var(--ink)">Sent</b> · Thu 1 Oct · 09:30</span><span class="sm"><b style="color:var(--ink)">Seen</b> · Thu 1 Oct · 09:40</span></div>
             <div style="padding:5px 7px;border-radius:7px;background:var(--sheet)"><b>Staff reply:</b> Thanks, we'll check the AC this morning.</div>
-            <i class="pin">7</i>
+            <i class="pin">9</i>
           </div>
           <div class="card">
             <div class="row btw"><span class="b">Wifi · Public seating</span><span class="chip" style="font-size:7.5px">Seen</span></div>
@@ -1134,8 +1163,40 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
         </div>
         <div class="wf-tabs"><span>Map</span><span>Rooms</span><span>My bookings</span><span class="on">Report</span></div>
       </div>
-      <figcaption><span class="sn">4</span><span><b>My reports, updated</b><span class="sid">R-17</span></span></figcaption>
+      <figcaption><span class="sn">5</span><span><b>My reports, updated</b><span class="sid">R-17</span></span></figcaption>
     </figure>
+  </div>
+
+
+  <p class="route">Missed the alert? The bell keeps it</p>
+  <div class="strip" tabindex="0" role="region" aria-label="Notifications frame">
+    <figure class="step">
+      <div class="wf">
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o"></span><span class="av"></span></div>
+        <div class="wf-body">
+          <span class="back">Back</span>
+          <div class="h1">Notifications</div>
+          <span class="lab rel">New<i class="pin" style="right:auto;left:26px">10</i></span>
+          <div class="list">
+            <div class="li" style="align-items:flex-start"><span class="ico"></span><div class="col grow"><div class="row btw"><b>Report</b><span class="sm">09:40</span></div><span>Your report about Public seating is now: Seen.</span><span class="lnk rel" style="font-size:8.5px">See report ›<span class="touch" style="left:30%;top:50%"></span></span></div></div>
+            <div class="li" style="align-items:flex-start"><span class="ico"></span><div class="col grow"><div class="row btw"><b>Notice</b><span class="sm">08:05</span></div><span>Event in the main hall 10:00–14:00, expect noise. You have a booking in Focus Room 3 at 13:30.</span><span class="lnk" style="font-size:8.5px">See today's status ›</span></div></div>
+          </div>
+          <span class="lab">Earlier</span>
+          <div class="list">
+            <div class="li" style="align-items:flex-start"><span class="ico"></span><div class="col grow"><div class="row btw"><b>Report</b><span class="sm">29 Sept</span></div><span>Your report about Public seating is now: Seen.</span></div></div>
+            <div class="li" style="align-items:flex-start"><span class="ico"></span><div class="col grow"><span class="t w90"></span><span class="t w45"></span></div></div>
+          </div>
+        </div>
+        <div class="wf-tabs"><span>Map</span><span>Rooms</span><span>My bookings</span><span>Report</span></div>
+      </div>
+      <figcaption><span class="sn">6</span><span><b>Notifications</b><span class="sid">R-18</span><br><span class="cap">From the bell. Opening it clears the dot.</span></span></figcaption>
+    </figure>
+
+    <div class="arrow"><span class="act">See report</span><span class="shaft"></span><span class="tap">+1</span></div>
+
+    <div class="step">
+      <div class="ghost"><div><b>R-17 My reports</b>Same as frame 5, with the status and staff reply.</div></div>
+    </div>
   </div>
 
   <ol class="notes">
@@ -1145,7 +1206,10 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
     <li><i class="pin">4</i><p>Sending lands on My reports, with the new report marked "Sent" and a short confirmation.<span class="law">Feedback after every action</span></p></li>
     <li><i class="pin">5</i><p>Reception sees a count on Reports in the sidebar and a "new reports" card on Today, so a report never waits unseen.<span class="law">Visibility of system status</span></p></li>
     <li><i class="pin">6</i><p>One row per report with status and reply side by side. Save stays disabled until something changes.<span class="law">Prevent errors · fewer clicks</span></p></li>
-    <li><i class="pin">7</i><p>Tala sees each step (Sent → Seen → In progress → Fixed) and the staff reply under her report.<span class="law">Visibility of system status · close the loop</span></p></li>
+    <li><i class="pin">7</i><p>A banner drops in the moment reception saves, over whatever screen Tala has open. Tapping it opens the report.<span class="law">Feedback after every action · visibility of system status</span></p></li>
+    <li><i class="pin">8</i><p>The bell keeps a dot until the alerts are opened, so a missed banner isn't lost.<span class="law">Recognition over recall</span></p></li>
+    <li><i class="pin">9</i><p>Tala sees each step (Sent → Seen → In progress → Fixed) and the staff reply under her report.<span class="law">Visibility of system status · close the loop</span></p></li>
+    <li><i class="pin">10</i><p>Notifications groups alerts as New and Earlier, each with an icon and the one action it needs.<span class="law">Visual hierarchy</span></p></li>
   </ol>
 </section>
 
@@ -1303,7 +1367,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
   <div class="strip gallery" tabindex="0" role="region" aria-label="Edge state frames">
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o"></span><span class="av"></span></div>
         <div class="wf-body">
           <div class="h1">Slot just taken</div>
           <div class="box strong rel"><span class="b">Someone booked Big Room 2 at 10:00–12:00 a moment ago.</span><i class="pin">1</i></div>
@@ -1325,7 +1389,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="ico o"></span><span class="av"></span></div>
         <div class="backdrop" style="height:190px"><span class="t w60"></span><span class="t w90"></span><span class="t w45"></span><span class="t w75"></span></div>
         <div class="sheet">
           <div class="grab"></div>
@@ -1364,6 +1428,8 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
     <div class="ia-col"><h3>Report</h3><p class="via">Tab 4</p>
       <ul><li><code>R-16</code>Report an issue
         <ul><li><code>R-17</code>My reports</li></ul></li></ul></div>
+    <div class="ia-col"><h3>Top bar</h3><p class="via">Every screen</p>
+      <ul><li>Logo → Home</li><li>Bell → <code>R-18</code>Notifications</li><li>عربي / EN language switch</li></ul></div>
     <div class="ia-col"><h3>Inside a task</h3><p class="via">No tab</p>
       <ul><li><code>R-06</code>Review booking</li><li><code>R-07</code>Slot just taken</li><li><code>R-08</code>Booking confirmed</li><li><code>R-15</code>Reminder (from SMS)</li></ul></div>
   </div>
@@ -1394,7 +1460,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
         <tr><td><b>Von Restorff</b></td><td>The item that looks different gets noticed</td><td class="path">One filled button per screen (F1·5, F2·5)</td></tr>
         <tr><td><b>Peak-End Rule</b></td><td>People remember the peak and the ending</td><td class="path">Confirmation page with Undo (F2·8)</td></tr>
         <tr><td><b>Clicks to treasure</b></td><td>Fewest steps to the main value</td><td class="path">Status on open (F1), time arrives picked (F3·3), more days in the same sheet (F4·1), one-tap confirm (F5·1)</td></tr>
-        <tr><td><b>Visibility of system status</b></td><td>Always show what is going on</td><td class="path">Live seat count (F1·1), measured Wi-Fi (F1·3), report status and reply (F6·7)</td></tr>
+        <tr><td><b>Visibility of system status</b></td><td>Always show what is going on</td><td class="path">Live seat count (F1·1), measured Wi-Fi (F1·3), alert when a report changes (F6·7), report status and reply (F6·9)</td></tr>
         <tr><td><b>Prevent errors, allow recovery</b></td><td>Stop mistakes early; make them cheap to undo</td><td class="path">Disabled until ready (F2·5, F6·3), skipped days named first (F4·3), Undo (F5·7), Slot just taken (E·1)</td></tr>
         <tr><td><b>Accessibility</b></td><td>Works for everyone, in context</td><td class="path">Words next to every colour state (F1·7, F5·5), Arabic right-to-left, 44 px targets</td></tr>
       </tbody>
