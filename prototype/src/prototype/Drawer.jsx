@@ -176,6 +176,7 @@ function ScreenIndex() {
     ['R-15', '/r/reminder/b-leen'],
     ['R-16', '/r/report'],
     ['R-17', '/r/reports'],
+    ['R-18', '/r/notifications'],
     ['S-01', '/s/today'],
     ['S-02', '/s/checkin'],
     ['S-03', '/s/seat-log'],

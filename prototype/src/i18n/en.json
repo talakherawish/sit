@@ -380,7 +380,8 @@
     "kind_report": "Report",
     "kind_cancel": "Cancelled",
     "kind_reminder": "Reminder",
-    "kind_release": "Released"
+    "kind_release": "Released",
+    "now": "now"
   },
   "rate": {
     "title": "Rate your visit",
@@ -713,7 +714,7 @@
   },
   "demo": {
     "title": "Live demo: renter app and reception, side by side",
-    "hint": "Both screens share the same data. Try checking Leen in on the right and watch the seat count on the left.",
+    "hint": "Both screens share the same data. Check Leen in on the right and watch the seat count on the left, or answer a report on the right and watch the alert reach Tala.",
     "panel": "Time & scenarios",
     "reset": "Reset demo",
     "renter": "Renter app · Tala",

@@ -7,6 +7,7 @@ import { Book, SlotTaken, Confirmed } from './renter/Booking'
 import { SignUp, Code, Login } from './renter/Auth'
 import { MyBookings, MoveBooking, Reminder } from './renter/Manage'
 import { Report, MyReports } from './renter/Report'
+import { Notifications } from './renter/Notifications'
 import StaffLayout from './staff/StaffLayout'
 import { Today, CheckIn, SeatLog } from './staff/Desk'
 import { Notices, ReportsInbox } from './staff/Ops'
@@ -39,6 +40,7 @@ export default function App() {
           <Route path="reminder/:id" element={<Reminder />} />
           <Route path="report" element={<Report />} />
           <Route path="reports" element={<MyReports />} />
+          <Route path="notifications" element={<Notifications />} />
         </Route>
         <Route path="/s" element={<StaffLayout />}>
           <Route index element={<Navigate to="today" replace />} />

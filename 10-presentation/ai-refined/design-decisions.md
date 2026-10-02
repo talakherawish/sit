@@ -110,6 +110,15 @@ We worked in **Design Thinking loops**: build from the spec, review it as a user
 | Narrow columns show stacked times with a lock icon instead of the word "Booked" | The word was cut off in 60 px columns | Clarity over decoration; colour is never the only signal |
 | List view is kept one tap away (Day view / List) | Some people prefer a list of rooms with features | User control and freedom |
 
+## Round 10: Reports and alerts back
+
+| Decision | Why | Principle |
+|---|---|---|
+| **Report** is the fourth tab again: report several issues at once, then follow each report's status and the staff reply in My reports | Removing it left renters no way to flag a broken AC or bad Wi-Fi, and reception no way to answer | Match user needs; visibility of system status |
+| Reception gets a **Reports inbox** with a count in the sidebar and a "new reports" card on Today | A report nobody sees is worse than no report | Visibility of system status |
+| Renters are **alerted**: a banner drops in as soon as something changes for them (a report update, a reminder, a released booking), and the bell keeps a red dot until they open Notifications | Without it, a reply only showed up if the renter happened to open My reports | Feedback after every action; recognition over recall |
+| Notifications are grouped into **New** and **Earlier**, each with an icon and the one action it needs | Same reason as Round 3: a flat list didn't show what mattered | Visual hierarchy |
+
 ## Clicks to book (roughly)
 
 | Task | Before | Now |

@@ -5,6 +5,7 @@ export const REASONS = ['study', 'group_project', 'client_call', 'meeting', 'int
 export const REMINDERS = ['2h', '3h', '1d', 'eve']
 export const ISSUE_TYPES = ['ac', 'wifi', 'noise', 'cleanliness', 'furniture', 'other']
 export const NOTICE_TAGS = ['ac', 'wifi', 'events', 'other']
+export const NOTIF_ICON = { booking: 'calendar', notice: 'megaphone', report: 'flag', cancel: 'close', reminder: 'bell', release: 'clock' }
 
 /** Calendar date ('YYYY-MM-DD') of an absolute timestamp. */
 export const dateOf = (a) => split(a).date

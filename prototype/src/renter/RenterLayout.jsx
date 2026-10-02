@@ -1,9 +1,9 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
-import { openPanelOnTripleTap, usePersonName, useRequireLogin } from '../lib/hooks'
-import { dateOf, minOfDay } from '../lib/logic'
+import { openPanelOnTripleTap, usePersonName, useRequireLogin, useTemplate } from '../lib/hooks'
+import { NOTIF_ICON, dateOf, minOfDay } from '../lib/logic'
 import { hm } from '../lib/time'
 import Icon, { TechnoparkLogo } from '../components/Icon'
 import { OverlayHost, ScreenId, Sheet, Toast } from '../components/ui'
@@ -42,6 +42,7 @@ export default function RenterLayout() {
             <div className="absolute bottom-2 left-1/2 z-50 hidden h-[5px] w-[134px] -translate-x-1/2 rounded-full bg-black/85 sm:block" aria-hidden="true" />
             <LoginGate />
             <Toast />
+            <NotificationBanner />
           </OverlayHost>
         </div>
       </div>
@@ -59,6 +60,7 @@ function TopBar() {
   const data = useStore((s) => s.data)
   const me = data.renters.find((r) => r.id === renterId)
   const pn = usePersonName()
+  const unread = data.notifications.some((n) => n.renter_id === renterId && !n.read)
   return (
     <header className="absolute inset-x-0 top-0 z-30 border-b border-black/[0.06] bg-white/80 pt-[var(--app-top)] backdrop-blur-xl backdrop-saturate-150 sm:pt-0">
       <div className="hidden h-[52px] items-center justify-between px-8 pt-1 sm:flex" dir="ltr" aria-hidden="true">
@@ -78,6 +80,12 @@ function TopBar() {
         >
           {lang === 'en' ? 'عربي' : 'EN'}
         </button>
+        {me && (
+          <Link to="/r/notifications" className="relative grid size-11 place-items-center text-navy" aria-label={t('nav.notifications')}>
+            <Icon name="bell" />
+            {unread && <span className="absolute end-[11px] top-[10px] size-2 rounded-full bg-red ring-2 ring-white" />}
+          </Link>
+        )}
         {me ? (
           <span className="grid size-11 place-items-center" title={pn(me)}>
             <span className="grid size-8 place-items-center rounded-full bg-navy text-[14px] font-semibold text-white">{pn(me)[0]}</span>
@@ -89,6 +97,55 @@ function TopBar() {
         )}
       </div>
     </header>
+  )
+}
+
+/**
+ * Drops in from the top when a new alert reaches the signed-in renter, e.g. reception replied to a report
+ * (possibly from another tab, such as the reception side of the demo). Tapping it opens what it's about.
+ */
+function NotificationBanner() {
+  const { t } = useTranslation()
+  const tpl = useTemplate()
+  const [note, setNote] = useState(null)
+
+  useEffect(
+    () =>
+      useStore.subscribe((st, prev) => {
+        if (!st.renterId || st.renterId !== prev.renterId || st.data.notifications === prev.data.notifications) return
+        const before = new Set(prev.data.notifications.map((n) => n.id))
+        const fresh = st.data.notifications.filter((n) => n.renter_id === st.renterId && !n.read && !before.has(n.id))
+        if (fresh.length) setNote(fresh[fresh.length - 1])
+      }),
+    [],
+  )
+  useEffect(() => {
+    if (!note) return
+    const id = setTimeout(() => setNote(null), 6000)
+    return () => clearTimeout(id)
+  }, [note])
+
+  if (!note) return null
+  return (
+    <div className="pointer-events-none absolute inset-x-0 top-[calc(6px+var(--app-top))] z-50 flex justify-center px-3 sm:top-[56px]" role="status">
+      <Link
+        key={note.id}
+        to={note.link || '/r/notifications'}
+        onClick={() => setNote(null)}
+        className="animate-drop pointer-events-auto flex w-full items-start gap-3 rounded-[22px] bg-white/90 p-3.5 text-start shadow-[0_12px_40px_rgba(16,24,40,0.22)] ring-1 ring-black/[0.06] backdrop-blur-xl"
+      >
+        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-navy text-white">
+          <Icon name={NOTIF_ICON[note.kind] || 'bell'} size={20} />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="flex items-baseline justify-between gap-2">
+            <span className="text-[15px] font-semibold">{t(`notif.kind_${note.kind}`)}</span>
+            <span className="shrink-0 text-[13px] text-grey-ink">{t('notif.now')}</span>
+          </span>
+          <span className="mt-0.5 line-clamp-2 block text-[15px] leading-snug text-ink">{tpl(note.tpl, note.params)}</span>
+        </span>
+      </Link>
+    </div>
   )
 }
 
