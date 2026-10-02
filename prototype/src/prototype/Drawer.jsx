@@ -174,10 +174,13 @@ function ScreenIndex() {
     ['R-12', '/r/login'],
     ['R-13', '/r/bookings'],
     ['R-15', '/r/reminder/b-leen'],
+    ['R-16', '/r/report'],
+    ['R-17', '/r/reports'],
     ['S-01', '/s/today'],
     ['S-02', '/s/checkin'],
     ['S-03', '/s/seat-log'],
     ['S-04', '/s/notices'],
+    ['S-05', '/s/reports'],
     ['S-10', '/s/settings/rooms'],
   ]
   return (

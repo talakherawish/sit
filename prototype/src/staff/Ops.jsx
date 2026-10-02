@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
-import { useL, useSpaceName } from '../lib/hooks'
-import { NOTICE_TAGS, hoursFor, dateOf, minOfDay } from '../lib/logic'
+import { useL, useSpaceName, usePersonName } from '../lib/hooks'
+import { NOTICE_TAGS, hoursFor, dateOf, minOfDay, renter as findRenter } from '../lib/logic'
 import { abs, fmtAbs, hm, parseHm } from '../lib/time'
 import { Card, Chip, Confirm, Field, Switch } from '../components/ui'
 import { StaffTitle } from './StaffLayout'
@@ -208,6 +208,87 @@ export function Notices() {
         }}
         onCancel={() => setRemoving(null)}
       />
+    </>
+  )
+}
+
+/** S-05 Reports inbox (#22, #23) */
+export function ReportsInbox() {
+  const { t } = useTranslation()
+  const pn = usePersonName()
+  const name = useSpaceName()
+  const s = useStore()
+  const [edits, setEdits] = useState({})
+  return (
+    <>
+      <StaffTitle id="S-05" title={t('inbox.title')} />
+      <Card className="overflow-x-auto">
+        <table className="w-full min-w-[880px] text-[15px] [&_td]:px-2.5 [&_td]:py-3 [&_td:first-child]:ps-0 [&_td:last-child]:pe-0 [&_th]:px-2.5 [&_th:first-child]:ps-0">
+          <thead className="text-[13px] font-medium text-grey-ink">
+            <tr className="border-b border-black/[0.08]">
+              {['time', 'renter', 'place', 'type', 'note', 'status', 'reply', ''].map((c) => (
+                <th key={c} className="py-2 text-start font-medium">
+                  {c && t(`inbox.col_${c}`)}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {s.data.reports.map((r) => {
+              const e = edits[r.id] || { status: r.status, reply: r.reply || '' }
+              const dirty = e.status !== r.status || e.reply !== (r.reply || '')
+              return (
+                <tr key={r.id} className={`border-b border-black/[0.06] align-middle last:border-0 ${r.status === 'sent' ? 'bg-navy/[0.04]' : ''}`}>
+                  <td className="min-w-22 text-sm text-grey-ink">{fmtAbs(r.history[0].time, s.lang)}</td>
+                  <td className="font-semibold">{pn(findRenter(s.data, r.renter_id))}</td>
+                  <td className="whitespace-nowrap">{name(r.space_id)}</td>
+                  <td className="whitespace-nowrap">{r.types.map((k) => t(`issue.${k}`)).join(', ')}</td>
+                  <td className="max-w-60 min-w-36 text-sm">
+                    {r.note}
+                    {r.photo && <span className="block text-grey-ink">📎 {r.photo}</span>}
+                  </td>
+                  <td>
+                    <select
+                      className="input !min-h-10 !w-32 !px-3 !text-[15px]"
+                      value={e.status}
+                      onChange={(ev) => setEdits({ ...edits, [r.id]: { ...e, status: ev.target.value } })}
+                      aria-label={t('inbox.col_status')}
+                    >
+                      {['sent', 'seen', 'in_progress', 'fixed'].map((k) => (
+                        <option key={k} value={k} disabled={k === 'sent' && r.status !== 'sent'}>
+                          {t(`report_status.${k}`)}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td>
+                    <input
+                      className="input !min-h-10 min-w-36 !px-3 !text-[15px]"
+                      value={e.reply}
+                      placeholder={t('inbox.reply_ph')}
+                      onChange={(ev) => setEdits({ ...edits, [r.id]: { ...e, reply: ev.target.value } })}
+                      aria-label={t('inbox.col_reply')}
+                    />
+                  </td>
+                  <td>
+                    <button
+                      className="btn-primary !min-h-10 !px-4 !text-[15px]"
+                      disabled={!dirty}
+                      onClick={() => {
+                        s.updateReport(r.id, e.status, e.reply)
+                        setEdits({ ...edits, [r.id]: undefined })
+                        s.showToast('toast.report_updated')
+                      }}
+                    >
+                      {t('common.save')}
+                    </button>
+                  </td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
+      </Card>
     </>
   )
 }

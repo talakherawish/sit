@@ -99,6 +99,7 @@ export function Today() {
   }
   const bookings = s.data.bookings.filter((b) => b.date === date).sort(order[sort])
   const notices = activeNotices(s.data, s.now)
+  const newReports = s.data.reports.filter((r) => r.status === 'sent').length
 
   return (
     <>
@@ -141,6 +142,15 @@ export function Today() {
               <p className="text-grey-ink">{t('staff.no_notices')}</p>
             )}
           </section>
+
+          <Link to="/s/reports" className="flex items-center gap-4 rounded-[22px] bg-surface p-5 hover:bg-black/[0.04]">
+            <span className="font-head text-[40px] leading-none font-bold">{newReports}</span>
+            <span className="flex-1">
+              <span className="block text-[17px] font-semibold">{t('staff.reports')}</span>
+              <span className="text-[13px] text-grey-ink">{t('staff.new_reports')}</span>
+            </span>
+            <Icon name="next" size={18} className="text-grey-ink/60 rtl:rotate-180" />
+          </Link>
         </div>
 
         <div className="min-w-0 space-y-6">

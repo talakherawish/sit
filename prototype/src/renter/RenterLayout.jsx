@@ -122,10 +122,11 @@ function TabBar() {
     { key: 'map', icon: 'map', match: ['/r/home'], open: () => navigate('/r/home') },
     { key: 'list', icon: 'list', match: ['/r/list'], open: () => navigate('/r/list') },
     { key: 'bookings', icon: 'calendar', match: ['/r/bookings'], open: () => requireLogin('/r/bookings') },
+    { key: 'report', icon: 'flag', match: ['/r/report'], open: () => requireLogin('/r/report') },
   ]
   return (
     <nav
-      className="absolute inset-x-0 bottom-0 z-30 grid grid-cols-3 border-t border-black/[0.06] bg-white/75 pb-1 backdrop-blur-xl backdrop-saturate-150 sm:pb-6"
+      className="absolute inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-black/[0.06] bg-white/75 pb-1 backdrop-blur-xl backdrop-saturate-150 sm:pb-6"
       aria-label={t('nav.tabs')}
     >
       {tabs.map((tab) => {

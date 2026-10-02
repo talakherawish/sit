@@ -6,9 +6,10 @@ import { SpacesList, RoomDetails, Hours } from './renter/Browse'
 import { Book, SlotTaken, Confirmed } from './renter/Booking'
 import { SignUp, Code, Login } from './renter/Auth'
 import { MyBookings, MoveBooking, Reminder } from './renter/Manage'
+import { Report, MyReports } from './renter/Report'
 import StaffLayout from './staff/StaffLayout'
 import { Today, CheckIn, SeatLog } from './staff/Desk'
-import { Notices } from './staff/Ops'
+import { Notices, ReportsInbox } from './staff/Ops'
 import { RoomSettings } from './staff/Admin'
 import Drawer from './prototype/Drawer'
 import Demo from './prototype/Demo'
@@ -36,6 +37,8 @@ export default function App() {
           <Route path="bookings" element={<MyBookings />} />
           <Route path="bookings/:id/move" element={<MoveBooking />} />
           <Route path="reminder/:id" element={<Reminder />} />
+          <Route path="report" element={<Report />} />
+          <Route path="reports" element={<MyReports />} />
         </Route>
         <Route path="/s" element={<StaffLayout />}>
           <Route index element={<Navigate to="today" replace />} />
@@ -43,6 +46,7 @@ export default function App() {
           <Route path="checkin" element={<CheckIn />} />
           <Route path="seat-log" element={<SeatLog />} />
           <Route path="notices" element={<Notices />} />
+          <Route path="reports" element={<ReportsInbox />} />
           <Route path="settings/rooms" element={<RoomSettings />} />
         </Route>
         <Route path="/demo" element={<Demo />} />

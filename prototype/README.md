@@ -22,11 +22,11 @@ Every push to `main` builds and publishes the prototype to **GitHub Pages** via 
 
 | Prefix       | Surface                       | Notes                                                                                  |
 | ------------ | ----------------------------- | -------------------------------------------------------------------------------------- |
-| `/r/…`       | Renter app (R-01 – R-15)      | Rendered in a 390 px phone frame on desktop                                            |
+| `/r/…`       | Renter app (R-01 – R-17)      | Rendered in a 390 px phone frame on desktop                                            |
 | `/s/…`       | Staff dashboard (S-00 – S-10) | Full width, reception computer only                                                    |
 | Hidden panel | Prototype panel (P-01 – P-04) | Reviewer-only: personas, switches, time simulator, outbox, analytics. Kept in English. |
 
-Features planned for later sprints (filters, repeat bookings, reports, notifications, rating, profile, staff insights, book-for-someone and room-down) are not in this build.
+Features planned for later sprints (filters, repeat bookings, notifications, rating, profile, staff insights, book-for-someone and room-down) are not in this build.
 
 Open the prototype panel by **tapping the Technopark logo three times**, pressing **Ctrl + .** (⌘ + . on a Mac), or adding `?panel` to the URL. It has no visible tab so the app looks like the real thing.
 
@@ -34,14 +34,14 @@ Open the prototype panel by **tapping the Technopark logo three times**, pressin
 
 Why each design choice was made, and which UX principle it follows: [10-presentation/ai-refined/design-decisions.md](../10-presentation/ai-refined/design-decisions.md).
 
-**Staff and renter stay in sync:** bookings, check-ins, seats, notices and the simulated clock are shared between every open tab of the same browser (and kept across reloads), so a check-in on the staff dashboard shows up straight away in the renter app. There is no server, so two _different_ devices (e.g. staff laptop and your phone) do not share data. "Reset all data" in P-01 resets every tab.
+**Staff and renter stay in sync:** bookings, check-ins, seats, notices, reports and the simulated clock are shared between every open tab of the same browser (and kept across reloads), so a check-in on the staff dashboard shows up straight away in the renter app. There is no server, so two _different_ devices (e.g. staff laptop and your phone) do not share data. "Reset all data" in P-01 resets every tab.
 
 ## Demo start state
 
-The clock starts at **Thu 1 Oct 2026, 09:30**, and the app opens logged in as **Tala** with a lived-in account (bookings). Pick **Guest** in P-01 for the browse-without-an-account story (US-1). Seeded data lives in `src/data/mock-data.json`; "Reset all data" in P-01 reloads it.
+The clock starts at **Thu 1 Oct 2026, 09:30**, and the app opens logged in as **Tala** with a lived-in account (bookings, reports). Pick **Guest** in P-01 for the browse-without-an-account story (US-1). Seeded data lives in `src/data/mock-data.json`; "Reset all data" in P-01 reloads it.
 
 - **Tala Kherawish** — recurring Focus Room 1, Sun–Thu 09:00–10:00 (checked in today), plus a client call in Focus Room 3 at 13:30 awaiting confirmation.
-- **Leen Anabtawi** (Arabic) — Big Room 2 today 15:00–17:00, awaiting confirmation, reminder 2 h before.
+- **Leen Anabtawi** (Arabic) — Big Room 2 today 15:00–17:00, awaiting confirmation, reminder 2 h before; one AC report in progress.
 - **Fatima Alkilani** — Focus Room 2 at 10:00 and Big Room 1 at 12:00 today.
 - **Shahd Mallah** — checked in to Focus Room 3 (09:30–11:00), plus Focus Room 1 at 14:00.
 - **Ahmed Salamh** — no bookings yet; use him for the last-minute and "slot just taken" demos.
@@ -61,8 +61,8 @@ src/
   store/                one Zustand store: bookings, seats, notices, reports, messages, events + time rules
   lib/                  time helpers, booking/availability logic, shared hooks
   components/           FloorPlan, BookingForm, mode chips / when bar, UI primitives
-  renter/               R-01 … R-15
-  staff/                S-00 … S-04, S-10
+  renter/               R-01 … R-17
+  staff/                S-00 … S-05, S-10
   prototype/            P-01 … P-04 drawer
 ```
 

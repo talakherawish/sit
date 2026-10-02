@@ -259,6 +259,16 @@ export function RoomDetails() {
         <button className="btn-primary w-full" onClick={book} disabled={!!sp.down}>
           {range ? <span dir="ltr">{t('room.book_range', { from: hm(range.start), to: hm(range.end) })}</span> : t('details.book')}
         </button>
+        <button
+          className="btn-link"
+          onClick={() => {
+            set({ reportSpace: id })
+            requireLogin('/r/report')
+          }}
+        >
+          <Icon name="flag" size={18} />
+          {t('details.report')}
+        </button>
       </div>
     </>
   )
