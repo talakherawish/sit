@@ -411,6 +411,10 @@ export function BookFor() {
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('+970')
   const [formKey, setFormKey] = useState(0)
+  const pStart = params.get('start') !== null ? Number(params.get('start')) : null
+  const prefill = params.get('space')
+    ? { spaceId: params.get('space'), date: params.get('date'), start: pStart, end: pStart !== null ? pStart + 60 : null }
+    : {}
   const r = findRenter(s.data, renterId)
   const ql = q.trim().toLowerCase()
   const results = ql ? s.data.renters.filter((x) => x.name.toLowerCase().includes(ql) || (normPhone(ql) && normPhone(x.phone).includes(normPhone(ql)))) : []
@@ -490,7 +494,7 @@ export function BookFor() {
         <Card className="self-start">
           <h2 className="mb-3 font-head text-xl font-bold">2 · {t('bookfor.what')}</h2>
           {r ? (
-            <BookingForm key={formKey} onSubmit={submit} submitLabel={t('bookfor.book', { name: r.name.split(' ')[0] })} />
+            <BookingForm key={formKey} initial={prefill} onSubmit={submit} submitLabel={t('bookfor.book', { name: r.name.split(' ')[0] })} />
           ) : (
             <p className="text-grey-ink">{t('bookfor.pick_first')}</p>
           )}

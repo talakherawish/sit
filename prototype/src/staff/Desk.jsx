@@ -3,49 +3,63 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL, useSpaceName } from '../lib/hooks'
-import { ACTIVE, activeNotices, bookingAt, downAt, normPhone, staffStatus, dateOf, minOfDay, renter as findRenter } from '../lib/logic'
+import { ACTIVE, activeNotices, normPhone, staffStatus, dateOf, minOfDay, renter as findRenter } from '../lib/logic'
 import { fmtAbs, hm } from '../lib/time'
 import { Card, Modal, PhaseBadge, ScreenId, StatusChip } from '../components/ui'
 import Icon from '../components/Icon'
 import { SignUpForm } from '../renter/Auth'
 import { StaffTitle } from './StaffLayout'
+import RoomsDay from './RoomsDay'
 
-export function SeatCounter({ big }) {
+export function SeatCounter() {
   const { t } = useTranslation()
   const seats = useStore((s) => s.data.seats)
   const adjust = useStore((s) => s.adjustSeats)
+  const { taken, total } = seats
   return (
-    <Card>
-      <h2 className="font-head text-xl font-bold">{t('staff.open_area')}</h2>
-      <div className="my-3 flex items-center justify-between gap-3">
+    <section className="rounded-[22px] bg-surface p-5">
+      <p className="flex items-center gap-2 text-[13px] font-medium text-grey-ink">
+        <span className="live-dot size-2 rounded-full bg-teal" />
+        {t('home.live')} · {t('staff.open_area')}
+      </p>
+      <div className="mt-2 flex items-center justify-between gap-3">
         <button
-          className="grid size-14 place-items-center rounded-lg border border-navy/40 text-navy disabled:opacity-40"
-          disabled={seats.taken <= 0}
+          className="grid size-14 place-items-center rounded-2xl bg-navy/[0.08] text-navy active:scale-95 disabled:opacity-40"
+          disabled={taken <= 0}
           onClick={() => adjust(-1)}
           aria-label={t('staff.minus')}
         >
           <Icon name="minus" size={26} />
         </button>
-        <p className={`font-head font-bold ${big ? 'text-6xl' : 'text-5xl'}`} aria-live="polite" dir="ltr">
-          {seats.taken}
-          <span className="text-2xl text-grey-ink"> / {seats.total}</span>
+        <p className="flex items-baseline gap-1.5" aria-live="polite" dir="ltr">
+          <span className="font-head text-[64px] leading-none font-bold tracking-tight">{taken}</span>
+          <span className="font-head text-[26px] font-semibold text-grey-ink">/ {total}</span>
         </p>
         <button
-          className="grid size-14 place-items-center rounded-lg bg-navy text-white disabled:bg-grey/30"
-          disabled={seats.taken >= seats.total}
+          className="grid size-14 place-items-center rounded-2xl bg-navy text-white active:scale-95 disabled:bg-grey/30"
+          disabled={taken >= total}
           onClick={() => adjust(+1)}
           aria-label={t('staff.plus')}
         >
           <Icon name="plus" size={26} />
         </button>
       </div>
-      <p className="text-sm text-grey-ink">{t('staff.counter_hint')}</p>
-      <Link to="/s/seat-log" className="btn-link">
-        {t('staff.view_log')}
-      </Link>
-    </Card>
+      <span className="mt-4 flex h-6 items-end gap-[3px]" dir="ltr" aria-hidden="true">
+        {Array.from({ length: total }, (_, k) => (
+          <span key={k} className={`flex-1 rounded-full transition-all ${k < taken ? 'h-full bg-navy' : 'h-2.5 bg-black/[0.09]'}`} />
+        ))}
+      </span>
+      <div className="mt-3 flex items-center justify-between gap-2">
+        <p className="text-[13px] text-grey-ink">{t('staff.counter_hint')}</p>
+        <Link to="/s/seat-log" className="btn-link shrink-0 !text-[15px]">
+          {t('staff.view_log')}
+        </Link>
+      </div>
+    </section>
   )
 }
+
+const NOTICE_ICON = { wifi: 'wifi', events: 'megaphone', ac: 'drop', cleaning: 'drop' }
 
 /** S-01 Today */
 export function Today() {
@@ -54,77 +68,101 @@ export function Today() {
   const navigate = useNavigate()
   const name = useSpaceName()
   const s = useStore()
-  const [menu, setMenu] = useState(null)
+  const [sort, setSort] = useState('time')
   const date = dateOf(s.now)
-  const min = minOfDay(s.now)
   const statusPosted = s.data.notices.some((n) => n.daily && !n.removed && dateOf(n.posted_at) === date)
-  const bookings = s.data.bookings.filter((b) => b.date === date).sort((a, b) => a.start - b.start)
+  const order = {
+    time: (a, b) => a.start - b.start,
+    room: (a, b) => name(a.space_id).localeCompare(name(b.space_id)) || a.start - b.start,
+    status: (a, b) => staffStatus(a).localeCompare(staffStatus(b)) || a.start - b.start,
+    renter: (a, b) => findRenter(s.data, a.renter_id).name.localeCompare(findRenter(s.data, b.renter_id).name),
+  }
+  const bookings = s.data.bookings.filter((b) => b.date === date).sort(order[sort])
   const notices = activeNotices(s.data, s.now)
   const newReports = s.data.reports.filter((r) => r.status === 'sent').length
-
-  const roomStatus = (sp) => {
-    if (downAt(sp, date, min, min + 1)) return 'down'
-    const b = bookingAt(s.data, sp.id, date, min, min + 1)
-    if (!b) return 'free'
-    return b.status === 'used' ? 'in_use' : 'booked'
-  }
 
   return (
     <>
       <StaffTitle id="S-01" title={t('staff.today_title')} />
       {!statusPosted && (
-        <Link to="/s/notices" className="mb-5 flex items-center gap-3 rounded-lg bg-amber/20 p-4 font-semibold ring-1 ring-amber">
-          <Icon name="megaphone" /> {t('staff.no_status')} <span className="ms-auto text-navy underline">{t('staff.post_now')}</span>
+        <Link to="/s/notices" className="mb-6 flex min-h-14 items-center gap-3 rounded-2xl bg-amber/15 px-5 text-[15px] font-medium">
+          <Icon name="megaphone" size={20} className="text-[#7a4f00]" />
+          {t('staff.no_status')}
+          <span className="ms-auto font-semibold text-navy">{t('staff.post_now')} ›</span>
         </Link>
       )}
-      <div className="grid gap-5 xl:grid-cols-[340px_1fr]">
-        <div className="space-y-5">
-          <SeatCounter big />
-          <Card>
-            <div className="mb-2 flex items-center justify-between">
-              <h2 className="font-head text-xl font-bold">{t('staff.notices')}</h2>
-              <Link to="/s/notices" className="btn-primary !min-h-10 !text-base">
+      <div className="grid gap-6 xl:grid-cols-[360px_1fr]">
+        <div className="space-y-6">
+          <SeatCounter />
+
+          <section className="rounded-[22px] bg-surface p-5">
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="font-head text-[22px] font-bold tracking-tight">{t('staff.notices')}</h2>
+              <Link to="/s/notices" className="btn-secondary !min-h-9 !px-3 !text-[15px]">
                 {t('staff.post_notice')}
               </Link>
             </div>
             {notices.length ? (
-              <ul className="space-y-2">
+              <ul className="divide-y divide-black/[0.06] overflow-hidden rounded-2xl bg-white">
                 {notices.map((n) => (
-                  <li key={n.id} className="rounded-lg bg-surface p-2 text-sm">
-                    <b>{t(`tag.${n.tag}`)}</b> · {L(n.text)} <span className="text-grey-ink">({hm(minOfDay(n.posted_at))})</span>
+                  <li key={n.id} className="flex gap-3 px-4 py-3">
+                    <span className="grid size-9 shrink-0 place-items-center rounded-[10px] bg-surface text-navy">
+                      <Icon name={NOTICE_ICON[n.tag] || 'megaphone'} size={18} />
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[15px] leading-snug">{L(n.text)}</span>
+                      <span className="block text-[13px] text-grey-ink">
+                        {t(`tag.${n.tag}`)} · {hm(minOfDay(n.posted_at))}
+                      </span>
+                    </span>
                   </li>
                 ))}
               </ul>
             ) : (
               <p className="text-grey-ink">{t('staff.no_notices')}</p>
             )}
-          </Card>
-          <Card>
-            <div className="flex items-center justify-between">
-              <h2 className="font-head text-xl font-bold">
+          </section>
+
+          <Link to="/s/reports" className="flex items-center gap-4 rounded-[22px] bg-surface p-5 hover:bg-black/[0.04]">
+            <span className="font-head text-[40px] leading-none font-bold">{newReports}</span>
+            <span className="flex-1">
+              <span className="block text-[17px] font-semibold">
                 {t('staff.reports')} <PhaseBadge phase="next" />
-              </h2>
-              <Link to="/s/reports" className="btn-link">
-                {t('staff.open')}
-              </Link>
-            </div>
-            <p>
-              <span className="font-head text-3xl font-bold">{newReports}</span> {t('staff.new_reports')}
-            </p>
-          </Card>
+              </span>
+              <span className="text-[13px] text-grey-ink">{t('staff.new_reports')}</span>
+            </span>
+            <Icon name="next" size={18} className="text-grey-ink/60 rtl:rotate-180" />
+          </Link>
         </div>
-        <div className="space-y-5">
-          <Card>
-            <h2 className="mb-2 font-head text-xl font-bold">{t('staff.todays_bookings')}</h2>
-            <div className="overflow-x-auto">
-              <table className="w-full text-start">
+
+        <div className="min-w-0 space-y-6">
+          <RoomsDay />
+
+          <section className="rounded-[22px] bg-surface p-5">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+              <h2 className="font-head text-[22px] font-bold tracking-tight">
+                {t('staff.todays_bookings')} <span className="text-[15px] font-medium text-grey-ink">· {bookings.length}</span>
+              </h2>
+              <label className="flex min-h-10 items-center gap-1 text-[15px] font-medium text-navy">
+                <span className="text-grey-ink">{t('bookings.sort')}:</span>
+                <select value={sort} onChange={(e) => setSort(e.target.value)} className="bg-transparent font-medium text-navy outline-none">
+                  {['time', 'room', 'renter', 'status'].map((k) => (
+                    <option key={k} value={k}>
+                      {t(`staff.sort_${k}`)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            </div>
+            <div className="overflow-x-auto rounded-2xl bg-white ring-1 ring-black/[0.06]">
+              <table className="w-full text-start text-[15px]">
                 <thead className="text-[13px] font-medium text-grey-ink">
                   <tr className="border-b border-black/[0.08]">
-                    <th className="py-2 text-start">{t('staff.col_renter')}</th>
+                    <th className="px-4 py-2.5 text-start">{t('staff.col_renter')}</th>
                     <th className="text-start">{t('staff.col_room')}</th>
                     <th className="text-start">{t('staff.col_time')}</th>
                     <th className="text-start">{t('staff.col_reason')}</th>
-                    <th className="text-start">{t('staff.col_status')}</th>
+                    <th className="pe-4 text-start">{t('staff.col_status')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -135,15 +173,15 @@ export function Today() {
                       <tr
                         key={b.id}
                         onClick={() => navigate(`/s/checkin?renter=${r.id}`)}
-                        className="cursor-pointer border-b border-black/[0.06] hover:bg-black/[0.03]"
+                        className="cursor-pointer border-b border-black/[0.05] last:border-0 hover:bg-black/[0.025]"
                       >
-                        <td className="py-2.5 font-medium">{r.name}</td>
+                        <td className="px-4 py-3 font-medium">{r.name}</td>
                         <td>{name(b.space_id)}</td>
-                        <td dir="ltr" className="text-start">
+                        <td dir="ltr" className="text-start tabular-nums">
                           {hm(b.start)}–{hm(b.end)}
                         </td>
-                        <td>{b.reason === 'other' ? b.reason_other : t(`reason.${b.reason}`)}</td>
-                        <td>
+                        <td className="text-grey-ink">{b.reason === 'other' ? b.reason_other : t(`reason.${b.reason}`)}</td>
+                        <td className="pe-4">
                           <StatusChip status={st} label={t(`staff_status.${st}`)} />
                         </td>
                       </tr>
@@ -152,54 +190,7 @@ export function Today() {
                 </tbody>
               </table>
             </div>
-          </Card>
-          <Card>
-            <h2 className="mb-3 font-head text-xl font-bold">{t('staff.rooms_now')}</h2>
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
-              {s.data.spaces.map((sp) => {
-                const st = roomStatus(sp)
-                return (
-                  <div key={sp.id} className={`relative rounded-lg p-3 ring-1 ${st === 'down' ? 'hatch ring-red' : 'bg-white ring-transparent'}`}>
-                    <div className="flex items-start justify-between gap-1">
-                      <span className="font-semibold">{L(sp.label)}</span>
-                      <button
-                        className="-me-2 -mt-2 grid size-10 place-items-center rounded-lg text-navy hover:bg-white"
-                        onClick={() => setMenu(menu === sp.id ? null : sp.id)}
-                        aria-label={t('staff.room_menu')}
-                        aria-expanded={menu === sp.id}
-                      >
-                        ⋯
-                      </button>
-                    </div>
-                    <StatusChip status={st} label={t(`room_status.${st}`)} />
-                    {st === 'down' && <p className="mt-1 text-sm">{sp.down.reason}</p>}
-                    {menu === sp.id && (
-                      <div className="absolute end-2 top-10 z-10 w-48 rounded-xl bg-white p-1 shadow-xl ring-1 ring-black/[0.06]">
-                        {sp.down ? (
-                          <button
-                            className="block min-h-11 w-full rounded px-3 text-start hover:bg-black/[0.03]"
-                            onClick={() => {
-                              s.markRoomUp(sp.id)
-                              setMenu(null)
-                            }}
-                          >
-                            {t('staff.mark_up')}
-                          </button>
-                        ) : (
-                          <button
-                            className="block min-h-11 w-full rounded px-3 text-start text-[#a32f2f] hover:bg-black/[0.03]"
-                            onClick={() => navigate(`/s/room-down?space=${sp.id}`)}
-                          >
-                            {t('staff.mark_down')}
-                          </button>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          </Card>
+          </section>
         </div>
       </div>
     </>

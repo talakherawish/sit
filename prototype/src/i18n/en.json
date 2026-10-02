@@ -470,7 +470,14 @@
     "check_in": "Check in",
     "check_out": "Check out",
     "walkin_hint": "Same sign-up form as the app.",
-    "log_title": "Seat-count log"
+    "log_title": "Seat-count log",
+    "rooms_today": "Rooms today",
+    "rooms_today_hint": "The teal line is now ({{time}}). Click a booking to check its renter in, or free time to book for someone.",
+    "book_slot": "Book {{room}} at {{time}} for someone",
+    "sort_time": "Time",
+    "sort_room": "Room",
+    "sort_renter": "Renter",
+    "sort_status": "Status"
   },
   "notices": {
     "title": "Notices",
