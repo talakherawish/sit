@@ -283,54 +283,65 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
   .lede{font-size:16.5px}
   .tally b{font-size:48px}
 }
+
+/* three tabs, as in the app */
+.wf-tabs{grid-template-columns:repeat(3,1fr)}
+
+/* rooms day view: one column per room, time runs down */
+.rc{--u:9px;display:grid;grid-template-columns:24px repeat(5,minmax(0,1fr));gap:3px;font-size:6.5px;line-height:1.2}
+.rc .hd{padding-bottom:3px;border-bottom:1px solid var(--fill-2);text-align:center;font-weight:700}
+.rc .hd span{display:block;font-weight:400;color:var(--muted)}
+.rc .gut,.rc .cl{position:relative;height:calc(16*var(--u))}
+.rc .gut i{position:absolute;right:2px;top:calc(var(--s)*var(--u));transform:translateY(-50%);font:400 6px/1 var(--f-mono);font-style:normal;color:var(--muted)}
+.rc .cl{border:1px solid var(--fill-2);border-radius:4px;background:repeating-linear-gradient(to bottom,transparent 0 calc(2*var(--u) - 1px),var(--fill-2) calc(2*var(--u) - 1px) calc(2*var(--u)))}
+.rc em{position:absolute;left:1px;right:1px;top:calc(var(--s)*var(--u));height:calc((var(--e) - var(--s))*var(--u));overflow:hidden;padding:1px 2px;border-radius:3px;font-size:6px;font-style:normal}
+.rc .bk{background:var(--fill-2);color:var(--muted)}
+.rc .me{background:var(--sheet);border:1.3px solid var(--ink);font-weight:700}
 </style>
 
 <div class="page">
 
 <header class="masthead">
-  <p class="eyebrow">Deliverable 7 · Sit, seat and room booking for Technopark</p>
+  <p class="eyebrow">Deliverable 7 · Sit, room booking for Technopark</p>
   <h1>Sit wireframes</h1>
-  <p class="lede">Low-fidelity blueprints of Sit's core flows, traced from the clickable prototype. They show structure, navigation and the order of steps. Colour, photos and branding are left out on purpose, so the review stays on one question: does the structure and the flow work?</p>
+  <p class="lede">Low-fidelity frames of the prototype's core flows: structure and steps only, no colour or branding.</p>
   <ul class="facts">
-    <li><b>Renter app</b> · phone, 390 × 844</li>
-    <li><b>Reception dashboard</b> · desktop</li>
-    <li><b>6 flows</b> · 5 edge states · 25 frames</li>
-    <li>Screen IDs match the prototype spec (R-01…R-21, S-01…S-10)</li>
+    <li><b>Renter app</b> · phone</li>
+    <li><b>Reception</b> · desktop</li>
+    <li><b>6 flows</b> · 21 frames</li>
+    <li>Screen IDs match the prototype</li>
   </ul>
 </header>
 
 <!-- ============ KEY ============ -->
 <section class="sec" aria-labelledby="h-key">
-  <p class="eyebrow">Before you start</p>
   <h2 id="h-key">How to read the frames</h2>
-  <p class="intro">Each flow is one strip, read left to right. Arrows say what the person taps and how many taps that adds. Pink pins are design notes, explained under the strip with the UX principle they follow.</p>
+  <p class="intro">Read each strip left to right. Arrows show the tap and its count. Pink pins match the notes below each strip.</p>
   <div class="legend">
-    <div><div class="sample"><span class="t w90"></span><span class="t w60"></span></div><span>Body text. Real words appear only where the wording is the design: titles, buttons, labels.</span></div>
-    <div><div class="sample c"><span class="img" style="width:44px;height:26px"></span></div><span>Photo or image.</span></div>
-    <div><div class="sample"><span class="btn pri">Book</span></div><span>The one main action on the screen. Every other button is an outline.</span></div>
-    <div><div class="sample"><span class="btn off">Pick a time</span></div><span>Disabled until the step before it is done. The label says what is missing.</span></div>
-    <div><div class="sample" style="background:var(--hatch)"></div><span>Past, or out of service.</span></div>
-    <div><div class="sample" style="padding-inline:0"><div class="fold" style="margin:0">fold</div></div><span>End of the first screen on a phone. Everything above it is visible without scrolling.</span></div>
-    <div><div class="sample c"><i class="pin" style="position:static;box-shadow:none">3</i></div><span>Design note. Find the matching number under the strip.</span></div>
-    <div><div class="sample c"><span class="touch" style="position:static;margin:0"></span></div><span>Where the person taps to reach the next frame.</span></div>
+    <div><div class="sample"><span class="t w90"></span><span class="t w60"></span></div><span>Body text</span></div>
+    <div><div class="sample c"><span class="img" style="width:44px;height:26px"></span></div><span>Photo</span></div>
+    <div><div class="sample"><span class="btn pri">Book</span></div><span>Main action</span></div>
+    <div><div class="sample"><span class="btn off">Pick a time</span></div><span>Disabled until the step before is done</span></div>
+    <div><div class="sample" style="background:var(--hatch)"></div><span>Past or out of service</span></div>
+    <div><div class="sample" style="padding-inline:0"><div class="fold" style="margin:0">fold</div></div><span>End of the first phone screen</span></div>
+    <div><div class="sample c"><i class="pin" style="position:static;box-shadow:none">3</i></div><span>Design note</span></div>
+    <div><div class="sample c"><span class="touch" style="position:static;margin:0"></span></div><span>Where the person taps</span></div>
   </div>
 </section>
 
 <!-- ============ TAPS ============ -->
 <section class="sec" aria-labelledby="h-taps">
-  <p class="eyebrow">Clicks to treasure</p>
-  <h2 id="h-taps">Taps to finish each task</h2>
-  <p class="intro">Counted from opening the app on Home, signed in, on the shortest path. Fewer unnecessary steps means less chance to give up before reaching the value.</p>
+  <h2 id="h-taps">Taps per task</h2>
   <div class="tablewrap" tabindex="0" role="region" aria-label="Taps per flow">
     <table class="taps">
-      <thead><tr><th style="text-align:right;padding-right:24px">Taps</th><th>Flow</th><th>Who</th><th>Shortest path</th></tr></thead>
+      <thead><tr><th style="text-align:right;padding-right:24px">Taps</th><th>Flow</th><th>Shortest path from Home</th></tr></thead>
       <tbody>
-        <tr><td class="n">0</td><td><a href="#flow-1">1 · Check before you go</a></td><td>Anyone, no account</td><td class="path">Opens on the answer: seats free, hours, Wi-Fi, notices</td></tr>
-        <tr><td class="n">6</td><td><a href="#flow-2">2 · Book a room from the map</a></td><td>Renter</td><td class="path">Room → start → end → Book → reason → Confirm</td></tr>
-        <tr><td class="n">5</td><td><a href="#flow-3">3 · Book the same time on several days</a></td><td>Regular renter</td><td class="path">Book a room → Weekly → Book 2 days → reason → Confirm</td></tr>
-        <tr><td class="n">1</td><td><a href="#flow-4">4 · Keep or cancel a booking</a></td><td>Renter with a reminder</td><td class="path">Confirm or Cancel in the reminder (from My bookings: 2)</td></tr>
-        <tr><td class="n">3</td><td><a href="#flow-5">5 · Report a problem</a></td><td>Renter</td><td class="path">Report → issue → Send</td></tr>
-        <tr><td class="n">2</td><td><a href="#flow-6">6 · Check someone in</a></td><td>Reception staff</td><td class="path">Check-in → Check in · Focus Room 2</td></tr>
+        <tr><td class="n">0</td><td><a href="#flow-1">1 · Check before you go</a></td><td class="path">Seats, hours, Wi-Fi and notices are on the first screen</td></tr>
+        <tr><td class="n">6</td><td><a href="#flow-2">2 · Book from the map</a></td><td class="path">Room → start → end → Book → reason → Confirm</td></tr>
+        <tr><td class="n">5</td><td><a href="#flow-3">3 · Book from the Rooms tab</a></td><td class="path">Book a room → free time → Book → reason → Confirm</td></tr>
+        <tr><td class="n">8</td><td><a href="#flow-4">4 · Book several days</a></td><td class="path">Room → start → end → Book more days → day → Book 2 days → reason → Confirm</td></tr>
+        <tr><td class="n">1</td><td><a href="#flow-5">5 · Keep or cancel a booking</a></td><td class="path">Confirm or Cancel in the reminder</td></tr>
+        <tr><td class="n">2</td><td><a href="#flow-6">6 · Check someone in</a></td><td class="path">Check-in → Check in · Focus Room 2</td></tr>
       </tbody>
     </table>
   </div>
@@ -338,37 +349,29 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
 
 <!-- ============ NAVIGATION ============ -->
 <section class="sec" aria-labelledby="h-nav">
-  <p class="eyebrow">Structure</p>
   <h2 id="h-nav">Navigation</h2>
-  <p class="intro">Four tabs on the phone, one sidebar at reception. Screens that belong to a task (review, confirmation, log in) open from that task and don't get a tab of their own.</p>
 
-  <p class="ia-label">Renter app · tab bar and top bar</p>
+  <p class="ia-label">Renter app · tab bar</p>
   <div class="ia">
     <div class="ia-col"><h3>Map</h3><p class="via">Tab 1 · default</p>
       <ul><li><code>R-01</code>Home
-        <ul><li>Room sheet: day timeline, Book</li><li><code>R-03</code>Room details</li><li><code>R-04</code>Opening hours</li><li><code>R-05</code>Book a room (by date)</li></ul></li></ul></div>
+        <ul><li>Room sheet</li><li><code>R-03</code>Room details</li><li><code>R-04</code>Opening hours</li></ul></li></ul></div>
     <div class="ia-col"><h3>Rooms</h3><p class="via">Tab 2</p>
-      <ul><li><code>R-02</code>Rooms list
-        <ul><li>Same room sheet as the map</li></ul></li></ul></div>
-    <div class="ia-col"><h3>My bookings</h3><p class="via">Tab 3 · needs log in</p>
+      <ul><li><code>R-02</code>Rooms: Day view · List
+        <ul><li>Same room sheet</li></ul></li></ul></div>
+    <div class="ia-col"><h3>My bookings</h3><p class="via">Tab 3</p>
       <ul><li><code>R-13</code>My bookings
-        <ul><li><code>R-14</code>Move booking</li><li><code>R-08</code>Booking details</li></ul></li></ul></div>
-    <div class="ia-col"><h3>Report</h3><p class="via">Tab 4 · needs log in</p>
-      <ul><li><code>R-16</code>Report an issue <span class="ph">Next</span>
-        <ul><li><code>R-17</code>My reports <span class="ph">Next</span></li></ul></li></ul></div>
-    <div class="ia-col"><h3>Top bar</h3><p class="via">Every screen</p>
-      <ul><li>Logo → Home</li><li>Bell → <code>R-18</code>Notifications</li><li>Avatar → <code>R-20</code>Profile</li><li>Guests: language switch and Log in</li></ul></div>
+        <ul><li><code>R-08</code>Booking details</li><li><code>R-14</code>Move booking</li></ul></li></ul></div>
     <div class="ia-col"><h3>Inside a task</h3><p class="via">No tab</p>
-      <ul><li><code>R-06</code>Review booking</li><li><code>R-07</code>Slot just taken</li><li><code>R-08</code>Booking confirmed</li><li><code>R-09–12</code>Log in, sign up, code</li><li><code>R-15</code>Reminder (from SMS)</li><li><code>R-19</code>Rate your visit</li><li><code>R-21</code>Booking paused</li></ul></div>
+      <ul><li><code>R-06</code>Review booking</li><li><code>R-07</code>Slot just taken</li><li><code>R-08</code>Booking confirmed</li><li><code>R-15</code>Reminder (from SMS)</li></ul></div>
   </div>
 
-  <p class="ia-label">Reception dashboard · sidebar</p>
+  <p class="ia-label">Reception · sidebar</p>
   <div class="ia">
-    <div class="ia-col"><h3>Today</h3><p class="via">Default</p><ul><li><code>S-01</code>Today<ul><li><code>S-03</code>Seat-count log</li><li><code>S-06</code>Room down <span class="ph">Next</span></li></ul></li></ul></div>
-    <div class="ia-col"><h3>Check-in</h3><p class="via">Desk</p><ul><li><code>S-02</code>Check-in / check-out</li></ul></div>
-    <div class="ia-col"><h3>Notices</h3><p class="via">Desk</p><ul><li><code>S-04</code>Notices</li></ul></div>
-    <div class="ia-col"><h3>Reports · Bookings</h3><p class="via">Next release</p><ul><li><code>S-05</code>Reports inbox</li><li><code>S-07</code>Book for someone</li></ul></div>
-    <div class="ia-col"><h3>Insights · Settings</h3><p class="via">Later</p><ul><li><code>S-08</code>Insights</li><li><code>S-09</code>No-show limit</li><li><code>S-10</code>Rooms and hours</li></ul></div>
+    <div class="ia-col"><h3>Today</h3><p class="via">Default</p><ul><li><code>S-01</code>Today<ul><li><code>S-03</code>Seat-count log</li></ul></li></ul></div>
+    <div class="ia-col"><h3>Check-in</h3><p class="via">&nbsp;</p><ul><li><code>S-02</code>Check-in / check-out</li></ul></div>
+    <div class="ia-col"><h3>Notices</h3><p class="via">&nbsp;</p><ul><li><code>S-04</code>Notices</li></ul></div>
+    <div class="ia-col"><h3>Settings</h3><p class="via">Read only</p><ul><li><code>S-10</code>Rooms and hours</li></ul></div>
   </div>
 </section>
 
@@ -376,9 +379,9 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
 <section class="sec" id="flow-1" aria-labelledby="h-f1">
   <div class="flow-head">
     <div>
-      <p class="eyebrow">Flow 1 · Renter app · no account needed</p>
+      <p class="eyebrow">Flow 1 · Renter app</p>
       <h2 id="h-f1">Check before you go</h2>
-      <p class="intro">"Is there space, is it open, and does the Wi-Fi work?" A renter answers this from bed, before deciding to come in.</p>
+      <p class="intro">Is there space, is it open, does the Wi-Fi work?</p>
     </div>
     <div class="tally"><b>0</b><span>taps to the answer</span></div>
   </div>
@@ -386,29 +389,29 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
   <div class="strip" tabindex="0" role="region" aria-label="Flow 1 frames">
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="btn sm pri">Log in</span><i class="pin" style="top:8px;right:82px">1</i></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
         <div class="wf-body">
-          <div class="h1">Good morning</div>
+          <div class="h1">Good morning, Tala</div>
           <div class="card rel">
             <div class="row sm"><span class="dot hol"></span>Live · Public seating</div>
             <div class="row btw" style="align-items:baseline"><span><span class="num">18</span> <span class="b" style="font-size:11px;color:var(--muted)">/ 40</span></span><span class="b" style="font-size:10px">22 seats free</span></div>
             <div class="ticks"></div>
-            <i class="pin">2</i>
+            <i class="pin">1</i>
             <span class="touch" style="left:78%;top:38%"></span>
           </div>
           <div class="g3 rel">
             <div class="tile"><span class="sm">Hours</span><b>Until 18:00</b></div>
             <div class="tile"><span class="sm">Cafeteria</span><b>Until 15:30</b></div>
-            <div class="tile rel"><span class="sm">Wi-Fi</span><b>↓ 94 Mbps</b><i class="pin">4</i><span class="touch" style="left:72%;top:26%"></span></div>
-            <i class="pin l">3</i>
+            <div class="tile rel"><span class="sm">Wi-Fi</span><b>↓ 94 Mbps</b><span class="touch" style="left:72%;top:26%"></span></div>
+            <i class="pin">2</i>
           </div>
-          <div class="box rel"><div class="row"><span class="ico"></span><div class="col grow"><span class="b">Wi-Fi back to full speed</span><span class="sm">posted 08:40 · 2 notices</span></div><span class="chev"></span></div><i class="pin">5</i></div>
-          <div class="rel" style="margin-top:8px"><div class="btn pri big">Book a room</div><i class="pin">6</i></div>
-          <div class="sm ctr">Choose days, time and size. No map needed.</div>
-          <div class="fold">end of first screen<i class="pin" style="top:-8px;right:6px">7</i></div>
+          <div class="box"><div class="row"><span class="ico"></span><div class="col grow"><span class="b">Wi-Fi back to full speed</span><span class="sm">posted 08:40 · 2 notices</span></div><span class="chev"></span></div></div>
+          <div class="rel" style="margin-top:8px"><div class="btn pri big">Book a room</div><i class="pin">3</i></div>
+          <div class="sm ctr">See every room and its free times.</div>
+          <div class="fold">end of first screen</div>
           <div class="h2">Floor plan</div>
-          <span class="t w75"></span>
-          <div class="row btw"><span class="chip f">Today · Now</span><span class="lnk" style="font-size:8.5px">Book by date</span></div>
+          <span class="sm">Tap a room to see its day and book it.</span>
+          <div class="row"><span class="chip f">Today · Now</span></div>
           <div class="plan">
             <div class="rm bk" style="grid-area:f1"><b>Focus 1</b>until 10:00</div>
             <div class="rm" style="grid-area:f2"><b>Focus 2</b>Free</div>
@@ -419,30 +422,27 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
             <div class="rm plain" style="grid-area:caf">Cafeteria</div>
             <div class="rm plain" style="grid-area:wc">Restrooms</div>
             <div class="rm plain" style="grid-area:in">Entrance ↑</div>
-            <i class="pin">8</i>
           </div>
           <div class="key"><span><i></i>Free</span><span><i class="k-bk"></i>Booked</span><span><i class="k-sel"></i>Selected</span><span><i class="k-dn"></i>Down</span></div>
           <div class="row"><span class="lab">Zone rules</span><span class="chip f">ⓘ Public seating</span><span class="chip f">ⓘ Focus</span></div>
-          <div class="h2 rel" style="margin-top:8px">What are you here to do?<i class="pin">9</i></div>
-          <span class="t w75"></span>
+          <div class="h2 rel" style="margin-top:8px">What are you here to do?<i class="pin">4</i></div>
           <div class="chips"><span class="chip on">Focus alone</span><span class="chip">Call</span><span class="chip">Group work</span><span class="chip">Meeting</span></div>
           <div class="list">
             <div class="li"><span class="dot hol"></span><span class="grow">Public seating</span><span class="sm">22 seats free</span><span class="chev"></span></div>
             <div class="li"><span class="dot gr"></span><span class="grow">Focus Room 1</span><span class="sm">Free from 10:00</span><span class="chev"></span></div>
             <div class="li"><span class="dot hol"></span><span class="grow">Focus Room 2</span><span class="sm">Free</span><span class="chev"></span></div>
-            <div class="li"><span class="dot gr"></span><span class="grow">Focus Room 3</span><span class="sm">Free from 11:00</span><span class="chev"></span></div>
           </div>
         </div>
-        <div class="wf-tabs"><span class="on">Map</span><span>Rooms</span><span>My bookings</span><span>Report</span></div>
+        <div class="wf-tabs"><span class="on">Map</span><span>Rooms</span><span>My bookings</span></div>
       </div>
-      <figcaption><span class="sn">1</span><span><b>Home</b><span class="sid">R-01</span><br><span class="cap">Opened by a guest. Drawn tall: the dashed line is where the phone screen ends.</span></span></figcaption>
+      <figcaption><span class="sn">1</span><span><b>Home</b><span class="sid">R-01</span><br><span class="cap">Drawn tall to show the whole scroll.</span></span></figcaption>
     </figure>
 
-    <div class="arrow"><span class="act">Tap the Wi-Fi tile</span><span class="shaft"></span><span class="tap">+1 tap · optional</span><span class="why">Detail is one tap away, never in the way</span></div>
+    <div class="arrow"><span class="act">Tap the Wi-Fi tile</span><span class="shaft"></span><span class="tap">+1 · optional</span></div>
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="btn sm pri">Log in</span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
         <div class="backdrop"><span class="t w60"></span><span class="t w90"></span><span class="t w45"></span></div>
         <div class="sheet">
           <div class="grab"></div>
@@ -452,7 +452,7 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
             <div class="row" style="align-items:baseline"><span class="num" style="font-size:34px">94</span><span class="sm" style="font-size:9px">Mbps download</span></div>
             <div class="g2"><div class="col"><span class="sm">Upload</span><b>41 Mbps</b></div><div class="col"><span class="sm">Ping</span><b>12 ms</b></div></div>
             <span class="sm">Speed test at 09:20</span>
-            <i class="pin">10</i>
+            <i class="pin">5</i>
           </div>
           <span class="lab">Today's speed tests</span>
           <div class="list">
@@ -460,52 +460,45 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
             <div class="li"><span class="mono grow">08:35</span><span>↓ 88 · ↑ 39</span></div>
             <div class="li"><span class="mono grow">07:50</span><span>↓ 6 · ↑ 2</span></div>
           </div>
-          <span class="lab">What's here</span>
-          <span class="t w90"></span><span class="t w60"></span>
           <span class="lab">This week</span>
           <div class="list"><div class="li"><span class="grow">Today</span><span class="sm">08:00–18:00</span></div><div class="li"><span class="grow">Fri</span><span class="sm">Closed</span></div></div>
           <div style="height:10px"></div>
         </div>
       </div>
-      <figcaption><span class="sn">2</span><span><b>Wi-Fi sheet</b><span class="sid">R-01</span><br><span class="cap">Bottom sheet over Home. Drag down or × to close.</span></span></figcaption>
+      <figcaption><span class="sn">2</span><span><b>Wi-Fi sheet</b><span class="sid">R-01</span></span></figcaption>
     </figure>
 
-    <div class="arrow"><span class="act">Close, tap the seat count</span><span class="shaft"></span><span class="tap">+1 tap · optional</span></div>
+    <div class="arrow"><span class="act">Close, tap the seat count</span><span class="shaft"></span><span class="tap">+1 · optional</span></div>
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="btn sm pri">Log in</span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
         <div class="backdrop"><span class="t w60"></span><span class="t w90"></span><span class="t w45"></span></div>
         <div class="sheet">
           <div class="grab"></div>
-          <div class="row btw"><div class="col"><span class="h2">Public seating</span><span class="sm">Updated by staff 4 min ago</span></div><span class="x">×</span></div>
+          <div class="row btw"><div class="col"><span class="h2">Public seating</span><span class="sm">Updated 4 min ago</span></div><span class="x">×</span></div>
           <div class="card"><div class="row btw" style="align-items:flex-end"><span><span class="num">18</span> <span class="b" style="font-size:11px;color:var(--muted)">/ 40</span></span><span class="sm" style="text-align:right">seats taken<br><b style="color:var(--ink)">22 seats free</b></span></div></div>
           <span class="lab">Zone rules</span>
           <div class="list">
-            <div class="li"><span>✓</span><span class="grow">First come, first served, not bookable</span></div>
+            <div class="li"><span>✓</span><span class="grow">First come, first served</span></div>
             <div class="li"><span>✓</span><span class="grow">Quiet side: no calls</span></div>
-            <div class="li"><span>✓</span><span class="grow">Don't hold a seat for more than 30 minutes while away</span></div>
+            <div class="li"><span>✓</span><span class="grow">Don't hold a seat over 30 min</span></div>
           </div>
-          <div class="row rel" style="align-items:flex-start"><span class="ico o" style="margin-top:1px"></span><span class="grow" style="color:var(--muted)">Public seating can't be booked: just walk in. Staff keep this count up to date.</span><i class="pin" style="top:-13px;right:-2px">11</i></div>
+          <div class="row rel" style="align-items:flex-start"><span class="ico o" style="margin-top:1px"></span><span class="grow" style="color:var(--muted)">Not bookable: just walk in.</span><i class="pin" style="top:-13px;right:-2px">6</i></div>
           <div style="height:10px"></div>
         </div>
       </div>
-      <figcaption><span class="sn">3</span><span><b>Public seating sheet</b><span class="sid">R-01</span><br><span class="cap">No Book button on purpose.</span></span></figcaption>
+      <figcaption><span class="sn">3</span><span><b>Public seating sheet</b><span class="sid">R-01</span></span></figcaption>
     </figure>
   </div>
 
   <ol class="notes">
-    <li><i class="pin">1</i><p>Guests see a language switch and <b>Log in</b>, nothing else. Browsing never asks for an account; we ask only when the person tries to book or report.<span class="law">Reduce friction · clicks to treasure</span></p></li>
-    <li><i class="pin">2</i><p>The live seat count is the largest thing on the screen because it answers the first question: is there space?<span class="law">Visual hierarchy</span></p></li>
-    <li><i class="pin">3</i><p>Hours, cafeteria and Wi-Fi as three tiles with one short value each, instead of a long status list.<span class="law">Miller's Law · chunking</span></p></li>
-    <li><i class="pin">4</i><p>Wi-Fi shows the measured speed (↓ 94 Mbps), not "Normal". A renter can tell if a video call will work.<span class="law">Useful information over vague status</span></p></li>
-    <li><i class="pin">5</i><p>Only the latest notice is shown, with a count. The rest open in a sheet.<span class="law">Avoid too much information</span></p></li>
-    <li><i class="pin">6</i><p><b>Book a room</b> closes the first screen as the only filled button, for people who know when but not where.<span class="law">Von Restorff · make the main action obvious</span></p></li>
-    <li><i class="pin">7</i><p>Everything above the fold answers "should I come in?". The floor plan and room tools start below it, as separate sections.<span class="law">Visual hierarchy · sectioning</span></p></li>
-    <li><i class="pin">8</i><p>The floor plan matches the real building. The key fits on one line and every state has a word, not only a colour.<span class="law">Familiar mental model · accessibility</span></p></li>
-    <li><i class="pin">9</i><p>"What are you here to do?" offers four choices and then lists only the rooms that suit it.<span class="law">Hick's Law</span></p></li>
-    <li><i class="pin">10</i><p>Speed tests through the day explain the earlier "back to full speed" notice.<span class="law">Visibility of system status</span></p></li>
-    <li><i class="pin">11</i><p>The sheet says why there is nothing to book here, so nobody looks for a missing button.<span class="law">Prevent errors · clear expectations</span></p></li>
+    <li><i class="pin">1</i><p>The live seat count is the biggest thing on screen.<span class="law">Visual hierarchy</span></p></li>
+    <li><i class="pin">2</i><p>Three tiles, one short value each.<span class="law">Miller's Law · chunking</span></p></li>
+    <li><i class="pin">3</i><p>One filled button above the fold; it opens the Rooms tab.<span class="law">Von Restorff</span></p></li>
+    <li><i class="pin">4</i><p>Four activity choices narrow the room list.<span class="law">Hick's Law</span></p></li>
+    <li><i class="pin">5</i><p>Measured speed, not "Normal".<span class="law">Visibility of system status</span></p></li>
+    <li><i class="pin">6</i><p>Says why there's no Book button.<span class="law">Clear expectations</span></p></li>
   </ol>
 </section>
 
@@ -514,8 +507,8 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
   <div class="flow-head">
     <div>
       <p class="eyebrow">Flow 2 · Renter app · core booking</p>
-      <h2 id="h-f2">Book a room from the map</h2>
-      <p class="intro">Tala needs Big Room 2 for two hours this morning. She sees the room on the plan, picks a time on its day, says what it's for and is done.</p>
+      <h2 id="h-f2">Book from the map</h2>
+      <p class="intro">Tala books Big Room 2 for two hours this morning.</p>
     </div>
     <div class="tally"><b>6</b><span>taps from Home to booked</span></div>
   </div>
@@ -523,11 +516,11 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
   <div class="strip" tabindex="0" role="region" aria-label="Flow 2 frames">
     <figure class="step">
       <div class="wf" style="min-height:0">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="ico o"></span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
         <div class="wf-body">
           <div class="h2">Floor plan</div>
-          <span class="t w75"></span>
-          <div class="row btw"><span class="chip f">Today · Now</span><span class="lnk" style="font-size:8.5px">Book by date</span></div>
+          <span class="sm">Tap a room to see its day and book it.</span>
+          <div class="row"><span class="chip f">Today · Now</span></div>
           <div class="plan">
             <div class="rm bk" style="grid-area:f1"><b>Focus 1</b>until 10:00</div>
             <div class="rm" style="grid-area:f2"><b>Focus 2</b>Free</div>
@@ -541,25 +534,22 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
             <i class="pin">1</i>
           </div>
           <div class="key"><span><i></i>Free</span><span><i class="k-bk"></i>Booked</span><span><i class="k-sel"></i>Selected</span><span><i class="k-dn"></i>Down</span></div>
-          <div class="row"><span class="lab">Zone rules</span><span class="chip f">ⓘ Public seating</span><span class="chip f">ⓘ Focus</span></div>
-          <span class="t w60" style="margin-top:6px"></span><span class="t w90"></span>
         </div>
-        <div class="wf-tabs"><span class="on">Map</span><span>Rooms</span><span>My bookings</span><span>Report</span></div>
+        <div class="wf-tabs"><span class="on">Map</span><span>Rooms</span><span>My bookings</span></div>
       </div>
-      <figcaption><span class="sn">1</span><span><b>Home, floor plan</b><span class="sid">R-01</span><br><span class="cap">Scrolled below the fold.</span></span></figcaption>
+      <figcaption><span class="sn">1</span><span><b>Home, floor plan</b><span class="sid">R-01</span></span></figcaption>
     </figure>
 
-    <div class="arrow"><span class="act">Tap Big Room 2</span><span class="shaft"></span><span class="tap">+1 tap</span></div>
+    <div class="arrow"><span class="act">Tap Big Room 2</span><span class="shaft"></span><span class="tap">+1</span></div>
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="ico o"></span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
         <div class="backdrop" style="height:34px"><span class="t w60"></span></div>
         <div class="sheet">
           <div class="grab"></div>
-          <div class="row btw" style="align-items:flex-start"><div class="col"><span class="h2">Big Room 2</span><span class="sm">12 ppl · 36 m² · Screen · Whiteboard · AC</span></div><span class="x">×</span></div>
+          <div class="row btw" style="align-items:flex-start"><div class="col"><span class="h2">Big Room 2</span><span class="sm">12 ppl · 36 m² · Screen · Whiteboard</span></div><span class="x">×</span></div>
           <div class="days rel"><span class="on">Today<b>1</b></span><span class="no">Fri<b>2</b></span><span>Sat<b>3</b></span><span>Sun<b>4</b></span><span>Mon<b>5</b></span><span>Tue<b>6</b></span><i class="pin">2</i></div>
-          <div class="hint"><div class="col grow"><span class="b">No time picked yet</span><span class="sm">Tap a free time to start.</span></div></div>
           <div class="tl rel">
             <i style="--s:0">09:00</i><i style="--s:2">10:00</i><i style="--s:4">11:00</i><i style="--s:6">12:00</i><i style="--s:8">13:00</i><i style="--s:10">14:00</i><i style="--s:12">15:00</i><i style="--s:14">16:00</i><i style="--s:16">17:00</i><i style="--s:18">18:00</i>
             <em class="past" style="--s:0;--e:1">Past</em>
@@ -571,23 +561,22 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
             <b class="pin">3</b>
           </div>
           <div class="row" style="padding:5px 8px;background:var(--fill);border-radius:9px"><span class="ico"></span><span class="grow">Book more days</span><span class="tog"></span></div>
-          <div class="foot rel"><span class="btn">Details</span><span class="btn off pri">Pick a time</span><i class="pin" style="top:2px;right:6px">5</i></div>
+          <div class="foot rel"><span class="btn">Details</span><span class="btn off pri">Pick a time</span><i class="pin" style="top:2px;right:6px">4</i></div>
         </div>
       </div>
-      <figcaption><span class="sn">2</span><span><b>Room sheet</b><span class="sid">R-01</span><br><span class="cap">The room's whole opening day. Same sheet from the Rooms tab.</span></span></figcaption>
+      <figcaption><span class="sn">2</span><span><b>Room sheet</b><span class="sid">R-01</span></span></figcaption>
     </figure>
 
-    <div class="arrow"><span class="act">Tap 10:00, then 11:30</span><span class="shaft"></span><span class="tap">+2 taps</span><span class="why">Start, then stretch</span></div>
+    <div class="arrow"><span class="act">Tap 10:00, then 11:30</span><span class="shaft"></span><span class="tap">+2</span></div>
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="ico o"></span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
         <div class="backdrop" style="height:34px"><span class="t w60"></span></div>
         <div class="sheet">
           <div class="grab"></div>
-          <div class="row btw" style="align-items:flex-start"><div class="col"><span class="h2">Big Room 2</span><span class="sm">12 ppl · 36 m² · Screen · Whiteboard · AC</span></div><span class="x">×</span></div>
+          <div class="row btw" style="align-items:flex-start"><div class="col"><span class="h2">Big Room 2</span><span class="sm">12 ppl · 36 m² · Screen · Whiteboard</span></div><span class="x">×</span></div>
           <div class="days"><span class="on">Today<b>1</b></span><span class="no">Fri<b>2</b></span><span>Sat<b>3</b></span><span>Sun<b>4</b></span><span>Mon<b>5</b></span><span>Tue<b>6</b></span></div>
-          <div class="hint rel"><div class="col grow"><span class="b">10:00–12:00 · 2 h</span><span class="sm">Tap inside to shorten it, or another free time to stretch it.</span></div><span class="lnk">Clear</span><i class="pin">4</i></div>
           <div class="tl">
             <i style="--s:0">09:00</i><i style="--s:2">10:00</i><i style="--s:4">11:00</i><i style="--s:6">12:00</i><i style="--s:8">13:00</i><i style="--s:10">14:00</i><i style="--s:12">15:00</i><i style="--s:14">16:00</i><i style="--s:16">17:00</i><i style="--s:18">18:00</i>
             <em class="past" style="--s:0;--e:1">Past</em>
@@ -600,41 +589,41 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
           <div class="foot rel"><span class="btn">Details</span><span class="btn pri">Book 10:00–12:00</span><span class="touch" style="left:66%;top:50%"></span></div>
         </div>
       </div>
-      <figcaption><span class="sn">3</span><span><b>Room sheet, time picked</b><span class="sid">R-01</span><br><span class="cap">The button now names the booking.</span></span></figcaption>
+      <figcaption><span class="sn">3</span><span><b>Time picked</b><span class="sid">R-01</span></span></figcaption>
     </figure>
 
-    <div class="arrow"><span class="act">Book 10:00–12:00</span><span class="shaft"></span><span class="tap">+1 tap</span><span class="why">Guests meet the log-in sheet here (Edge states)</span></div>
+    <div class="arrow"><span class="act">Book 10:00–12:00</span><span class="shaft"></span><span class="tap">+1</span></div>
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="ico o"></span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
         <div class="wf-body">
           <span class="back">Back</span>
           <div class="h1">Review booking</div>
           <div class="card" style="gap:0;padding:0">
-            <div class="row" style="padding:8px"><span class="img" style="width:38px;height:26px"></span><div class="col"><span class="b">Big Room 2</span><span class="sm">12 ppl · Screen · Whiteboard · AC</span></div></div>
+            <div class="row" style="padding:8px"><span class="img" style="width:38px;height:26px"></span><div class="col"><span class="b">Big Room 2</span><span class="sm">12 ppl · Screen · Whiteboard</span></div></div>
             <div class="row btw" style="padding:6px 8px;border-top:1px solid var(--fill-2)"><span class="row"><span class="ico o"></span><b>10:00–12:00</b></span><span class="sm">2 h</span></div>
             <div class="row" style="padding:6px 8px;border-top:1px solid var(--fill-2)"><span class="ico"></span><span class="chip">Thu 1 Oct</span></div>
           </div>
-          <span class="lab rel" style="margin-top:4px">What's it for?<i class="pin" style="right:auto;left:80px">6</i></span>
+          <span class="lab rel" style="margin-top:4px">What's it for?<i class="pin" style="right:auto;left:80px">5</i></span>
           <div class="chips"><span class="chip on">Study / focused work</span><span class="chip f">Group project</span><span class="chip f">Client call</span><span class="chip f">Meeting</span><span class="chip f">Interview</span><span class="chip f">Other</span></div>
           <span class="lab" style="margin-top:4px">Reminder</span>
-          <div class="card rel"><span>Starts soon, so no reminder is needed: it's confirmed straight away.</span><i class="pin">7</i></div>
+          <div class="card">Starts soon, so no reminder needed.</div>
           <span class="sm">Confirm from the reminder, or the room is released 1 hour before.</span>
           <div class="btn pri big rel" style="margin-top:6px">Confirm booking<span class="touch" style="left:50%;top:50%"></span></div>
           <span class="lnk ctr" style="font-size:8.5px">Change room, days or time</span>
         </div>
-        <div class="wf-tabs"><span>Map</span><span>Rooms</span><span>My bookings</span><span>Report</span></div>
+        <div class="wf-tabs"><span>Map</span><span>Rooms</span><span>My bookings</span></div>
       </div>
-      <figcaption><span class="sn">4</span><span><b>Review booking</b><span class="sid">R-06</span><br><span class="cap">One page. Asks only what the sheet couldn't.</span></span></figcaption>
+      <figcaption><span class="sn">4</span><span><b>Review booking</b><span class="sid">R-06</span></span></figcaption>
     </figure>
 
-    <div class="arrow"><span class="act">Pick a reason, Confirm</span><span class="shaft"></span><span class="tap">+2 taps</span><span class="why">Confirm stays disabled until a reason is picked</span></div>
+    <div class="arrow"><span class="act">Pick a reason, Confirm</span><span class="shaft"></span><span class="tap">+2</span></div>
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="ico o"></span><span class="av"></span></div>
-        <div class="toast">✓ Booked <u>Undo</u><i class="pin">8</i></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="toast">✓ Booked <u>Undo</u><i class="pin">6</i></div>
         <div class="wf-body">
           <div class="row" style="margin-top:22px"><span style="display:grid;place-items:center;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--ink);font-size:11px">✓</span><span class="h1">Booking confirmed</span></div>
           <span class="sm">Receipt sent to tala@example.com</span>
@@ -643,28 +632,25 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
             <div class="li"><span class="grow sm">Date</span><span>Thursday 1 October</span></div>
             <div class="li"><span class="grow sm">Time</span><span>10:00–12:00</span></div>
             <div class="li"><span class="grow sm">Reason</span><span>Study / focused work</span></div>
-            <div class="li"><span class="grow sm">Reminder</span><span>None (starts soon)</span></div>
             <div class="li"><span class="grow sm">Status</span><span class="row"><span class="dot"></span>Confirmed</span></div>
           </div>
           <div class="btn pri big" style="margin-top:6px">My bookings</div>
           <div class="btn">Add to calendar</div>
           <span class="lnk ctr" style="font-size:8.5px">Done</span>
         </div>
-        <div class="wf-tabs"><span>Map</span><span>Rooms</span><span>My bookings</span><span>Report</span></div>
+        <div class="wf-tabs"><span>Map</span><span>Rooms</span><span>My bookings</span></div>
       </div>
-      <figcaption><span class="sn">5</span><span><b>Booking confirmed</b><span class="sid">R-08</span><br><span class="cap">With a short-lived Undo at the top.</span></span></figcaption>
+      <figcaption><span class="sn">5</span><span><b>Booking confirmed</b><span class="sid">R-08</span></span></figcaption>
     </figure>
   </div>
 
   <ol class="notes">
-    <li><i class="pin">1</i><p>The map and the Rooms tab open the same room sheet, so booking works the same wherever you start.<span class="law">Consistency · Jakob's Law (bottom sheets)</span></p></li>
-    <li><i class="pin">2</i><p>Six days in a strip. Closed days (Friday) are faded and can't be picked.<span class="law">Error prevention</span></p></li>
-    <li><i class="pin">3</i><p>The room's whole opening day, with booked stretches labelled by time, instead of a list of free slots that hides when it's taken. Half-hour rows are 44 px tall in the real UI.<span class="law">Visibility of system status · Fitts's Law</span></p></li>
-    <li><i class="pin">4</i><p>The hint line says what the next tap will do and changes after each tap. If a booking is in the way, it says so and starts again from the tapped time.<span class="law">Feedback after every action</span></p></li>
-    <li><i class="pin">5</i><p>The main button sits at the bottom, full width, under the thumb. It reads "Pick a time" and stays disabled until a time is chosen, then names the booking.<span class="law">Fitts's Law · Von Restorff · prevent errors</span></p></li>
-    <li><i class="pin">6</i><p>Room, day and time are already chosen, so the review page only asks what it's for: one tap on a chip instead of the full form again.<span class="law">Hick's Law · fewer steps</span></p></li>
-    <li><i class="pin">7</i><p>The release rule is explained where the person commits, not in a help page.<span class="law">Set expectations · prevent no-shows</span></p></li>
-    <li><i class="pin">8</i><p>A clear ending: a confirmation page with every detail, plus "Booked · Undo" for a few seconds in case of a mistake.<span class="law">Peak-End Rule · let users recover</span></p></li>
+    <li><i class="pin">1</i><p>Map and Rooms tab open the same room sheet.<span class="law">Consistency · Jakob's Law</span></p></li>
+    <li><i class="pin">2</i><p>Closed days are faded and can't be picked.<span class="law">Error prevention</span></p></li>
+    <li><i class="pin">3</i><p>The room's whole day, booked times labelled. 44 px rows.<span class="law">Visibility of status · Fitts's Law</span></p></li>
+    <li><i class="pin">4</i><p>Button stays disabled until a time is picked, then names the booking.<span class="law">Prevent errors</span></p></li>
+    <li><i class="pin">5</i><p>Only asks what the sheet couldn't: the reason.<span class="law">Fewer steps</span></p></li>
+    <li><i class="pin">6</i><p>Clear ending with a short Undo.<span class="law">Peak-End Rule · recovery</span></p></li>
   </ol>
 </section>
 
@@ -672,129 +658,106 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
 <section class="sec" id="flow-3" aria-labelledby="h-f3">
   <div class="flow-head">
     <div>
-      <p class="eyebrow">Flow 3 · Renter app · repeat bookings</p>
-      <h2 id="h-f3">Book the same time on several days</h2>
-      <p class="intro">Regular renters book patterns ("every Thursday this month"), not single days. Two doors lead to the same review page.</p>
+      <p class="eyebrow">Flow 3 · Renter app</p>
+      <h2 id="h-f3">Book from the Rooms tab</h2>
+      <p class="intro">For people who know when, not where. "Book a room" on Home opens this tab.</p>
     </div>
-    <div class="tally"><b>5</b><span>taps from Home, by date</span></div>
+    <div class="tally"><b>5</b><span>taps from Home to booked</span></div>
   </div>
 
-  <p class="route">Route A · I know when, not where</p>
-  <div class="strip" tabindex="0" role="region" aria-label="Flow 3 route A frames">
+  <div class="strip" tabindex="0" role="region" aria-label="Flow 3 frames">
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="ico o"></span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
         <div class="wf-body">
-          <span class="back">Back</span>
-          <div class="row"><span class="h1">Book a room</span><span class="ph" style="font-size:7px">Next</span></div>
-          <span class="lab">1 · Days</span>
-          <div class="seg rel"><span>One day</span><span class="on">Weekly<i class="touch" style="left:50%;top:50%"></i></span><span>Monthly</span><span>Pick days</span><i class="pin">1</i></div>
-          <div class="card">
-            <span class="sm">Every</span>
-            <div class="row btw"><span class="chip">Su</span><span class="chip">Mo</span><span class="chip">Tu</span><span class="chip">We</span><span class="chip on">Th</span><span class="chip">Sa</span></div>
-            <div class="row"><span class="sm">For</span><div class="seg grow" style="background:var(--sheet)"><span>2 weeks</span><span class="on">4 weeks</span><span>8 weeks</span></div></div>
+          <div class="h1">Rooms</div>
+          <span class="sm">Every room on one day. Tap a free time to book it.</span>
+          <div class="seg rel"><span class="on">Day view</span><span>List</span><i class="pin">1</i></div>
+          <div class="days"><span class="on">Today<b>1</b></span><span class="no">Fri<b>2</b></span><span>Sat<b>3</b></span><span>Sun<b>4</b></span><span>Mon<b>5</b></span><span>Tue<b>6</b></span></div>
+          <div class="key"><span><i></i>Free</span><span><i class="k-bk"></i>Booked</span><span><i class="k-sel"></i>Yours</span><span><i class="k-dn"></i>Down</span></div>
+          <div class="rc rel">
+            <span></span>
+            <span class="hd">F1<span>2 ppl</span></span><span class="hd">F2<span>3 ppl</span></span><span class="hd">F3<span>4 ppl</span></span><span class="hd">Big 1<span>10 ppl</span></span><span class="hd">Big 2<span>12 ppl</span></span>
+            <div class="gut"><i style="--s:0">09:00</i><i style="--s:4">11:00</i><i style="--s:8">13:00</i><i style="--s:12">15:00</i><i style="--s:16">17:00</i></div>
+            <div class="cl"><em class="bk" style="--s:0;--e:2">Booked</em></div>
+            <div class="cl"><span class="touch" style="left:50%;top:17%"></span></div>
+            <div class="cl"><em class="bk" style="--s:1;--e:4">Booked</em><em class="me" style="--s:9;--e:12">Yours</em></div>
+            <div class="cl"><em class="bk" style="--s:6;--e:8">Booked</em></div>
+            <div class="cl"><em class="bk" style="--s:12;--e:16">Booked</em></div>
+            <i class="pin">2</i>
           </div>
-          <span class="sm rel">3 days: Thu 1 Oct, Thu 8 Oct, Thu 15 Oct<i class="pin">2</i></span>
-          <span class="lab">2 · Time</span>
-          <div class="list"><div class="li"><span class="grow">Start</span><span class="sm">09:30 ⌃</span></div><div class="li"><span class="grow">Duration</span><span class="sm">60 min ⌃</span></div></div>
-          <span class="lab">3 · Size</span>
-          <div class="chips"><span class="chip on">Any</span><span class="chip f">Small (2–4)</span><span class="chip f">Big (8–12)</span></div>
-          <span class="lab">4 · Pick a room</span>
-          <span class="sm" style="margin-top:-5px">4 rooms free</span>
-          <div class="rel"><div class="list">
-            <div class="li"><div class="col grow"><span class="b">Big Room 1</span><span class="sm">Free on all 3 days</span></div><span class="btn sm">Book 3 days</span></div>
-            <div class="li"><div class="col grow"><span class="b">Big Room 2</span><span class="sm">Free on all 3 days</span></div><span class="btn sm">Book 3 days</span></div>
-            <div class="li"><div class="col grow"><span class="b">Focus Room 2</span><span class="sm">Free on 2 of 3 days</span></div><span class="btn sm rel">Book 2 days<span class="touch" style="left:50%;top:50%"></span></span></div>
-          </div><i class="pin">3</i></div>
         </div>
-        <div class="wf-tabs"><span class="on">Map</span><span>Rooms</span><span>My bookings</span><span>Report</span></div>
+        <div class="wf-tabs"><span>Map</span><span class="on">Rooms</span><span>My bookings</span></div>
       </div>
-      <figcaption><span class="sn">1</span><span><b>Book a room, by date</b><span class="sid">R-05</span><span class="ph">Next</span><br><span class="cap">Opened from the Book a room button on Home. Four numbered steps on one page.</span></span></figcaption>
+      <figcaption><span class="sn">1</span><span><b>Rooms, day view</b><span class="sid">R-02</span></span></figcaption>
     </figure>
 
-    <div class="arrow"><span class="act">Weekly, then Book 2 days</span><span class="shaft"></span><span class="tap">+3 taps</span><span class="why">Including the Book a room button on Home</span></div>
+    <div class="arrow"><span class="act">Tap 10:00 in Focus 2</span><span class="shaft"></span><span class="tap">+1</span></div>
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="ico o"></span><span class="av"></span></div>
-        <div class="wf-body">
-          <span class="back">Back</span>
-          <div class="h1">Review booking</div>
-          <div class="card" style="gap:0;padding:0">
-            <div class="row" style="padding:8px"><span class="img" style="width:38px;height:26px"></span><div class="col"><span class="b">Focus Room 2</span><span class="sm">3 ppl · Sockets · Screen</span></div></div>
-            <div class="row btw" style="padding:6px 8px;border-top:1px solid var(--fill-2)"><span class="row"><span class="ico o"></span><b>09:30–10:30</b></span><span class="sm">1 h</span></div>
-            <div class="row" style="padding:6px 8px;border-top:1px solid var(--fill-2)"><span class="ico"></span><span class="chip">Thu 1 Oct</span><span class="chip">Thu 15 Oct</span></div>
-          </div>
-          <div class="box strong rel"><span>Not available on <b>Thu 8 Oct</b> (room taken), so that day is skipped.</span><i class="pin">4</i></div>
-          <span class="lab">What's it for?</span>
-          <div class="chips"><span class="chip on">Study / focused work</span><span class="chip f">Group project</span><span class="chip f">Client call</span><span class="chip f">Meeting</span><span class="chip f">…</span></div>
-          <span class="lab rel">Reminder<i class="pin" style="right:auto;left:50px">5</i></span>
-          <div class="seg"><span class="on">2 h before</span><span>3 h</span><span>1 day</span><span>Evening</span></div>
-          <span class="sm">Confirm from the reminder, or the room is released 1 hour before.</span>
-          <div class="btn pri big" style="margin-top:6px">Confirm 2 bookings</div>
-          <span class="lnk ctr" style="font-size:8.5px">Change room, days or time</span>
-        </div>
-        <div class="wf-tabs"><span>Map</span><span>Rooms</span><span>My bookings</span><span>Report</span></div>
-      </div>
-      <figcaption><span class="sn">2</span><span><b>Review booking, 2 days</b><span class="sid">R-06</span><br><span class="cap">Same page as Flow 2, with one chip per day.</span></span></figcaption>
-    </figure>
-
-    <div class="arrow"><span class="act">Pick a reason, Confirm</span><span class="shaft"></span><span class="tap">+2 taps</span></div>
-
-    <div class="step">
-      <div class="ghost"><div><b>R-08 Booking confirmed</b>Same page as Flow 2, plus "2 bookings in this series" and Undo.</div></div>
-    </div>
-  </div>
-
-  <p class="route">Route B · I already know the room</p>
-  <div class="strip" tabindex="0" role="region" aria-label="Flow 3 route B frames">
-    <figure class="step">
-      <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="ico o"></span><span class="av"></span></div>
-        <div class="backdrop" style="height:24px"></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="backdrop" style="height:34px"><span class="t w60"></span></div>
         <div class="sheet">
           <div class="grab"></div>
-          <div class="row btw" style="align-items:flex-start"><div class="col"><span class="h2">Big Room 2</span><span class="sm">12 ppl · 36 m² · Screen · Whiteboard · AC</span></div><span class="x">×</span></div>
+          <div class="row btw" style="align-items:flex-start"><div class="col"><span class="h2">Focus Room 2</span><span class="sm">3 ppl · 10 m² · Sockets · Screen</span></div><span class="x">×</span></div>
           <div class="days"><span class="on">Today<b>1</b></span><span class="no">Fri<b>2</b></span><span>Sat<b>3</b></span><span>Sun<b>4</b></span><span>Mon<b>5</b></span><span>Tue<b>6</b></span></div>
-          <div class="hint"><div class="col grow"><span class="b">10:00–12:00 · 2 h</span></div><span class="lnk">Clear</span></div>
-          <div class="tl short">
-            <i style="--s:0">09:00</i><i style="--s:6">12:00</i><i style="--s:12">15:00</i><i style="--s:18">18:00</i>
-            <em class="past" style="--s:0;--e:1"></em>
-            <em class="sel" style="--s:2;--e:6">10:00–12:00</em>
-            <em class="bk" style="--s:12;--e:16">Booked</em>
+          <div class="tl rel">
+            <i style="--s:0">09:00</i><i style="--s:2">10:00</i><i style="--s:4">11:00</i><i style="--s:6">12:00</i><i style="--s:8">13:00</i><i style="--s:10">14:00</i><i style="--s:12">15:00</i><i style="--s:14">16:00</i><i style="--s:16">17:00</i><i style="--s:18">18:00</i>
+            <em class="past" style="--s:0;--e:1">Past</em>
+            <em class="sel" style="--s:2;--e:4">10:00–11:00 · 1 h</em>
+            <em class="free" style="--s:4;--e:5">● Free until 18:00</em>
+            <b class="pin">3</b>
           </div>
-          <div class="row rel" style="padding:5px 8px;background:var(--fill);border-radius:9px"><span class="ico"></span><span class="grow">Book more days</span><span class="tog on"></span><i class="pin">6</i></div>
-          <div class="seg rel"><span>Week</span><span class="on">Month</span><span style="flex:2;text-align:right;color:var(--ink)">October ‹ ›</span></div>
-          <div class="cal rel">
-            <span class="h">S</span><span class="h">M</span><span class="h">T</span><span class="h">W</span><span class="h">T</span><span class="h">F</span><span class="h">S</span>
-            <span class="o">27</span><span class="o">28</span><span class="o">29</span><span class="o">30</span><span class="s">1</span><span class="o">2</span><span class="f">3</span>
-            <span class="f">4</span><span class="f">5</span><span class="f">6</span><span class="f">7</span><span class="s">8<i class="touch" style="left:50%;top:50%"></i></span><span class="o">9</span><span class="f">10</span>
-            <span class="f">11</span><span class="f">12</span><span class="f">13</span><span class="f">14</span><span class="f">15</span><span class="o">16</span><span class="f">17</span>
-            <span class="f">18</span><span class="f">19</span><span class="f">20</span><span class="f">21</span><span>22</span><span class="o">23</span><span class="f">24</span>
-            <i class="pin">7</i>
-          </div>
-          <span class="sm">Same time on every day you pick. Days marked "Not free" are skipped.</span>
-          <div class="foot"><span class="btn">Details</span><span class="btn pri">Book 2 days</span></div>
+          <div class="row" style="padding:5px 8px;background:var(--fill);border-radius:9px"><span class="ico"></span><span class="grow">Book more days</span><span class="tog"></span></div>
+          <div class="foot"><span class="btn">Details</span><span class="btn pri rel">Book 10:00–11:00<span class="touch" style="left:50%;top:50%"></span></span></div>
         </div>
       </div>
-      <figcaption><span class="sn">1</span><span><b>Room sheet, more days</b><span class="sid">R-01</span><br><span class="cap">Same sheet as Flow 2 with the switch on.</span></span></figcaption>
+      <figcaption><span class="sn">2</span><span><b>Room sheet, time filled in</b><span class="sid">R-01</span></span></figcaption>
     </figure>
 
-    <div class="arrow"><span class="act">Book 2 days</span><span class="shaft"></span><span class="tap">+1 tap</span></div>
+    <div class="arrow"><span class="act">Book, reason, Confirm</span><span class="shaft"></span><span class="tap">+3</span></div>
 
     <div class="step">
-      <div class="ghost"><div><b>R-06 Review booking</b>Same page as Route A: one chip per day, reason, Confirm.</div></div>
+      <div class="ghost"><div><b>R-06 → R-08</b>Same review and confirmation as Flow 2.</div></div>
     </div>
+  </div>
+
+  <p class="route">Or switch to List</p>
+  <div class="strip" tabindex="0" role="region" aria-label="Rooms list frame">
+    <figure class="step">
+      <div class="wf">
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-body">
+          <div class="h1">Rooms</div>
+          <div class="seg"><span>Day view</span><span class="on">List</span></div>
+          <div class="row"><span class="chip f">Today · Now</span></div>
+          <span class="lab">Focus Rooms</span>
+          <div class="list">
+            <div class="li"><span class="img" style="width:26px;height:18px"></span><div class="col grow"><span class="b">Focus Room 1</span><span class="sm">2 ppl · Sockets</span><span class="sm">Free from 10:00</span></div><span class="chev"></span></div>
+            <div class="li"><span class="img" style="width:26px;height:18px"></span><div class="col grow"><span class="b">Focus Room 2</span><span class="sm">3 ppl · Sockets · Screen</span><span class="sm"><b style="color:var(--ink)">Free now</b></span></div><span class="chev"></span></div>
+            <div class="li"><span class="img" style="width:26px;height:18px"></span><div class="col grow"><span class="b">Focus Room 3</span><span class="sm">4 ppl · Screen</span><span class="sm">Free from 11:00</span></div><span class="chev"></span></div>
+          </div>
+          <span class="lab">Big Rooms</span>
+          <div class="list">
+            <div class="li"><span class="img" style="width:26px;height:18px"></span><div class="col grow"><span class="b">Big Room 1</span><span class="sm"><b style="color:var(--ink)">Free now</b></span></div><span class="chev"></span></div>
+            <div class="li"><span class="img" style="width:26px;height:18px"></span><div class="col grow"><span class="b">Big Room 2</span><span class="sm"><b style="color:var(--ink)">Free now</b></span></div><span class="chev"></span></div>
+          </div>
+          <span class="lab">Walk-in seating</span>
+          <div class="list"><div class="li"><div class="col grow"><span class="b">Public seating</span><span class="sm">Not bookable</span></div><b>18 / 40</b><span class="chev"></span></div></div>
+          <span class="lab">Amenities</span>
+          <div class="list"><div class="li"><span class="grow">Cafeteria</span><span class="sm">Until 15:30</span></div><div class="li"><span class="grow">Wi-Fi</span><span class="sm">↓ 94 Mbps</span></div></div>
+        </div>
+        <div class="wf-tabs"><span>Map</span><span class="on">Rooms</span><span>My bookings</span></div>
+      </div>
+      <figcaption><span class="sn">3</span><span><b>Rooms, list</b><span class="sid">R-02</span></span></figcaption>
+    </figure>
   </div>
 
   <ol class="notes">
-    <li><i class="pin">1</i><p>The patterns people actually book, side by side: One day, Weekly, Monthly (e.g. the 1st of each month) and Pick days (any days, any week).<span class="law">Understand user needs · familiar segmented control</span></p></li>
-    <li><i class="pin">2</i><p>The page writes out the real dates it will book and leaves out closed days, so nobody has to work it out.<span class="law">Reduce cognitive load · visibility of status</span></p></li>
-    <li><i class="pin">3</i><p>Results update while days, time or size change. There is no Search button. Each row says on how many of the days it's free and books from the row.<span class="law">Feedback · fewer clicks</span></p></li>
-    <li><i class="pin">4</i><p>Days that can't be booked are named before confirming, not discovered after.<span class="law">Error prevention over error messages</span></p></li>
-    <li><i class="pin">5</i><p>For later bookings, the person picks when to be reminded. The release rule sits right under it.<span class="law">User control · set expectations</span></p></li>
-    <li><i class="pin">6</i><p>Several days from a room you already like: one switch in the same sheet, instead of a form several screens deep.<span class="law">Clicks to treasure</span></p></li>
-    <li><i class="pin">7</i><p>Dots mark days that are free at the chosen time. Faded days are closed or taken and can't be picked.<span class="law">Prevent errors · labels plus marks</span></p></li>
+    <li><i class="pin">1</i><p>Two views of the same rooms: a day grid or a plain list.<span class="law">User control</span></p></li>
+    <li><i class="pin">2</i><p>All rooms side by side, so free time is easy to spot. Your own bookings are marked.<span class="law">Visibility of status</span></p></li>
+    <li><i class="pin">3</i><p>The tapped time arrives already picked (1 hour).<span class="law">Fewer steps</span></p></li>
   </ol>
 </section>
 
@@ -802,17 +765,93 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
 <section class="sec" id="flow-4" aria-labelledby="h-f4">
   <div class="flow-head">
     <div>
-      <p class="eyebrow">Flow 4 · Renter app · after booking</p>
-      <h2 id="h-f4">Keep or cancel a booking</h2>
-      <p class="intro">A reminder arrives a few hours before. Confirming keeps the room; silence releases it for someone else. This is how Sit cuts no-shows.</p>
+      <p class="eyebrow">Flow 4 · Renter app</p>
+      <h2 id="h-f4">Book several days</h2>
+      <p class="intro">Same room, same time, more than one day: one switch in the room sheet.</p>
     </div>
-    <div class="tally"><b>1</b><span>tap to confirm or cancel</span></div>
+    <div class="tally"><b>8</b><span>taps from Home</span></div>
   </div>
 
   <div class="strip" tabindex="0" role="region" aria-label="Flow 4 frames">
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="ico o"></span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="backdrop" style="height:24px"></div>
+        <div class="sheet">
+          <div class="grab"></div>
+          <div class="row btw" style="align-items:flex-start"><div class="col"><span class="h2">Big Room 2</span><span class="sm">12 ppl · 36 m² · Screen · Whiteboard</span></div><span class="x">×</span></div>
+          <div class="days"><span class="on">Today<b>1</b></span><span class="no">Fri<b>2</b></span><span>Sat<b>3</b></span><span>Sun<b>4</b></span><span>Mon<b>5</b></span><span>Tue<b>6</b></span></div>
+          <div class="tl short">
+            <i style="--s:0">09:00</i><i style="--s:6">12:00</i><i style="--s:12">15:00</i><i style="--s:18">18:00</i>
+            <em class="past" style="--s:0;--e:1"></em>
+            <em class="sel" style="--s:2;--e:6">10:00–12:00</em>
+            <em class="bk" style="--s:12;--e:16">Booked</em>
+          </div>
+          <div class="row rel" style="padding:5px 8px;background:var(--fill);border-radius:9px"><span class="ico"></span><span class="grow">Book more days</span><span class="tog on"></span><i class="pin">1</i></div>
+          <div class="seg"><span>Week</span><span class="on">Month</span><span style="flex:2;text-align:right;color:var(--ink)">October ‹ ›</span></div>
+          <div class="cal rel">
+            <span class="h">S</span><span class="h">M</span><span class="h">T</span><span class="h">W</span><span class="h">T</span><span class="h">F</span><span class="h">S</span>
+            <span class="o">27</span><span class="o">28</span><span class="o">29</span><span class="o">30</span><span class="s">1</span><span class="o">2</span><span class="f">3</span>
+            <span class="f">4</span><span class="f">5</span><span class="f">6</span><span class="f">7</span><span class="s">8<i class="touch" style="left:50%;top:50%"></i></span><span class="o">9</span><span class="f">10</span>
+            <span class="f">11</span><span class="f">12</span><span class="f">13</span><span class="f">14</span><span class="f">15</span><span class="o">16</span><span class="f">17</span>
+            <span class="f">18</span><span class="f">19</span><span class="f">20</span><span class="f">21</span><span>22</span><span class="o">23</span><span class="f">24</span>
+            <i class="pin">2</i>
+          </div>
+          <span class="sm">Same time on every day you pick.</span>
+          <div class="foot"><span class="btn">Details</span><span class="btn pri">Book 2 days</span></div>
+        </div>
+      </div>
+      <figcaption><span class="sn">1</span><span><b>Room sheet, more days</b><span class="sid">R-01</span></span></figcaption>
+    </figure>
+
+    <div class="arrow"><span class="act">Book 2 days</span><span class="shaft"></span><span class="tap">+1</span></div>
+
+    <figure class="step">
+      <div class="wf">
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="wf-body">
+          <span class="back">Back</span>
+          <div class="h1">Review booking</div>
+          <div class="card" style="gap:0;padding:0">
+            <div class="row" style="padding:8px"><span class="img" style="width:38px;height:26px"></span><div class="col"><span class="b">Big Room 2</span><span class="sm">12 ppl · Screen · Whiteboard</span></div></div>
+            <div class="row btw" style="padding:6px 8px;border-top:1px solid var(--fill-2)"><span class="row"><span class="ico o"></span><b>10:00–12:00</b></span><span class="sm">2 h</span></div>
+            <div class="row" style="padding:6px 8px;border-top:1px solid var(--fill-2)"><span class="ico"></span><span class="chip">Thu 1 Oct</span><span class="chip">Thu 8 Oct</span></div>
+          </div>
+          <span class="lab rel">What's it for?<i class="pin" style="right:auto;left:80px">3</i></span>
+          <div class="chips"><span class="chip on">Study / focused work</span><span class="chip f">Group project</span><span class="chip f">Client call</span><span class="chip f">…</span></div>
+          <span class="lab">Reminder</span>
+          <div class="chips"><span class="chip on">2 h before</span><span class="chip f">3 h before</span><span class="chip f">1 day before</span><span class="chip f">Evening before</span></div>
+          <span class="sm">Confirm from the reminder, or the room is released 1 hour before.</span>
+          <div class="btn pri big" style="margin-top:6px">Confirm 2 bookings</div>
+        </div>
+        <div class="wf-tabs"><span>Map</span><span>Rooms</span><span>My bookings</span></div>
+      </div>
+      <figcaption><span class="sn">2</span><span><b>Review, 2 days</b><span class="sid">R-06</span></span></figcaption>
+    </figure>
+  </div>
+
+  <ol class="notes">
+    <li><i class="pin">1</i><p>More days lives in the same sheet, not a separate form.<span class="law">Clicks to treasure</span></p></li>
+    <li><i class="pin">2</i><p>Dots mark days free at that time; faded days can't be picked.<span class="law">Prevent errors</span></p></li>
+    <li><i class="pin">3</i><p>Same review page as one day, with one chip per day. Taken days are named and skipped.<span class="law">Consistency · error prevention</span></p></li>
+  </ol>
+</section>
+
+<!-- ============ FLOW 5 ============ -->
+<section class="sec" id="flow-5" aria-labelledby="h-f5">
+  <div class="flow-head">
+    <div>
+      <p class="eyebrow">Flow 5 · Renter app · after booking</p>
+      <h2 id="h-f5">Keep or cancel a booking</h2>
+      <p class="intro">An SMS reminder arrives before the booking. No answer releases the room.</p>
+    </div>
+    <div class="tally"><b>1</b><span>tap to confirm or cancel</span></div>
+  </div>
+
+  <div class="strip" tabindex="0" role="region" aria-label="Flow 5 frames">
+    <figure class="step">
+      <div class="wf">
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
         <div class="wf-body">
           <span class="back">Back</span>
           <div class="h1">Reminder</div>
@@ -822,82 +861,78 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
             <div class="g2"><span class="btn">Cancel</span><span class="btn pri rel">Confirm<span class="touch" style="left:50%;top:50%"></span></span></div>
             <i class="pin">1</i>
           </div>
-          <div class="box rel">
+          <div class="box">
             <span class="b">ⓘ How it works</span>
-            <span>• Not confirmed by 1 hour before the start? The room is released for others.</span>
-            <span>• Not checked in at reception by 15 minutes after the start? The room is released.</span>
-            <span>• Released rooms show as free on the map straight away.</span>
-            <i class="pin">2</i>
+            <span>• Not confirmed 1 h before? Released.</span>
+            <span>• Not checked in 15 min after start? Released.</span>
+            <span>• Released rooms show as free straight away.</span>
           </div>
-          <div class="btn rel">My bookings<span class="touch" style="left:50%;top:50%"></span></div>
+          <div class="btn">My bookings</div>
         </div>
-        <div class="wf-tabs"><span>Map</span><span>Rooms</span><span>My bookings</span><span>Report</span></div>
+        <div class="wf-tabs"><span>Map</span><span>Rooms</span><span>My bookings</span></div>
       </div>
-      <figcaption><span class="sn">1</span><span><b>Reminder</b><span class="sid">R-15</span><br><span class="cap">What the SMS link opens. Confirm here and the task is done.</span></span></figcaption>
+      <figcaption><span class="sn">1</span><span><b>Reminder</b><span class="sid">R-15</span></span></figcaption>
     </figure>
 
-    <div class="arrow"><span class="act">Or open My bookings</span><span class="shaft"></span><span class="tap">+1 tap</span><span class="why">Also the third tab</span></div>
+    <div class="arrow"><span class="act">Or open My bookings</span><span class="shaft"></span><span class="tap">+1</span></div>
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="ico o"></span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
         <div class="wf-body">
           <div class="h1">My bookings</div>
           <div class="seg"><span class="on">Upcoming</span><span>Past</span></div>
-          <div class="row btw rel"><span class="sm">21 bookings</span><span class="b" style="font-size:8.5px">⇅ Soonest first</span><i class="pin" style="top:-12px;right:auto;left:150px">5</i></div>
+          <div class="row btw"><span class="sm">21 bookings</span><span class="b" style="font-size:8.5px">⇅ Soonest first</span></div>
           <div class="card">
             <div class="row btw"><span class="b">Focus Room 1</span><span class="row sm"><span class="dot"></span>Used</span></div>
             <span class="sm">Thu 1 Oct · 09:00–10:00 · Study</span>
             <span class="sm"><b style="color:var(--ink)">Repeats</b> +19 more</span>
-            <div class="g2"><span class="btn off">Change</span><span class="btn off">Cancel</span></div>
-            <span class="sm rel">Can't change after it starts<i class="pin">4</i></span>
+            <div class="g2 rel"><span class="btn off">Change</span><span class="btn off">Cancel</span><i class="pin">2</i></div>
           </div>
           <div class="card">
-            <div class="row btw rel"><span class="b">Focus Room 3</span><span class="row sm"><span class="dot half"></span>Awaiting confirmation</span><i class="pin" style="top:-15px;right:auto;left:72px">3</i></div>
+            <div class="row btw rel"><span class="b">Focus Room 3</span><span class="row sm"><span class="dot half"></span>Awaiting confirmation</span><i class="pin">3</i></div>
             <span class="sm">Thu 1 Oct · 13:30–15:00 · Client call</span>
-            <span class="sm">Confirm you're coming, or it's released 1 hour before the start.</span>
             <div class="g3"><span class="btn pri">Confirm</span><span class="btn">Change</span><span class="btn rel">Cancel<span class="touch" style="left:50%;top:50%"></span></span></div>
           </div>
         </div>
-        <div class="wf-tabs"><span>Map</span><span>Rooms</span><span class="on">My bookings</span><span>Report</span></div>
+        <div class="wf-tabs"><span>Map</span><span>Rooms</span><span class="on">My bookings</span></div>
       </div>
-      <figcaption><span class="sn">2</span><span><b>My bookings</b><span class="sid">R-13</span><br><span class="cap">Upcoming first, every action on the card.</span></span></figcaption>
+      <figcaption><span class="sn">2</span><span><b>My bookings</b><span class="sid">R-13</span></span></figcaption>
     </figure>
 
-    <div class="arrow"><span class="act">Tap Cancel</span><span class="shaft"></span><span class="tap">+1 tap</span></div>
+    <div class="arrow"><span class="act">Tap Cancel</span><span class="shaft"></span><span class="tap">+1</span></div>
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="ico o"></span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
         <div class="wf-body">
           <div class="h1">My bookings</div>
           <div class="seg"><span class="on">Upcoming</span><span>Past</span></div>
           <div class="card"><span class="t w60"></span><span class="t w90"></span><span class="t w45"></span></div>
           <div class="card"><span class="t w60"></span><span class="t w90"></span><span class="t w45"></span></div>
         </div>
-        <div class="wf-tabs"><span>Map</span><span>Rooms</span><span class="on">My bookings</span><span>Report</span></div>
+        <div class="wf-tabs"><span>Map</span><span>Rooms</span><span class="on">My bookings</span></div>
         <div class="dim">
           <div class="rel" style="width:100%"><div class="dlg">
             <div class="in">
               <span class="h2">Cancel this booking?</span>
-              <span>The room will be freed for others and we'll email you a confirmation.</span>
-              <span class="sm" style="margin-top:2px">For a repeating booking only:</span>
+              <span>The room is freed for others.</span>
               <span class="radio on">Only this one</span>
               <span class="radio">The whole series</span>
             </div>
             <div class="acts"><span>Back</span><span class="rel">Cancel booking<i class="touch" style="left:50%;top:50%"></i></span></div>
-          </div><i class="pin">6</i></div>
+          </div><i class="pin">4</i></div>
         </div>
       </div>
-      <figcaption><span class="sn">3</span><span><b>Cancel alert</b><span class="sid">R-13</span><br><span class="cap">"Cancel booking" is red in the UI.</span></span></figcaption>
+      <figcaption><span class="sn">3</span><span><b>Cancel alert</b><span class="sid">R-13</span></span></figcaption>
     </figure>
 
-    <div class="arrow"><span class="act">Cancel booking</span><span class="shaft"></span><span class="tap">+1 tap</span></div>
+    <div class="arrow"><span class="act">Cancel booking</span><span class="shaft"></span><span class="tap">+1</span></div>
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="ico o"></span><span class="av"></span></div>
-        <div class="toast">Cancelled · email sent <u>Undo</u><i class="pin">7</i></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
+        <div class="toast">Cancelled <u>Undo</u></div>
         <div class="wf-body" style="padding-top:34px">
           <div class="h1">My bookings</div>
           <div class="seg"><span class="on">Upcoming</span><span>Past</span></div>
@@ -905,118 +940,21 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
           <div class="card">
             <div class="row btw"><span class="b">Focus Room 1</span><span class="row sm"><span class="dot"></span>Used</span></div>
             <span class="sm">Thu 1 Oct · 09:00–10:00 · Study</span>
-            <span class="sm"><b style="color:var(--ink)">Repeats</b> +19 more</span>
             <div class="g2"><span class="btn off">Change</span><span class="btn off">Cancel</span></div>
           </div>
-          <div class="card"><span class="t w60"></span><span class="t w90"></span><div class="g3"><span class="btn off">&nbsp;</span><span class="btn off">&nbsp;</span><span class="btn off">&nbsp;</span></div></div>
+          <div class="card"><span class="t w60"></span><span class="t w90"></span></div>
         </div>
-        <div class="wf-tabs"><span>Map</span><span>Rooms</span><span class="on">My bookings</span><span>Report</span></div>
+        <div class="wf-tabs"><span>Map</span><span>Rooms</span><span class="on">My bookings</span></div>
       </div>
-      <figcaption><span class="sn">4</span><span><b>Cancelled</b><span class="sid">R-13</span><br><span class="cap">Focus Room 3 is gone from the list and free on the map.</span></span></figcaption>
+      <figcaption><span class="sn">4</span><span><b>Cancelled</b><span class="sid">R-13</span></span></figcaption>
     </figure>
   </div>
 
   <ol class="notes">
-    <li><i class="pin">1</i><p>The reminder carries both answers. Confirming or cancelling is one tap, and cancelling still gets an Undo.<span class="law">Clicks to treasure</span></p></li>
-    <li><i class="pin">2</i><p>The release rules, in plain words, at the moment the person decides.<span class="law">Set expectations · prevent no-shows</span></p></li>
-    <li><i class="pin">3</i><p>Status is written out next to a mark (Awaiting confirmation, Confirmed, Used). Colour is never the only signal.<span class="law">Accessibility</span></p></li>
-    <li><i class="pin">4</i><p>Actions that aren't possible stay visible but disabled, with the reason underneath, so nobody wonders where the button went.<span class="law">Prevent errors · consistency</span></p></li>
-    <li><i class="pin">5</i><p>Sort by soonest, oldest, latest date or recently booked. The newest booking is easy to find.<span class="law">User control and freedom</span></p></li>
-    <li><i class="pin">6</i><p>Cancelling asks first and says what happens next. For a repeating booking it asks "only this one or the whole series".<span class="law">Error prevention</span></p></li>
-    <li><i class="pin">7</i><p>Undo on the message after cancelling. A wrong tap costs nothing.<span class="law">Let users recover from mistakes</span></p></li>
-  </ol>
-</section>
-
-<!-- ============ FLOW 5 ============ -->
-<section class="sec" id="flow-5" aria-labelledby="h-f5">
-  <div class="flow-head">
-    <div>
-      <p class="eyebrow">Flow 5 · Renter app · feedback loop</p>
-      <h2 id="h-f5">Report a problem</h2>
-      <p class="intro">The AC is loud and the quiet side isn't quiet. Tala reports both at once and can see when staff pick it up.</p>
-    </div>
-    <div class="tally"><b>3</b><span>taps to send a report</span></div>
-  </div>
-
-  <div class="strip" tabindex="0" role="region" aria-label="Flow 5 frames">
-    <figure class="step">
-      <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="ico o"></span><span class="av"></span></div>
-        <div class="wf-body">
-          <div class="row btw" style="align-items:flex-start"><div class="col"><span class="h1">Report an issue</span><span class="ph" style="font-size:7px;margin-left:0;align-self:flex-start">Next</span></div><span class="lnk" style="font-size:8.5px">My reports</span></div>
-          <span class="lab">Where</span>
-          <div class="field rel" style="color:var(--ink)"><span class="grow">Public seating</span><span>▾</span><i class="pin">1</i></div>
-          <span class="lab">What's wrong?</span>
-          <span class="sm" style="margin-top:-5px">Pick all that apply.</span>
-          <div class="chips rel"><span class="chip on">AC</span><span class="chip f">Wifi</span><span class="chip on">Noise</span><span class="chip f">Cleanliness</span><span class="chip f">Furniture</span><span class="chip f">Other</span><i class="pin">2</i></div>
-          <span class="lab">Short note</span>
-          <div class="field area"><span>0/200</span></div>
-          <span class="lab">Photo (optional)</span>
-          <div class="row"><span class="btn sm">Choose file</span><span class="sm">No file chosen</span></div>
-          <div class="btn pri big rel" style="margin-top:6px">Send<span class="touch" style="left:50%;top:50%"></span><i class="pin">3</i></div>
-        </div>
-        <div class="wf-tabs"><span>Map</span><span>Rooms</span><span>My bookings</span><span class="on">Report</span></div>
-      </div>
-      <figcaption><span class="sn">1</span><span><b>Report an issue</b><span class="sid">R-16</span><span class="ph">Next</span><br><span class="cap">Fourth tab. Also opens from a room's details.</span></span></figcaption>
-    </figure>
-
-    <div class="arrow"><span class="act">Report tab, pick an issue, Send</span><span class="shaft"></span><span class="tap">3 taps</span></div>
-
-    <figure class="step">
-      <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="ico o"></span><span class="av"></span></div>
-        <div class="toast">✓ Report sent to staff</div>
-        <div class="wf-body">
-          <span class="back" style="margin-top:20px">Back</span>
-          <div class="row btw"><span class="h1">My reports</span><span class="lnk" style="font-size:8.5px">New report</span></div>
-          <div class="card">
-            <div class="row btw"><span class="b">AC, Noise · Public seating</span><span class="chip" style="font-size:7.5px">Sent</span></div>
-            <div class="col" style="padding-left:7px;border-left:2px solid var(--fill-2)"><span class="sm"><b style="color:var(--ink)">Sent</b> · Thu 1 Oct, 09:42</span></div>
-          </div>
-          <div class="card rel">
-            <div class="row btw"><span class="b">Wifi · Public seating</span><span class="chip" style="font-size:7.5px">Seen</span></div>
-            <span class="sm">Wifi drops on the quiet side</span>
-            <div class="col" style="padding-left:7px;border-left:2px solid var(--fill-2)"><span class="sm"><b style="color:var(--ink)">Sent</b> · Tue 29 Sep, 10:05</span><span class="sm"><b style="color:var(--ink)">Seen</b> · Tue 29 Sep, 11:00</span></div>
-            <i class="pin">4</i>
-          </div>
-          <div class="card" style="opacity:.55"><span class="t w75"></span><span class="t w45"></span></div>
-        </div>
-        <div class="wf-tabs"><span>Map</span><span>Rooms</span><span>My bookings</span><span class="on">Report</span></div>
-      </div>
-      <figcaption><span class="sn">2</span><span><b>My reports</b><span class="sid">R-17</span><span class="ph">Next</span><br><span class="cap">Every report with its status history.</span></span></figcaption>
-    </figure>
-
-    <div class="arrow sys"><span class="act">Staff mark it "Seen"</span><span class="shaft"></span><span class="tap">0 taps · alert</span><span class="why">Bell gets a dot, SMS if chosen in Profile</span></div>
-
-    <figure class="step">
-      <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="ico o rel"><span class="dot" style="position:absolute;top:-3px;right:-3px;width:5px;height:5px"></span></span><span class="av"></span></div>
-        <div class="wf-body">
-          <span class="back">Back</span>
-          <div class="row"><span class="h1">Notifications</span><span class="ph" style="font-size:7px">Next</span></div>
-          <span class="lab rel">New<i class="pin" style="right:auto;left:26px">5</i></span>
-          <div class="list">
-            <div class="li" style="align-items:flex-start"><span class="ico"></span><div class="col grow"><span>Your report about Public seating is now: Seen.</span><span class="sm">Report · 09:58</span><span class="lnk" style="font-size:8.5px">See report</span></div></div>
-            <div class="li" style="align-items:flex-start"><span class="ico"></span><div class="col grow"><span>Your room "Focus Room 3" is at 13:30 on Thu 1 Oct. Confirm or cancel.</span><span class="sm">Reminder · 09:30</span><span class="lnk" style="font-size:8.5px">Confirm or cancel</span></div></div>
-          </div>
-          <span class="lab">Earlier</span>
-          <div class="list">
-            <div class="li" style="align-items:flex-start"><span class="ico"></span><div class="col grow"><span class="t w90"></span><span class="t w45"></span></div></div>
-            <div class="li" style="align-items:flex-start"><span class="ico"></span><div class="col grow"><span class="t w75"></span><span class="t w45"></span></div></div>
-          </div>
-        </div>
-        <div class="wf-tabs"><span>Map</span><span>Rooms</span><span>My bookings</span><span>Report</span></div>
-      </div>
-      <figcaption><span class="sn">3</span><span><b>Notifications</b><span class="sid">R-18</span><span class="ph">Next</span><br><span class="cap">From the bell in the top bar.</span></span></figcaption>
-    </figure>
-  </div>
-
-  <ol class="notes">
-    <li><i class="pin">1</i><p>Where is filled in already: public seating by default, or the room you came from when you tap "Report a problem with this room".<span class="law">Reduce typing · context</span></p></li>
-    <li><i class="pin">2</i><p>Several issue types at once, because real problems come together. One report instead of two.<span class="law">Match user needs</span></p></li>
-    <li><i class="pin">3</i><p>Send stays disabled until at least one issue is picked. The note and photo are optional.<span class="law">Prevent errors · keep it short</span></p></li>
-    <li><i class="pin">4</i><p>Each report shows its path, Sent → Seen → In progress → Fixed, and any staff reply under it.<span class="law">Visibility of system status</span></p></li>
-    <li><i class="pin">5</i><p>Alerts grouped as New and Earlier, each with an icon and the one action it needs.<span class="law">Visual hierarchy · feedback</span></p></li>
+    <li><i class="pin">1</i><p>Both answers are in the reminder: one tap.<span class="law">Clicks to treasure</span></p></li>
+    <li><i class="pin">2</i><p>Impossible actions stay visible but disabled.<span class="law">Consistency</span></p></li>
+    <li><i class="pin">3</i><p>Status is written out, not shown by colour alone.<span class="law">Accessibility</span></p></li>
+    <li><i class="pin">4</i><p>Asks first, then offers Undo.<span class="law">Error prevention · recovery</span></p></li>
   </ol>
 </section>
 
@@ -1024,9 +962,9 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
 <section class="sec" id="flow-6" aria-labelledby="h-f6">
   <div class="flow-head">
     <div>
-      <p class="eyebrow">Flow 6 · Reception dashboard · desktop</p>
+      <p class="eyebrow">Flow 6 · Reception · desktop</p>
       <h2 id="h-f6">Run the front desk</h2>
-      <p class="intro">Rana, at reception, starts the day by posting the status and keeping the seat count right, then checks people in as they arrive. Same look and words as the renter app.</p>
+      <p class="intro">Rana keeps the seat count right and checks people in.</p>
     </div>
     <div class="tally"><b>2</b><span>clicks to check someone in</span></div>
   </div>
@@ -1037,65 +975,60 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
         <div class="dw-chrome"><i></i><i></i><i></i><span class="url">sit / s / today</span></div>
         <div class="dw-side">
           <span class="logo" style="align-self:flex-start;margin-bottom:8px">LOGO</span>
-          <span class="sm" style="padding:0 6px 3px">Reception</span>
+          <span class="sm" style="padding:0 6px 3px">Desk</span>
           <span class="nv on">Today</span>
           <span class="nv rel">Check-in<span class="touch" style="left:30%;top:50%"></span></span>
           <span class="nv">Notices</span>
-          <span class="nv">Reports<span class="ph">Next</span></span>
-          <span class="nv">Bookings<span class="ph">Next</span></span>
-          <span class="nv">Insights<span class="ph">Later</span></span>
           <span class="nv">Settings</span>
-          <span class="sm" style="margin-top:auto;padding:0 6px">Reception computer · Technopark</span>
+          <span class="sm" style="margin-top:auto;padding:0 6px">Reception computer</span>
         </div>
         <div class="dw-main">
           <div class="row"><span class="sm">Thu 1 Oct · 09:30</span><span class="sp"></span><span class="chip f"><b>18 / 40</b> Open-area seats</span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span><span class="col"><b>Rana</b><span class="sm">Reception</span></span></div>
           <div class="h1">Today</div>
-          <div class="banner"><span class="ico"></span><span class="b grow">No status posted today</span><span class="btn sm pri">Post now</span><i class="pin">1</i></div>
+          <div class="banner"><span class="ico"></span><span class="b grow">No status posted today</span><span class="b">Post now ›</span><i class="pin">1</i></div>
           <div class="dw-grid">
             <div class="col" style="gap:9px">
               <div class="card rel">
                 <span class="row sm"><span class="dot hol"></span>Live · Open-area seats</span>
                 <div class="row btw"><span class="cbtn">−</span><span><span class="num">18</span> <span class="b" style="color:var(--muted);font-size:11px">/ 40</span></span><span class="cbtn pri">+</span></div>
                 <div class="ticks"></div>
-                <div class="row btw"><span class="sm grow">Renters see this number on the Sit home page.</span><span class="lnk" style="font-size:8px">View log</span></div>
+                <span class="sm">Renters see this number on the Sit home page.</span>
+                <div class="row btw"><span class="lnk" style="font-size:8px">Reset</span><span class="lnk" style="font-size:8px">View log</span></div>
                 <i class="pin">2</i>
               </div>
               <div class="card">
                 <div class="row btw"><span class="h2">Notices</span><span class="btn sm">Post notice</span></div>
                 <div class="list">
                   <div class="li"><span class="ico"></span><div class="col grow"><span>Wi-Fi back to full speed</span><span class="sm">Wifi · 08:40</span></div></div>
-                  <div class="li"><span class="ico"></span><div class="col grow"><span>Event in the main hall 10:00–14:00, expect noise</span><span class="sm">Events · 08:05</span></div></div>
+                  <div class="li"><span class="ico"></span><div class="col grow"><span>Event in the main hall, expect noise</span><span class="sm">Events · 08:05</span></div></div>
                 </div>
               </div>
-              <div class="card"><div class="row"><span class="num" style="font-size:20px">0</span><div class="col grow"><span class="b">Reports <span class="ph" style="font-size:6px">Next</span></span><span class="sm">new reports</span></div><span class="chev"></span></div></div>
             </div>
             <div class="col" style="gap:9px">
               <div class="box">
                 <span class="h2">Rooms today</span>
-                <div class="skey"><span><i class="aw"></i>Awaiting confirmation</span><span><i class="cf"></i>Confirmed</span><span><i class="ci"></i>Checked in</span><span><i class="dn"></i>Out of order</span></div>
-                <div class="rt">
+                <div class="skey"><span><i class="aw"></i>Awaiting confirmation</span><span><i class="cf"></i>Confirmed</span><span><i class="ci"></i>Checked in</span></div>
+                <div class="rt rel">
                   <span></span><div class="hrs"><span>08</span><span>10</span><span>12</span><span>14</span><span>16</span><span>18</span></div>
                   <span>Focus 1 · 2 ppl</span><div class="trk"><em class="ci" style="--s:9;--e:10">Tala</em><em class="aw" style="--s:14;--e:15.5">Shahd</em></div>
-                  <span>Focus 2 · 3 ppl</span><div class="trk"><em class="cf rel" style="--s:10;--e:11">Fatima</em><span class="touch" style="left:25%;top:50%"></span></div>
+                  <span>Focus 2 · 3 ppl</span><div class="trk"><em class="cf" style="--s:10;--e:11">Fatima</em><span class="touch" style="left:25%;top:50%"></span></div>
                   <span>Focus 3 · 4 ppl</span><div class="trk"><em class="ci" style="--s:9.5;--e:11">Shahd</em><em class="aw" style="--s:13.5;--e:15">Tala</em></div>
                   <span>Big Room 1</span><div class="trk"><em class="cf" style="--s:12;--e:13">Fatima</em></div>
                   <span>Big Room 2</span><div class="trk"><em class="aw" style="--s:15;--e:17">Leen</em></div>
                   <span class="now"></span>
                   <i class="pin">3</i>
                 </div>
-                <span class="sm rel">The line is now (09:30). Click a booking to check its renter in, or free time to book for someone.<i class="pin">4</i></span>
+                <span class="sm">The line is now. Click a booking to check its renter in.</span>
               </div>
               <div class="box">
-                <div class="row btw rel"><span class="h2">Today's bookings <span class="sm">· 7</span></span><span class="b" style="font-size:8px">Sort: Time ▾</span><i class="pin">5</i></div>
+                <div class="row btw"><span class="h2">Today's bookings <span class="sm">· 7</span></span><span class="b" style="font-size:8px">Sort: Time ▾</span></div>
                 <table class="tbl">
                   <thead><tr><th>Renter</th><th>Room</th><th>Time</th><th>Reason</th><th>Status</th></tr></thead>
                   <tbody>
                     <tr><td>Tala Kherawish</td><td>Focus Room 1</td><td>09:00–10:00</td><td>Study</td><td>● Checked in</td></tr>
                     <tr><td>Shahd Mallah</td><td>Focus Room 3</td><td>09:30–11:00</td><td>Client call</td><td>● Checked in</td></tr>
-                    <tr><td>Fatima Alkilani</td><td>Focus Room 2</td><td>10:00–11:00</td><td>Study</td><td>○ Upcoming</td></tr>
-                    <tr><td>Fatima Alkilani</td><td>Big Room 1</td><td>12:00–13:00</td><td>Meeting</td><td>○ Upcoming</td></tr>
-                    <tr><td>Tala Kherawish</td><td>Focus Room 3</td><td>13:30–15:00</td><td>Client call</td><td>○ Upcoming</td></tr>
-                    <tr><td colspan="5"><span class="t w45" style="display:inline-block;width:45%"></span></td></tr>
+                    <tr><td>Fatima Alkilani</td><td>Focus Room 2</td><td>10:00–11:00</td><td>Study</td><td>○ Confirmed</td></tr>
+                    <tr><td colspan="5"><span class="t" style="display:inline-block;width:45%"></span></td></tr>
                   </tbody>
                 </table>
               </div>
@@ -1103,210 +1036,128 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
           </div>
         </div>
       </div>
-      <figcaption><span class="sn">1</span><span><b>Today</b><span class="sid">S-01</span><br><span class="cap">The desk's home: status, seats, notices, the whole day of rooms, and today's bookings.</span></span></figcaption>
+      <figcaption><span class="sn">1</span><span><b>Today</b><span class="sid">S-01</span></span></figcaption>
     </figure>
 
-    <div class="arrow"><span class="act">Click Fatima's booking, or Check-in</span><span class="shaft"></span><span class="tap">+1 click</span></div>
+    <div class="arrow"><span class="act">Click Fatima's booking, or Check-in</span><span class="shaft"></span><span class="tap">+1</span></div>
 
     <figure class="step wide">
       <div class="dw">
         <div class="dw-chrome"><i></i><i></i><i></i><span class="url">sit / s / checkin</span></div>
         <div class="dw-side">
           <span class="logo" style="align-self:flex-start;margin-bottom:8px">LOGO</span>
-          <span class="sm" style="padding:0 6px 3px">Reception</span>
+          <span class="sm" style="padding:0 6px 3px">Desk</span>
           <span class="nv">Today</span>
           <span class="nv on">Check-in</span>
           <span class="nv">Notices</span>
-          <span class="nv">Reports<span class="ph">Next</span></span>
-          <span class="nv">Bookings<span class="ph">Next</span></span>
-          <span class="nv">Insights<span class="ph">Later</span></span>
           <span class="nv">Settings</span>
-          <span class="sm" style="margin-top:auto;padding:0 6px">Reception computer · Technopark</span>
+          <span class="sm" style="margin-top:auto;padding:0 6px">Reception computer</span>
         </div>
         <div class="dw-main">
           <div class="row"><span class="sm">Thu 1 Oct · 09:30</span><span class="sp"></span><span class="chip f"><b>18 / 40</b> Open-area seats</span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span><span class="col"><b>Rana</b><span class="sm">Reception</span></span></div>
-          <div class="row btw"><span class="h1">Check-in / check-out</span><span class="btn sm rel">+ New walk-in<i class="pin">6</i></span></div>
+          <div class="row btw"><span class="h1">Check-in / check-out</span><span class="btn sm">+ New walk-in</span></div>
           <div class="dw-grid" style="grid-template-columns:minmax(0,1fr) 200px">
             <div class="box">
-              <div class="field"><span class="ico o" style="width:9px;height:9px"></span>Search by name or phone</div>
+              <div class="row" style="min-height:24px;padding:4px 7px;border:1px solid var(--wire);border-radius:8px;color:var(--muted)"><span class="ico o" style="width:9px;height:9px"></span>Search by name or phone</div>
               <span class="sm">Showing today's bookers and people inside.</span>
               <div class="person">
                 <span class="b">Leen Anabtawi</span><span class="sm">+970 599 100 201</span>
-                <span class="sm rel" style="color:var(--ink)">Big Room 2 · 15:00–17:00 · <span class="dot half" style="vertical-align:0"></span> Awaiting confirmation · check-in from 14:30<i class="pin l" style="top:-3px;left:-17px">7</i></span>
-                <div class="row"><span class="btn">Book for this person</span><span class="btn">Check in · walk-in</span></div>
+                <span class="sm rel" style="color:var(--ink)">Big Room 2 · 15:00–17:00 · Awaiting confirmation · check-in from 14:30<i class="pin" style="top:-3px">4</i></span>
+                <div class="row"><span class="btn">Check in · walk-in</span></div>
               </div>
               <div class="person">
-                <span><b>Tala Kherawish</b> <span class="sm">· Inside</span></span><span class="sm">+970 599 100 202</span>
-                <span class="sm" style="color:var(--ink)">Focus Room 1 · 09:00–10:00 · ● Used</span>
-                <span class="sm" style="color:var(--ink)">Focus Room 3 · 13:30–15:00 · <span class="dot half" style="vertical-align:0"></span> Awaiting confirmation · check-in from 13:00</span>
-                <div class="row"><span class="btn">Book for this person</span><span class="btn">Check out</span></div>
+                <span><b>Tala Kherawish</b> <span class="sm">· Inside · Focus Room 1</span></span><span class="sm">+970 599 100 202</span>
+                <span class="sm" style="color:var(--ink)">Focus Room 1 · 09:00–10:00 · Checked in</span>
+                <div class="row"><span class="btn">Check out</span></div>
               </div>
-              <div class="person rel">
+              <div class="person">
                 <span class="b">Fatima Alkilani</span><span class="sm">+970 599 100 204</span>
-                <span class="sm" style="color:var(--ink)">Focus Room 2 · 10:00–11:00 · ● Confirmed</span>
-                <span class="sm" style="color:var(--ink)">Big Room 1 · 12:00–13:00 · ● Confirmed · check-in from 11:30</span>
-                <div class="row"><span class="btn">Book for this person</span><span class="btn pri rel">Check in · Focus Room 2<span class="touch" style="left:88%;top:50%"></span><i class="pin">8</i></span></div>
+                <span class="sm" style="color:var(--ink)">Focus Room 2 · 10:00–11:00 · Confirmed</span>
+                <div class="row"><span class="btn pri rel">Check in · Focus Room 2<span class="touch" style="left:88%;top:50%"></span><i class="pin">5</i></span></div>
               </div>
-              <div class="person" style="border-bottom:0"><span class="t w30"></span><span class="t w45"></span></div>
             </div>
             <div class="card">
               <span class="row sm"><span class="dot hol"></span>Live · Open-area seats</span>
               <div class="row btw"><span class="cbtn">−</span><span><span class="num">18</span> <span class="b" style="color:var(--muted);font-size:11px">/ 40</span></span><span class="cbtn pri">+</span></div>
               <div class="ticks"></div>
-              <div class="row btw"><span class="sm grow">Renters see this number on the Sit home page.</span><span class="lnk" style="font-size:8px">View log</span></div>
             </div>
           </div>
         </div>
       </div>
-      <figcaption><span class="sn">2</span><span><b>Check-in / check-out</b><span class="sid">S-02</span><br><span class="cap">One card per person with only the buttons that make sense right now. After the click: "Fatima Alkilani checked in to Focus Room 2".</span></span></figcaption>
+      <figcaption><span class="sn">2</span><span><b>Check-in / check-out</b><span class="sid">S-02</span></span></figcaption>
     </figure>
   </div>
 
   <ol class="notes">
-    <li><i class="pin">1</i><p>If today's status isn't posted, a banner says so with the button to fix it. It clears once staff post a notice marked as the daily status.<span class="law">Make important actions obvious · feedback</span></p></li>
-    <li><i class="pin">2</i><p>Large − and + buttons for the seat count, and a reminder that renters see this exact number.<span class="law">Fitts's Law · visibility of system status</span></p></li>
-    <li><i class="pin">3</i><p>Every room's day on one timeline with a line for now. Booking state is shown by fill and outline, with a key.<span class="law">Visibility of status · labels, not colour alone</span></p></li>
-    <li><i class="pin">4</i><p>Click a booking to check its renter in; click free time to book for someone with the form already filled.<span class="law">Fewer clicks for the most common desk tasks</span></p></li>
-    <li><i class="pin">5</i><p>Today's bookings sort by time, room, renter or status, because the desk gets different questions.<span class="law">User control</span></p></li>
-    <li><i class="pin">6</i><p>A new walk-in uses the same sign-up form as the app: name, phone, email.<span class="law">Consistency</span></p></li>
-    <li><i class="pin">7</i><p>A booking only counts from 30 minutes before it starts. Someone arriving early is a walk-in until then, and the button says so.<span class="law">Prevent errors · match the real process</span></p></li>
-    <li><i class="pin">8</i><p>The main button names exactly what will happen. When public seating is full, the walk-in button says "Public seating full" and is disabled.<span class="law">Feedback · prevent errors</span></p></li>
+    <li><i class="pin">1</i><p>A banner until today's status is posted.<span class="law">Make important actions obvious</span></p></li>
+    <li><i class="pin">2</i><p>Big − / + buttons; renters see this exact number.<span class="law">Fitts's Law</span></p></li>
+    <li><i class="pin">3</i><p>Every room's day on one timeline, with a line for now.<span class="law">Visibility of status</span></p></li>
+    <li><i class="pin">4</i><p>A booking counts from 30 min before; earlier arrivals are walk-ins.<span class="law">Match the real process</span></p></li>
+    <li><i class="pin">5</i><p>One button per person, naming exactly what happens.<span class="law">Feedback</span></p></li>
   </ol>
 </section>
 
 <!-- ============ EDGE STATES ============ -->
 <section class="sec" id="edge" aria-labelledby="h-edge">
-  <div class="flow-head">
-    <div>
-      <p class="eyebrow">Edge states · Renter app</p>
-      <h2 id="h-edge">When something goes wrong</h2>
-      <p class="intro">Each of these screens tells the person what happened and gives a way forward. None of them is a dead end.</p>
-    </div>
-  </div>
+  <h2 id="h-edge">When something goes wrong</h2>
+  <p class="intro">Each screen says what happened and offers a way forward.</p>
 
   <div class="strip gallery" tabindex="0" role="region" aria-label="Edge state frames">
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="btn sm pri">Log in</span></div>
-        <div class="backdrop" style="height:150px"><span class="t w60"></span><span class="t w90"></span><span class="t w45"></span><span class="t w75"></span><span class="t w60"></span></div>
-        <div class="sheet">
-          <div class="grab"></div>
-          <div class="row btw"><span class="h2 rel">Log in to continue<i class="pin" style="top:-3px;right:-22px">1</i></span><span class="x">×</span></div>
-          <span style="color:var(--muted)">Browsing is open to everyone. To book, see your bookings or report a problem, log in with your phone.</span>
-          <div class="btn pri big">Sign up</div>
-          <div class="btn big">Log in</div>
-          <div style="height:12px"></div>
-        </div>
-      </div>
-      <figcaption><span class="sn">1</span><span><b>Log-in sheet</b><span class="sid">R-09</span><br><span class="cap">A guest taps Book, My bookings or Report.</span></span></figcaption>
-    </figure>
-
-    <figure class="step">
-      <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="btn sm pri">Log in</span></div>
-        <div class="wf-body">
-          <span class="back">Back</span>
-          <div class="h1">Enter the code</div>
-          <span>We sent a code to +970 599 100 202.</span>
-          <div class="row rel" style="gap:8px;justify-content:center;margin:8px 0"><span class="field" style="width:34px;height:40px;justify-content:center;color:var(--ink);font-size:14px">4</span><span class="field" style="width:34px;height:40px;justify-content:center;color:var(--ink);font-size:14px">2</span><span class="field" style="width:34px;height:40px;border:1.5px solid var(--ink)"></span><span class="field" style="width:34px;height:40px"></span><i class="pin">2</i></div>
-          <div class="btn off big">Verify</div>
-          <span class="sm ctr">Resend in 28 s</span>
-          <span class="t w75" style="margin-top:10px"></span><span class="t w45"></span>
-        </div>
-        <div class="wf-tabs"><span>Map</span><span>Rooms</span><span>My bookings</span><span>Report</span></div>
-      </div>
-      <figcaption><span class="sn">2</span><span><b>Enter the code</b><span class="sid">R-11</span><br><span class="cap">After sign up (name, phone, email) or log in (phone).</span></span></figcaption>
-    </figure>
-
-    <figure class="step">
-      <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="ico o"></span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
         <div class="wf-body">
           <div class="h1">Slot just taken</div>
-          <div class="box strong rel"><span class="b">Someone booked Big Room 2 at 10:00–12:00 a moment ago.</span><i class="pin">3</i></div>
-          <span class="lab" style="margin-top:4px">Nearest free times in Big Room 2</span>
-          <div class="g2"><span class="btn">12:00–14:00</span><span class="btn">17:00–18:00</span></div>
+          <div class="box strong"><span class="b">Someone booked Big Room 2 at 10:00–12:00 a moment ago.</span></div>
+          <span class="lab" style="margin-top:4px">Big Room 2, other times</span>
+          <div class="list">
+            <div class="li"><b class="grow">12:00–14:00</b><span class="chev"></span></div>
+            <div class="li"><b class="grow">13:00–15:00</b><span class="chev"></span></div>
+          </div>
           <span class="lab" style="margin-top:4px">Other rooms free at 10:00–12:00</span>
           <div class="list">
             <div class="li"><span class="grow">Big Room 1 · 10 ppl</span><span class="chev"></span></div>
             <div class="li"><span class="grow">Focus Room 2 · 3 ppl</span><span class="chev"></span></div>
           </div>
         </div>
-        <div class="wf-tabs"><span>Map</span><span>Rooms</span><span>My bookings</span><span>Report</span></div>
+        <div class="wf-tabs"><span>Map</span><span>Rooms</span><span>My bookings</span></div>
       </div>
-      <figcaption><span class="sn">3</span><span><b>Slot just taken</b><span class="sid">R-07</span><br><span class="cap">Two people confirmed the same time; the second sees this.</span></span></figcaption>
+      <figcaption><span class="sn">1</span><span><b>Slot just taken</b><span class="sid">R-07</span></span></figcaption>
     </figure>
 
     <figure class="step">
       <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="ico o"></span><span class="av"></span></div>
+        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="b" style="font-size:8.5px">عربي</span><span class="av"></span></div>
         <div class="backdrop" style="height:190px"><span class="t w60"></span><span class="t w90"></span><span class="t w45"></span><span class="t w75"></span></div>
         <div class="sheet">
           <div class="grab"></div>
           <div class="row btw" style="align-items:flex-start"><div class="col"><span class="h2">Focus Room 2</span><span class="sm">3 ppl · 10 m² · Sockets · Screen</span></div><span class="x">×</span></div>
-          <div class="box rel" style="background:var(--hatch)"><span class="b" style="background:var(--sheet);align-self:flex-start;padding:0 3px">Out of service</span><span style="background:var(--sheet);align-self:flex-start;padding:0 3px">AC repair</span><i class="pin">4</i></div>
+          <div class="box" style="background:var(--hatch)"><span class="b" style="background:var(--sheet);align-self:flex-start;padding:0 3px">Out of service</span><span style="background:var(--sheet);align-self:flex-start;padding:0 3px">AC repair</span></div>
           <div class="foot"><span class="btn pri">Find another room</span></div>
         </div>
       </div>
-      <figcaption><span class="sn">4</span><span><b>Room out of service</b><span class="sid">R-01</span><br><span class="cap">Staff marked the room down (S-06).</span></span></figcaption>
-    </figure>
-
-    <figure class="step">
-      <div class="wf">
-        <div class="wf-top"><span class="logo">LOGO</span><span class="sp"></span><span class="ico o"></span><span class="av"></span></div>
-        <div class="wf-body">
-          <span class="back">Back</span>
-          <div class="row"><span class="h1">Booking paused</span><span class="ph" style="font-size:7px">Later</span></div>
-          <div class="box strong rel"><span>You missed 3 bookings this month. You can book again on 8 Oct.</span><span class="sm">Rule: 3 no-shows within 30 days pauses booking for 7 days.</span><i class="pin">5</i></div>
-          <span>You can still browse the map, rooms and today's status.</span>
-          <div class="btn pri big">Back to the map</div>
-        </div>
-        <div class="wf-tabs"><span>Map</span><span>Rooms</span><span>My bookings</span><span>Report</span></div>
-      </div>
-      <figcaption><span class="sn">5</span><span><b>Booking paused</b><span class="sid">R-21</span><span class="ph">Later</span><br><span class="cap">After repeated no-shows.</span></span></figcaption>
+      <figcaption><span class="sn">2</span><span><b>Room out of service</b><span class="sid">R-01</span></span></figcaption>
     </figure>
   </div>
-
-  <ol class="notes">
-    <li><i class="pin">1</i><p>Log in is asked for at the moment it's needed and explains why. After logging in, the person lands back on the booking they started.<span class="law">Context · don't lose the user's work</span></p></li>
-    <li><i class="pin">2</i><p>No password: a 4-digit code by SMS. Sign up asks only name, phone and email; the rest can wait for the profile.<span class="law">Reduce friction · fewer fields</span></p></li>
-    <li><i class="pin">3</i><p>The clash is explained in one sentence, followed by the nearest free times in the same room and other free rooms at the same time.<span class="law">Help users recover from errors</span></p></li>
-    <li><i class="pin">4</i><p>A room that is down says why, and the only button leads to another room.<span class="law">Visibility of status · a way forward</span></p></li>
-    <li><i class="pin">5</i><p>A pause names the reason, the rule and the date it ends, and leaves browsing open.<span class="law">Clear, fair feedback</span></p></li>
-  </ol>
 </section>
 
 <!-- ============ PRINCIPLES ============ -->
 <section class="sec" aria-labelledby="h-laws">
-  <p class="eyebrow">Index</p>
-  <h2 id="h-laws">Where each principle shows up</h2>
+  <h2 id="h-laws">Principles index</h2>
   <div class="tablewrap" tabindex="0" role="region" aria-label="Principles index">
     <table class="taps">
-      <thead><tr><th>Principle</th><th>What it says</th><th>Where in the wireframes</th></tr></thead>
+      <thead><tr><th>Principle</th><th>Where</th></tr></thead>
       <tbody>
-        <tr><td><b>Jakob's Law</b></td><td>People expect it to work like apps they know</td><td class="path">Tab bar, bottom sheets, large titles, segmented controls (all phone flows)</td></tr>
-        <tr><td><b>Fitts's Law</b></td><td>Important targets are big and easy to reach</td><td class="path">Full-width main button at the bottom (F2·5), 44 px timeline rows (F2·3), − / + seat buttons (F6·2)</td></tr>
-        <tr><td><b>Hick's Law</b></td><td>More choices, slower decisions</td><td class="path">Four activity chips (F1·9), review asks only the reason (F2·6)</td></tr>
-        <tr><td><b>Miller's Law</b></td><td>Show information in small groups</td><td class="path">Three glance tiles (F1·3), one-line map key (F1·8)</td></tr>
-        <tr><td><b>Von Restorff</b></td><td>The item that looks different gets noticed</td><td class="path">One filled button per screen (F1·6, F2·5, F4·4)</td></tr>
-        <tr><td><b>Peak-End Rule</b></td><td>People remember the peak and the ending</td><td class="path">Confirmation page with Undo (F2·8)</td></tr>
-        <tr><td><b>Clicks to treasure</b></td><td>Fewest steps to the main value</td><td class="path">Status on open (F1), one-tap confirm (F4·1), more days in the same sheet (F3·6)</td></tr>
-        <tr><td><b>Prevent errors, allow recovery</b></td><td>Stop mistakes early; make them cheap to undo</td><td class="path">Disabled buttons with reasons, skipped days named before confirming, Undo, Slot just taken</td></tr>
-        <tr><td><b>Accessibility</b></td><td>Works for everyone, in context</td><td class="path">Words next to every colour state, Arabic with right-to-left layout, 44 px targets</td></tr>
+        <tr><td><b>Jakob's Law</b></td><td class="path">Tab bar, bottom sheets, segmented controls</td></tr>
+        <tr><td><b>Fitts's Law</b></td><td class="path">Full-width bottom buttons, 44 px timeline rows, − / + seat buttons</td></tr>
+        <tr><td><b>Hick's Law</b></td><td class="path">Four activity chips (F1), review asks only the reason (F2)</td></tr>
+        <tr><td><b>Miller's Law</b></td><td class="path">Three status tiles (F1)</td></tr>
+        <tr><td><b>Von Restorff</b></td><td class="path">One filled button per screen</td></tr>
+        <tr><td><b>Peak-End Rule</b></td><td class="path">Confirmation page with Undo (F2)</td></tr>
+        <tr><td><b>Prevent errors, allow recovery</b></td><td class="path">Disabled buttons, skipped days named first, Undo, Slot just taken</td></tr>
+        <tr><td><b>Accessibility</b></td><td class="path">Words next to every colour state, Arabic right-to-left, 44 px targets</td></tr>
       </tbody>
     </table>
-  </div>
-  <p class="intro" style="margin-top:14px">The Aesthetic-Usability Effect belongs to the next stage. These frames are deliberately plain; the prototype adds the visual design.</p>
-</section>
-
-<!-- ============ NEXT ============ -->
-<section class="sec" aria-labelledby="h-next">
-  <p class="eyebrow">Next step</p>
-  <h2 id="h-next">Test the structure with real people</h2>
-  <div class="intro" style="display:grid;gap:10px;color:var(--ink)">
-    <p style="margin:0">Every decision above comes from our own reviews. Before more polish, five people should try the flows: three renters and two reception staff, three tasks each.</p>
-    <p style="margin:0"><b>Tasks:</b> find a free room right now · book the same room on two days · cancel one booking. For reception: check in someone who arrives early.</p>
-    <p style="margin:0"><b>Watch for:</b> where they hesitate, how many taps they really need compared with the counts above, and what they expected a button to do. Change the wireframe first, then the prototype.</p>
   </div>
 </section>
 
