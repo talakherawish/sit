@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL, useSpaceName } from '../lib/hooks'
-import { ACTIVE, activeNotices, normPhone, staffStatus, dateOf, minOfDay, renter as findRenter } from '../lib/logic'
+import { ACTIVE, activeNotices, normPhone, staffStatus, dateOf, endAbs, minOfDay, startAbs, renter as findRenter } from '../lib/logic'
 import { fmtAbs, hm } from '../lib/time'
 import { Card, Modal, PhaseBadge, ScreenId, StatusChip } from '../components/ui'
 import Icon from '../components/Icon'
@@ -214,10 +214,17 @@ export function CheckIn() {
     ql ? r.name.toLowerCase().includes(ql) || (normPhone(ql) && normPhone(r.phone).includes(normPhone(ql))) : bookersToday.has(r.id) || open.has(r.id),
   )
 
-  const doIn = (r) => {
-    const via = s.checkIn(r.id)
-    s.showToast(via === 'sit' ? 'toast.checked_in_sit' : 'toast.checked_in_walk', { name: r.name })
+  const doIn = (r, bookingId) => {
+    const res = s.checkIn(r.id, bookingId)
+    if (res.error) return s.showToast(`toast.err_${res.error}`, { name: r.name })
+    s.showToast(res.via === 'sit' ? 'toast.checked_in_room' : 'toast.checked_in_walk', {
+      name: r.name,
+      room: res.bookingId ? name(s.data.bookings.find((b) => b.id === res.bookingId).space_id) : '',
+    })
   }
+  // A booking can be checked in from 30 minutes before it starts until it ends.
+  const isDue = (b) => ['awaiting_confirmation', 'confirmed'].includes(b.status) && startAbs(b) - 30 <= s.now && endAbs(b) > s.now
+  const seatsFull = s.data.seats.taken >= s.data.seats.total
   const doOut = (r) => {
     const via = s.checkOut(r.id)
     s.showToast(via === 'sit' ? 'toast.checked_out_rate' : 'toast.checked_out', { name: r.name })
@@ -242,45 +249,69 @@ export function CheckIn() {
           <ul className="mt-3 divide-y divide-black/[0.06]" aria-live="polite">
             {!results.length && <li className="py-4 text-grey-ink">{t('staff.no_results')}</li>}
             {results.map((r) => {
-              const isIn = open.has(r.id)
-              const todays = s.data.bookings.filter((b) => b.renter_id === r.id && b.date === date)
+              const visit = s.data.visits.find((v) => v.renter_id === r.id && !v.check_out)
+              const todays = s.data.bookings.filter((b) => b.renter_id === r.id && b.date === date).sort((x, y) => x.start - y.start)
+              const due = todays.filter(isDue)
+              const where = visit ? (visit.seat ? t('staff.at_public') : name(s.data.bookings.find((b) => b.id === visit.booking_id)?.space_id)) : null
               return (
-                <li key={r.id} className={`flex flex-wrap items-center gap-3 py-3 ${pre?.id === r.id ? 'bg-navy/5' : ''}`}>
-                  <div className="min-w-48 flex-1">
-                    <p className="font-semibold">
-                      {r.name} {isIn && <StatusChip status="checked_in" label={t('staff.inside')} />}
+                <li key={r.id} className={`flex flex-wrap items-start gap-3 py-4 ${pre?.id === r.id ? 'bg-navy/5' : ''}`}>
+                  <div className="min-w-56 flex-1">
+                    <p className="flex flex-wrap items-center gap-2 text-[17px] font-semibold">
+                      {r.name} {visit && <StatusChip status="checked_in" label={`${t('staff.inside')} · ${where}`} />}
                     </p>
-                    <p className="text-sm text-grey-ink" dir="ltr">
+                    <p className="text-[13px] text-grey-ink" dir="ltr">
                       {r.phone}
                     </p>
-                    <div className="mt-1 flex flex-wrap gap-1">
+                    <ul className="mt-2 space-y-1.5">
                       {todays.length ? (
                         todays.map((b) => (
-                          <span key={b.id} className="text-sm">
-                            {name(b.space_id)} ·{' '}
-                            <span dir="ltr">
-                              {hm(b.start)}–{hm(b.end)}
-                            </span>{' '}
+                          <li key={b.id} className="flex flex-wrap items-center gap-2 text-[15px]">
+                            <span>
+                              {name(b.space_id)} ·{' '}
+                              <span dir="ltr" className="tabular-nums">
+                                {hm(b.start)}–{hm(b.end)}
+                              </span>
+                            </span>
                             <StatusChip status={b.status} />
-                          </span>
+                            {isDue(b)
+                              ? visit && (
+                                  <button className="btn-secondary !min-h-9 !px-3 !text-[14px]" onClick={() => doIn(r, b.id)}>
+                                    {t('staff.move_to_room', { room: name(b.space_id) })}
+                                  </button>
+                                )
+                              : ACTIVE.includes(b.status) &&
+                                b.status !== 'used' &&
+                                startAbs(b) > s.now && <span className="text-[13px] text-grey-ink">{t('staff.checkin_from', { time: hm(b.start - 30) })}</span>}
+                          </li>
                         ))
                       ) : (
-                        <span className="text-sm text-grey-ink">{t('staff.no_booking_today')}</span>
+                        <li className="text-[15px] text-grey-ink">{t('staff.no_booking_today')}</li>
                       )}
-                    </div>
+                    </ul>
                   </div>
-                  <Link to={`/s/book-for?renter=${r.id}`} className="btn-secondary">
-                    {t('staff.book_for')} <PhaseBadge phase="next" />
-                  </Link>
-                  {isIn ? (
-                    <button className="btn-secondary min-w-32" onClick={() => doOut(r)}>
-                      {t('staff.check_out')}
-                    </button>
-                  ) : (
-                    <button className="btn-primary min-w-32" onClick={() => doIn(r)}>
-                      {t('staff.check_in')}
-                    </button>
-                  )}
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Link to={`/s/book-for?renter=${r.id}`} className="btn-secondary">
+                      {t('staff.book_for')}
+                    </Link>
+                    {visit ? (
+                      <button className="btn-secondary min-w-36" onClick={() => doOut(r)}>
+                        {t('staff.check_out')}
+                      </button>
+                    ) : due.length ? (
+                      <button className="btn-primary min-w-36 !text-[16px]" onClick={() => doIn(r, due[0].id)}>
+                        {t('staff.check_in_to', { room: name(due[0].space_id) })}
+                      </button>
+                    ) : (
+                      <button
+                        className="btn-primary min-w-36 !text-[16px]"
+                        disabled={seatsFull}
+                        onClick={() => doIn(r)}
+                        title={seatsFull ? t('toast.err_full') : undefined}
+                      >
+                        {seatsFull ? t('staff.seats_full') : t('staff.check_in_walk')}
+                      </button>
+                    )}
+                  </div>
                 </li>
               )
             })}

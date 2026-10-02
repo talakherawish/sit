@@ -243,7 +243,7 @@ export function ReportsInbox() {
                   <td className="py-3 text-sm">{fmtAbs(r.history[0].time, s.lang)}</td>
                   <td className="font-medium">{findRenter(s.data, r.renter_id)?.name}</td>
                   <td>{name(r.space_id)}</td>
-                  <td>{t(`issue.${r.type}`)}</td>
+                  <td>{r.types.map((k) => t(`issue.${k}`)).join(', ')}</td>
                   <td className="max-w-64 text-sm">
                     {r.note}
                     {r.photo && <span className="block text-grey-ink">📎 {r.photo}</span>}
@@ -423,8 +423,10 @@ export function BookFor() {
     .sort((a, b) => startAbs(a) - startAbs(b))
     .slice(0, 12)
   const submit = (f) => {
-    const { ids } = s.createBooking({ ...f, renterId: r.id }, { createdBy: 'staff', source: 'staff' })
-    if (ids.length) s.showToast('toast.staff_booked', { name: r.name })
+    const { ids, clashes } = s.createBooking({ ...f, renterId: r.id }, { createdBy: 'staff', source: 'staff' })
+    if (!ids.length) return s.showToast('toast.err_nothing_booked', { name: r.name })
+    if (clashes) s.showToast('toast.err_clash', { name: r.name, count: clashes })
+    else s.showToast('toast.staff_booked', { name: r.name })
     setFormKey(formKey + 1)
   }
   return (
@@ -494,7 +496,7 @@ export function BookFor() {
         <Card className="self-start">
           <h2 className="mb-3 font-head text-xl font-bold">2 · {t('bookfor.what')}</h2>
           {r ? (
-            <BookingForm key={formKey} initial={prefill} onSubmit={submit} submitLabel={t('bookfor.book', { name: r.name.split(' ')[0] })} />
+            <BookingForm key={formKey} renterId={r.id} initial={prefill} onSubmit={submit} submitLabel={t('bookfor.book', { name: r.name.split(' ')[0] })} />
           ) : (
             <p className="text-grey-ink">{t('bookfor.pick_first')}</p>
           )}

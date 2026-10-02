@@ -28,7 +28,8 @@ export function Book() {
       s.set({ draft: { ...f, source } })
       return navigate('/r/taken')
     }
-    const { ids, skipped } = s.createBooking({ ...f, renterId: me.id }, { source })
+    const { ids, skipped, clashes } = s.createBooking({ ...f, renterId: me.id }, { source })
+    if (!ids.length && clashes) return s.showToast('toast.err_nothing_booked', { name: me.name.split(' ')[0] })
     s.set({ draft: null })
     if (!ids.length) return navigate('/r/taken')
     navigate(`/r/confirmed/${ids[0]}`, { replace: true, state: { fresh: true } })
@@ -48,7 +49,7 @@ export function Book() {
         {quick ? (
           <QuickReview draft={d} onSubmit={submit} onEdit={() => setFull(true)} />
         ) : (
-          <BookingForm key={JSON.stringify(d)} initial={d || {}} onSubmit={submit} />
+          <BookingForm key={JSON.stringify(d)} renterId={me.id} initial={d || {}} onSubmit={submit} />
         )}
       </div>
     </>
@@ -68,7 +69,10 @@ function QuickReview({ draft, onSubmit, onEdit }) {
   const [reminder, setReminder] = useState(null)
   const sp = data.spaces.find((x) => x.id === draft.spaceId)
   const dates = [...new Set(draft.dates?.length ? draft.dates : [draft.date])].filter((x) => hoursFor(data, x)).sort()
-  const free = dates.filter((x) => isFree(data, sp.id, x, draft.start, draft.end))
+  const renterId = useStore((s) => s.renterId)
+  // Skip days the room is taken, or you already have another booking at that time.
+  const mine = (x) => data.bookings.some((b) => b.renter_id === renterId && b.date === x && ACTIVE.includes(b.status) && b.start < draft.end && draft.start < b.end)
+  const free = dates.filter((x) => isFree(data, sp.id, x, draft.start, draft.end) && !mine(x))
   const skipped = dates.filter((x) => !free.includes(x))
   const remOpts = free.length ? REMINDERS.map((k) => ({ k, at: reminderAt(free[0], draft.start, k) })).filter((o) => o.at > now) : []
   const valid = free.length > 0 && reason && (reason !== 'other' || other.trim())

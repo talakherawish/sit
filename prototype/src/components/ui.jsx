@@ -260,7 +260,11 @@ export function Toast({ fixed }) {
         key={toast.id}
         className="animate-drop pointer-events-auto flex items-center gap-2 rounded-full bg-[#1c1c1e]/90 py-2 ps-5 pe-2 text-[15px] text-white shadow-xl backdrop-blur-xl"
       >
-        <Icon name="check" size={18} className="shrink-0 text-[#7fd1c3]" />
+        {toast.key.startsWith('toast.err_') ? (
+          <Icon name="info" size={18} className="shrink-0 text-amber" />
+        ) : (
+          <Icon name="check" size={18} className="shrink-0 text-[#7fd1c3]" />
+        )}
         <span className="py-1">{t(toast.key, toast.params)}</span>
         {toast.undo ? (
           <button

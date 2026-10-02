@@ -2,13 +2,13 @@ import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL } from '../lib/hooks'
-import { REASONS, REMINDERS, hoursFor, isFree, reminderAt, dateOf, minOfDay } from '../lib/logic'
+import { ACTIVE, REASONS, REMINDERS, hoursFor, isFree, reminderAt, dateOf, minOfDay } from '../lib/logic'
 import { addDays, fmtDate, fmtAbs, hm, ceil30, weekdayName } from '../lib/time'
 import CalendarPicker from './Calendar'
 import { Chip, Group, GroupRow, PhaseBadge, RowSelect, SectionLabel, Segmented, Switch } from './ui'
 
 /** The single booking form behind every way to book (R-06, S-07). */
-export default function BookingForm({ initial = {}, onSubmit, submitLabel, compact }) {
+export default function BookingForm({ initial = {}, onSubmit, submitLabel, compact, renterId }) {
   const { t } = useTranslation()
   const L = useL()
   const lang = useStore((s) => s.lang)
@@ -55,7 +55,13 @@ export default function BookingForm({ initial = {}, onSubmit, submitLabel, compa
   const sorted = [...dates].sort()
   const firstDate = sorted[0] || date
   const remOpts = start === null ? [] : REMINDERS.map((k) => ({ k, at: reminderAt(firstDate, start, k) })).filter((o) => o.at > now)
-  const freeDays = start === null || end === null ? [] : sorted.filter((d) => isFree(data, spaceId, d, start, end))
+  // The same person can't be in two places at once: days where they already have a booking then are skipped.
+  const clashOn = (d) =>
+    renterId && start !== null && end !== null
+      ? data.bookings.find((b) => b.renter_id === renterId && b.date === d && ACTIVE.includes(b.status) && b.start < end && start < b.end)
+      : null
+  const clashes = sorted.map((d) => clashOn(d)).filter(Boolean)
+  const freeDays = start === null || end === null ? [] : sorted.filter((d) => isFree(data, spaceId, d, start, end) && !clashOn(d))
   const toggleDay = (d) => {
     if (dates.includes(d)) {
       const rest = dates.filter((x) => x !== d)
@@ -122,6 +128,19 @@ export default function BookingForm({ initial = {}, onSubmit, submitLabel, compa
           </RowSelect>
         </GroupRow>
       </Group>
+
+      {clashes.length > 0 && (
+        <p className="-mt-3 rounded-2xl bg-amber/15 px-4 py-3 text-[15px] text-[#7a4f00]" role="alert">
+          {t('book.clash', {
+            list: clashes
+              .map(
+                (b) =>
+                  `${fmtDate(b.date, lang, { weekday: 'short', day: 'numeric' })} ${L(data.spaces.find((x) => x.id === b.space_id).label)} ${hm(b.start)}–${hm(b.end)}`,
+              )
+              .join(', '),
+          })}
+        </p>
+      )}
 
       <Group label={t('book.reason')} footer={!reason ? t('book.reason_required') : null}>
         <GroupRow label={t('book.purpose')} htmlFor="bf-reason">

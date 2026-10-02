@@ -48,6 +48,7 @@ function buildData() {
   d.visits.forEach((v) => {
     v.check_in = dt(v.check_in)
     v.check_out = dt(v.check_out)
+    v.seat = v.seat ?? v.via === 'walk_in'
   })
   d.seat_log.forEach((l) => {
     l.time = dt(l.time)
@@ -57,6 +58,7 @@ function buildData() {
     n.expires_at = dt(n.expires_at)
   })
   d.reports.forEach((r) => {
+    r.types = r.types || [r.type]
     r.history.forEach((h) => {
       h.time = dt(h.time)
     })
@@ -239,6 +241,7 @@ export const useStore = create(
     createBooking: (f, { createdBy = 'renter', source = 'map' } = {}) => {
       const ids = []
       let skipped = 0
+      let clashes = 0
       set((s) => {
         const dates = f.dates?.length ? [...f.dates] : [f.date]
         let seriesId = null
@@ -250,9 +253,16 @@ export const useStore = create(
             if (f.repeat.kind === 'weekly' ? wd === weekday(f.date) : f.repeat.days.includes(wd)) dates.push(d)
           }
         }
+        const clash = (date) =>
+          s.data.bookings.some((x) => x.renter_id === f.renterId && x.date === date && ACTIVE.includes(x.status) && x.start < f.end && f.start < x.end)
         for (const date of dates) {
           if (!isFree(s.data, f.spaceId, date, f.start, f.end)) {
             skipped++
+            continue
+          }
+          if (clash(date)) {
+            skipped++
+            clashes++
             continue
           }
           const rAt = f.reminder ? reminderAt(date, f.start, f.reminder) : null
@@ -289,7 +299,7 @@ export const useStore = create(
           logEvent(s, 'booking_created', { visitor_id: r.id, source, count: ids.length })
         }
       })
-      return { ids, skipped }
+      return { ids, skipped, clashes }
     },
 
     /** "Slot just taken" demo: someone else grabs the slot a moment before the renter. */
@@ -355,19 +365,43 @@ export const useStore = create(
       }),
 
     /** Returns 'sit' when the renter had a booking today, else 'walk_in'. */
-    checkIn: (renterId) => {
-      let via
+    /**
+     * Check someone in at reception. A booking counts only when it is due: from 30 minutes before it
+     * starts until it ends. Booked guests go to their room (no public seat); everyone else takes a
+     * public seat, if one is free. Someone already on a public seat whose booking comes due moves to
+     * the room and frees the seat. Returns { via, bookingId } or { error: 'full' | 'already_in' }.
+     */
+    checkIn: (renterId, bookingId = null) => {
+      let result
       set((s) => {
-        const b = s.data.bookings.find(
-          (x) => x.renter_id === renterId && x.date === dateOf(s.now) && ['awaiting_confirmation', 'confirmed'].includes(x.status) && endAbs(x) > s.now,
-        )
-        if (b) b.status = 'used'
-        s.data.visits.push({ id: uid('v'), renter_id: renterId, check_in: s.now, check_out: null, via: b ? 'sit' : 'walk_in', booking_id: b?.id })
-        changeSeats(s, +1, 'check_in')
-        via = b ? 'sit' : 'walk_in'
-        logEvent(s, 'check_in', { visitor_id: renterId, via })
+        const today = dateOf(s.now)
+        const open = s.data.visits.find((v) => v.renter_id === renterId && !v.check_out)
+        const due = (x) =>
+          x.renter_id === renterId &&
+          x.date === today &&
+          ['awaiting_confirmation', 'confirmed'].includes(x.status) &&
+          startAbs(x) - 30 <= s.now &&
+          endAbs(x) > s.now
+        const b = bookingId ? s.data.bookings.find((x) => x.id === bookingId && due(x)) : s.data.bookings.filter(due).sort((x, y) => x.start - y.start)[0]
+        if (b) {
+          b.status = 'used'
+          if (open) {
+            if (open.seat) changeSeats(s, -1, 'check_in')
+            Object.assign(open, { via: 'sit', booking_id: b.id, seat: false })
+          } else {
+            s.data.visits.push({ id: uid('v'), renter_id: renterId, check_in: s.now, check_out: null, via: 'sit', booking_id: b.id, seat: false })
+          }
+          result = { via: 'sit', bookingId: b.id }
+        } else {
+          if (open) return void (result = { error: 'already_in' })
+          if (s.data.seats.taken >= s.data.seats.total) return void (result = { error: 'full' })
+          s.data.visits.push({ id: uid('v'), renter_id: renterId, check_in: s.now, check_out: null, via: 'walk_in', booking_id: null, seat: true })
+          changeSeats(s, +1, 'check_in')
+          result = { via: 'walk_in' }
+        }
+        logEvent(s, 'check_in', { visitor_id: renterId, via: result.via })
       })
-      return via
+      return result
     },
     /** Returns how the closed visit was made; 'sit' visits trigger the rating (R-19). */
     checkOut: (renterId) => {
@@ -377,7 +411,7 @@ export const useStore = create(
         if (!v) return
         via = v.via
         v.check_out = s.now
-        changeSeats(s, -1, 'check_out')
+        if (v.seat) changeSeats(s, -1, 'check_out')
         if (v.via === 'sit') s.pendingRating[renterId] = v.id
         logEvent(s, 'check_out', { visitor_id: renterId })
       })
@@ -421,7 +455,7 @@ export const useStore = create(
     sendReport: (r) =>
       set((s) => {
         s.data.reports.unshift({ id: uid('r'), status: 'sent', history: [{ status: 'sent', time: s.now }], reply: null, ...r })
-        logEvent(s, 'report_sent', { visitor_id: r.renter_id, type: r.type })
+        logEvent(s, 'report_sent', { visitor_id: r.renter_id, types: r.types })
       }),
     updateReport: (id, status, reply) =>
       set((s) => {

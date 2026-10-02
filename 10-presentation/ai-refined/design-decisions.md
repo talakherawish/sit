@@ -72,6 +72,18 @@ We worked in **Design Thinking loops**: build from the spec, review it as a user
 
 ---
 
+## Round 7: Logic fixes on the reception dashboard
+
+| Decision | Why | Principle |
+|---|---|---|
+| Check-in only counts a booking when it's due (30 min before start until it ends); earlier arrivals are walk-ins until then, with a "Move to room" button when it comes due | Checking someone in at 09:30 marked their 15:00 booking as already used | Prevent errors; match the real-world process |
+| Only walk-ins take a public seat; people with a room booking don't change the open-area count, and a walk-in moving into their room frees their seat | The seat counter went up for people going to private rooms | Accurate system status |
+| No check-in when public seating is full (button says so) | The counter silently stopped at 40 | Prevent errors; feedback |
+| A person can't be booked into two rooms at the same time; the form warns before you submit and clashing days are skipped | Staff could double-book someone | Error prevention over error messages |
+| Clear messages when nothing could be booked, instead of a silent "booked" | Staff thought a booking went through when it didn't | Feedback after every action |
+| Reports can tick several issue types (e.g. AC and noise) | Real problems often come together | Match user needs; reduce extra reports |
+| Staff and renter tabs share the same live data | A check-in on the dashboard didn't appear in the app | Consistency; visibility of system status |
+
 ## Clicks to book (roughly)
 
 | Task | Before | Now |

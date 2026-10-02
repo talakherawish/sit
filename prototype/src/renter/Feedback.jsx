@@ -17,13 +17,14 @@ export function Report() {
   const s = useStore()
   const me = findRenter(s.data, s.renterId)
   const [where, setWhere] = useState(s.reportSpace || 'public')
-  const [type, setType] = useState(null)
+  const [types, setTypes] = useState([])
+  const toggle = (k) => setTypes(types.includes(k) ? types.filter((x) => x !== k) : [...types, k])
   const [note, setNote] = useState('')
   const [photo, setPhoto] = useState(null)
   if (!me) return <NeedLogin returnTo="/r/report" />
   const send = (e) => {
     e.preventDefault()
-    s.sendReport({ renter_id: me.id, space_id: where, type, note: note.trim(), photo })
+    s.sendReport({ renter_id: me.id, space_id: where, types, type: types[0], note: note.trim(), photo })
     s.set({ reportSpace: null })
     s.showToast('toast.report_sent')
     navigate('/r/reports')
@@ -48,9 +49,10 @@ export function Report() {
         </Field>
         <fieldset>
           <legend className="mb-1 text-sm font-medium">{t('report.type')}</legend>
+          <p className="mb-2 text-[13px] text-grey-ink">{t('report.type_hint')}</p>
           <div className="flex flex-wrap gap-2">
             {ISSUE_TYPES.map((k) => (
-              <Chip key={k} active={type === k} onClick={() => setType(k)}>
+              <Chip key={k} active={types.includes(k)} onClick={() => toggle(k)}>
                 {t(`issue.${k}`)}
               </Chip>
             ))}
@@ -67,7 +69,7 @@ export function Report() {
             onChange={(e) => setPhoto(e.target.files?.[0]?.name || null)}
           />
         </Field>
-        <button className="btn-primary w-full" disabled={!type}>
+        <button className="btn-primary w-full" disabled={!types.length}>
           {t('report.send')}
         </button>
       </form>
@@ -96,7 +98,7 @@ export function MyReports() {
             <div className="flex items-start justify-between gap-2">
               <div>
                 <h2 className="font-semibold">
-                  {t(`issue.${r.type}`)} · {name(r.space_id)}
+                  {r.types.map((k) => t(`issue.${k}`)).join(', ')} · {name(r.space_id)}
                 </h2>
                 {r.note && <p className="text-sm">{r.note}</p>}
               </div>

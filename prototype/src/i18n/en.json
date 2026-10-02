@@ -217,7 +217,8 @@
     "pick_days": "Pick one or more days.",
     "times_for": "Times shown for {{date}}. Days where the room is taken at this time are skipped.",
     "book_n_one": "Book {{count}} day",
-    "book_n_other": "Book {{count}} days"
+    "book_n_other": "Book {{count}} days",
+    "clash": "Already booked at this time: {{list}}. Those days will be skipped."
   },
   "reason": {
     "study": "Study / focused work",
@@ -330,7 +331,8 @@
     "note": "Short note",
     "photo": "Photo (optional)",
     "send": "Send",
-    "staff_reply": "Staff reply"
+    "staff_reply": "Staff reply",
+    "type_hint": "Pick all that apply."
   },
   "issue": {
     "ac": "AC",
@@ -498,7 +500,13 @@
     "sort_time": "Time",
     "sort_room": "Room",
     "sort_renter": "Renter",
-    "sort_status": "Status"
+    "sort_status": "Status",
+    "at_public": "public seating",
+    "move_to_room": "Move to {{room}}",
+    "checkin_from": "check-in from {{time}}",
+    "check_in_to": "Check in · {{room}}",
+    "check_in_walk": "Check in · walk-in",
+    "seats_full": "Public seating full"
   },
   "notices": {
     "title": "Notices",
@@ -629,7 +637,12 @@
     "room_down": "Room marked down · renters notified",
     "staff_booked": "Booked for {{name}} · SMS sent",
     "undone": "Undone",
-    "booked": "Booked"
+    "booked": "Booked",
+    "checked_in_room": "{{name}} checked in to {{room}}",
+    "err_full": "Public seating is full, so no seat to check {{name}} into",
+    "err_already_in": "{{name}} is already checked in",
+    "err_nothing_booked": "Nothing booked: the room is taken or {{name}} already has a booking then",
+    "err_clash": "Skipped {{count}} day(s) where {{name}} already has a booking"
   },
   "msg": {
     "code": "Your Sit code is {{code}}. It expires in 10 minutes.",
@@ -700,6 +713,6 @@
     "confirm_n_one": "Confirm {{count}} booking",
     "confirm_n_other": "Confirm {{count}} bookings",
     "edit": "Change room, days or time",
-    "skipped": "Not free at this time on {{days}}, so those days are skipped."
+    "skipped": "Not available on {{days}} (room taken, or you already have a booking then), so those days are skipped."
   }
 }

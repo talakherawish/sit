@@ -32,6 +32,8 @@ Open the prototype panel by **tapping the Technopark logo three times**, pressin
 
 Why each design choice was made, and which UX principle it follows: [10-presentation/ai-refined/design-decisions.md](../10-presentation/ai-refined/design-decisions.md).
 
+**Staff and renter stay in sync:** bookings, check-ins, seats, notices, reports and the simulated clock are shared between every open tab of the same browser (and kept across reloads), so a check-in on the staff dashboard shows up straight away in the renter app. There is no server, so two _different_ devices (e.g. staff laptop and your phone) do not share data. "Reset all data" in P-01 resets every tab.
+
 ## Demo start state
 
 The clock starts at **Thu 1 Oct 2026, 09:30**, and the app opens logged in as **Tala** with a lived-in account (bookings, alerts, reports, profile). Pick **Guest** in P-01 for the browse-without-an-account story (US-1). Seeded data lives in `src/data/mock-data.json`; "Reset all data" in P-01 reloads it.
