@@ -99,6 +99,17 @@ We worked in **Design Thinking loops**: build from the spec, review it as a user
 | Review shows one card when every day is the same, or a day-by-day list when rooms or times differ | People should see exactly what they're about to book | Visibility of system status |
 | Arabic spellings of everyone's names when the app is in Arabic (تالا خريوش، لين عنبتاوي، فاطمة الكيلاني، شهد ملّاح، أحمد سلامة، رنا) | Names in Latin letters looked out of place in the Arabic interface | Localization; consistency |
 
+## Round 9: All rooms' day on the phone
+
+| Decision | Why | Principle |
+|---|---|---|
+| Rooms page opens on a **Day view**: hours down the side, one column per room, bookings as blocks, a line and time pill for now, in the style of Apple Calendar's day view | The reception timeline showed the whole day well but only fits a desktop; renters need the same overview on a phone | Jakob's Law (a pattern people know from their calendar app); mobile-first |
+| Room names stay pinned at the top while the hours scroll | Columns are meaningless once you lose the header | Visibility; reduce memory load |
+| Today starts at the current hour; past time is shaded | Nobody books the past, so the screen shows what's still useful | Hick's Law; relevance |
+| Tap free time and that room's sheet opens with the day and time already picked | One tap from "I see a gap" to "I'm booking it" | Clicks to treasure; Fitts's Law |
+| Narrow columns show stacked times with a lock icon instead of the word "Booked" | The word was cut off in 60 px columns | Clarity over decoration; colour is never the only signal |
+| List view is kept one tap away (Day view / List) | Some people prefer a list of rooms with features | User control and freedom |
+
 ## Clicks to book (roughly)
 
 | Task | Before | Now |

@@ -737,5 +737,13 @@
     "renter": "Renter app · Tala",
     "staff": "Reception dashboard · Rana",
     "narrow": "The side-by-side demo needs a wider screen. Open each view on its own:"
+  },
+  "rooms_cal": {
+    "day_view": "Day view",
+    "list_view": "List",
+    "intro": "Every room on one day. Tap a free time to book it.",
+    "yours": "Yours",
+    "you": "Yours",
+    "free_at": "{{room}} free at {{time}}. Book"
   }
 }

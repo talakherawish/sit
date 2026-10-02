@@ -27,9 +27,13 @@ export function RulesList({ rules }) {
 }
 
 /** Bottom sheet for anything tapped on the map or in the Rooms list: public seating or a bookable room. */
-export default function RoomSheet({ id, onClose, onJump }) {
+export default function RoomSheet({ id, onClose, onJump, day, range }) {
   if (!id) return null
-  return id === 'public' ? <PublicSheet onClose={onClose} /> : <BookableRoomSheet key={id} id={id} onClose={onClose} onJump={onJump} />
+  return id === 'public' ? (
+    <PublicSheet onClose={onClose} />
+  ) : (
+    <BookableRoomSheet key={`${id}-${day}-${range?.start}`} id={id} onClose={onClose} onJump={onJump} initialDay={day} initialRange={range} />
+  )
 }
 
 function PublicSheet({ onClose }) {
@@ -63,7 +67,8 @@ function PublicSheet({ onClose }) {
   )
 }
 
-function BookableRoomSheet({ id, onClose, onJump }) {
+/** `initialDay` / `initialRange` preselect a day and time, e.g. when opened from a free slot in the Rooms day view. */
+function BookableRoomSheet({ id, onClose, onJump, initialDay, initialRange }) {
   const { t } = useTranslation()
   const L = useL()
   const navigate = useNavigate()
@@ -73,10 +78,10 @@ function BookableRoomSheet({ id, onClose, onJump }) {
   const mode = useStore((s) => s.mode)
   const set = useStore((s) => s.set)
   const when = useWhen()
-  const [day, setDay] = useState(when.date)
-  const [range, setRange] = useState(null)
+  const [day, setDay] = useState(initialDay || when.date)
+  const [range, setRange] = useState(initialRange || null)
   const [multi, setMulti] = useState(false)
-  const [dates, setDates] = useState([when.date])
+  const [dates, setDates] = useState([initialDay || when.date])
 
   const sp = data.spaces.find((s) => s.id === id)
   const meta = `${t('map.people', { n: sp.capacity })} · ${sp.size_m2} m² · ${sp.features.map((f) => t(`feature.${f}`)).join(' · ')}`
