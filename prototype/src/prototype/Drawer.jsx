@@ -96,7 +96,7 @@ function Scenario() {
   const personas = [
     [null, 'Guest', 'Browses without an account'],
     ['larine', 'Larine', 'Student · Arabic · Big Room 2 today 15:00'],
-    ['mohammad', 'Mohammad', 'Remote worker · recurring Sun–Thu 09:00'],
+    ['tala', 'Tala', 'Remote worker · recurring Sun–Thu 09:00'],
     ['omar', 'Omar', 'Freelancer · no bookings yet'],
   ]
   return (

@@ -199,7 +199,6 @@ export function Notices() {
         </div>
       </div>
       <Confirm
-        fixed
         open={!!removing}
         title={t('notices.remove_title')}
         body={removing ? L(removing.text) : ''}

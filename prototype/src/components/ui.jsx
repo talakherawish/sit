@@ -1,7 +1,9 @@
-import { useEffect } from 'react'
+import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store'
+import { hm } from '../lib/time'
 import Icon from './Icon'
 
 export function PhaseBadge({ phase }) {
@@ -79,22 +81,106 @@ export function SectionLabel({ children, className = '' }) {
   return <h2 className={`px-1 pb-1.5 text-[15px] font-semibold text-ink ${className}`}>{children}</h2>
 }
 
-/** Bottom sheet with a grabber, rounded top and a round close button. */
-export function Sheet({ open, onClose, title, children, label }) {
-  const { t } = useTranslation()
-  if (!open) return null
+const OverlayCtx = createContext(undefined)
+
+/**
+ * Where sheets and alerts render. The renter app wraps its phone screen in this so overlays cover
+ * the screen instead of scrolling away inside the page. Outside it (staff), overlays are fixed.
+ */
+export function OverlayHost({ children }) {
+  const [el, setEl] = useState(null)
   return (
-    <div className="absolute inset-0 z-40 flex flex-col justify-end" role="dialog" aria-modal="true" aria-label={label || title}>
-      <button className="animate-fade absolute inset-0 bg-black/30" onClick={onClose} aria-label={t('common.close')} />
-      <div className="animate-sheet relative max-h-[88%] overflow-y-auto rounded-t-[28px] bg-white px-5 pt-2 pb-8 shadow-[0_-8px_40px_rgba(0,0,0,0.12)]">
-        <div className="mx-auto mb-3 h-[5px] w-9 rounded-full bg-black/15" />
-        <div className="mb-3 flex items-center justify-between gap-2">
-          <h2 className="font-head text-[22px] font-bold tracking-tight">{title}</h2>
-          <CloseButton onClick={onClose} />
+    <OverlayCtx.Provider value={el}>
+      {children}
+      <div ref={setEl} />
+    </OverlayCtx.Provider>
+  )
+}
+
+function Overlay({ children }) {
+  const host = useContext(OverlayCtx)
+  if (host === undefined) return children('fixed')
+  return host ? createPortal(children('absolute'), host) : null
+}
+
+function useEscape(open, onClose) {
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e) => e.key === 'Escape' && onClose()
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [open, onClose])
+}
+
+/**
+ * Bottom sheet: grabber, title and close button stay put while the body scrolls; optional `footer`
+ * pins the actions to the bottom. Drag the top bar down (or tap outside, or Esc) to dismiss.
+ */
+export function Sheet({ open, onClose, title, subtitle, children, label, footer }) {
+  const { t } = useTranslation()
+  const [drag, setDrag] = useState(null) // { from, dy } while dragging
+  const [leaving, setLeaving] = useState(false)
+  const close = useCallback(() => {
+    setLeaving(true)
+    setTimeout(() => {
+      setLeaving(false)
+      setDrag(null)
+      onClose()
+    }, 220)
+  }, [onClose])
+  useEscape(open, close)
+  if (!open) return null
+
+  const down = (e) => {
+    if (e.target.closest('button')) return
+    e.currentTarget.setPointerCapture(e.pointerId)
+    setDrag({ from: e.clientY, dy: 0 })
+  }
+  const move = (e) => drag && setDrag({ ...drag, dy: Math.max(0, e.clientY - drag.from) })
+  const up = () => {
+    if (!drag) return
+    if (drag.dy > 90) close()
+    else setDrag(null)
+  }
+  const y = leaving ? '100%' : drag ? `${drag.dy}px` : '0'
+
+  return (
+    <Overlay>
+      {(pos) => (
+        <div className={`${pos} inset-0 z-40 flex flex-col justify-end pt-12 sm:pt-16`} role="dialog" aria-modal="true" aria-label={label || title}>
+          <button
+            className={`animate-fade absolute inset-0 bg-black/35 transition-opacity duration-200 ${leaving ? 'opacity-0' : ''}`}
+            onClick={close}
+            aria-label={t('common.close')}
+            tabIndex={-1}
+          />
+          <div
+            className={`animate-sheet relative mx-auto flex max-h-full w-full max-w-xl flex-col rounded-t-[28px] bg-white shadow-[0_-10px_40px_rgba(0,0,0,0.14)] ${drag ? '' : 'transition-transform duration-200 ease-out'}`}
+            style={{ transform: `translateY(${y})` }}
+          >
+            <div
+              className="shrink-0 cursor-grab touch-none px-5 pt-2 select-none active:cursor-grabbing"
+              onPointerDown={down}
+              onPointerMove={move}
+              onPointerUp={up}
+              onPointerCancel={up}
+            >
+              <div className="mx-auto h-[5px] w-9 rounded-full bg-black/15" />
+              <div className="flex items-start gap-2 pt-3 pb-3">
+                <div className="min-w-0 flex-1">
+                  <h2 className="font-head text-[22px] leading-tight font-bold tracking-tight">{title}</h2>
+                  {subtitle && <p className="mt-0.5 text-[15px] text-grey-ink">{subtitle}</p>}
+                </div>
+                <CloseButton onClick={close} />
+              </div>
+            </div>
+            <div className="no-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-6">{children}</div>
+            {footer && <div className="shrink-0 border-t border-black/[0.06] bg-white px-5 pt-3 pb-5 sm:pb-8">{footer}</div>}
+            {!footer && <div className="h-2 shrink-0 sm:h-5" />}
+          </div>
         </div>
-        {children}
-      </div>
-    </div>
+      )}
+    </Overlay>
   )
 }
 
@@ -127,28 +213,33 @@ export function Modal({ open, onClose, title, children, wide }) {
 }
 
 /** iOS alert: centred title and message, full-width stacked actions. */
-export function Confirm({ open, title, body, okLabel, onOk, onCancel, danger, children, fixed }) {
+export function Confirm({ open, title, body, okLabel, onOk, onCancel, danger, children }) {
   const { t } = useTranslation()
+  useEscape(open, onCancel)
   if (!open) return null
   return (
-    <div className={`${fixed ? 'fixed' : 'absolute'} inset-0 z-50 grid place-items-center p-8`} role="alertdialog" aria-modal="true" aria-label={title}>
-      <div className="animate-fade absolute inset-0 bg-black/30" />
-      <div className="animate-pop relative w-full max-w-[300px] overflow-hidden rounded-[18px] bg-white/95 text-center shadow-2xl backdrop-blur-xl">
-        <div className="px-5 pt-5 pb-4">
-          <h2 className="text-[17px] font-semibold">{title}</h2>
-          {body && <p className="mt-1 text-[15px] text-grey-ink">{body}</p>}
-          {children && <div className="text-start">{children}</div>}
+    <Overlay>
+      {(pos) => (
+        <div className={`${pos} inset-0 z-50 grid place-items-center p-8`} role="alertdialog" aria-modal="true" aria-label={title}>
+          <div className="animate-fade absolute inset-0 bg-black/35" />
+          <div className="animate-pop relative w-full max-w-[300px] overflow-hidden rounded-[18px] bg-white/95 text-center shadow-2xl backdrop-blur-xl">
+            <div className="px-5 pt-5 pb-4">
+              <h2 className="text-[17px] font-semibold">{title}</h2>
+              {body && <p className="mt-1 text-[15px] text-grey-ink">{body}</p>}
+              {children && <div className="text-start">{children}</div>}
+            </div>
+            <div className="grid grid-cols-2 border-t border-black/10">
+              <button className="min-h-12 border-e border-black/10 text-[17px] text-navy" onClick={onCancel}>
+                {t('common.back')}
+              </button>
+              <button className={`min-h-12 text-[17px] font-semibold ${danger ? 'text-[#c23b3b]' : 'text-navy'}`} onClick={onOk}>
+                {okLabel}
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="grid grid-cols-2 border-t border-black/10">
-          <button className="min-h-12 border-e border-black/10 text-[17px] text-navy" onClick={onCancel}>
-            {t('common.back')}
-          </button>
-          <button className={`min-h-12 text-[17px] font-semibold ${danger ? 'text-[#c23b3b]' : 'text-navy'}`} onClick={onOk}>
-            {okLabel}
-          </button>
-        </div>
-      </div>
-    </div>
+      )}
+    </Overlay>
   )
 }
 
@@ -330,4 +421,26 @@ export function Photo({ color, label, i = 0, className = '' }) {
 
 export function Empty({ children }) {
   return <p className="rounded-2xl bg-surface px-4 py-8 text-center text-grey-ink">{children}</p>
+}
+
+/** Even four-column grid of half-hour times. */
+export function TimeGrid({ times, isActive, onPick }) {
+  return (
+    <div className="grid grid-cols-4 gap-2" dir="ltr">
+      {times.map((m) => {
+        const on = isActive(m)
+        return (
+          <button
+            type="button"
+            key={m}
+            onClick={() => onPick(m)}
+            aria-pressed={on}
+            className={`min-h-11 rounded-xl text-[15px] font-medium tabular-nums transition active:scale-[0.97] ${on ? 'bg-ink text-white' : 'bg-surface text-ink'}`}
+          >
+            {hm(m)}
+          </button>
+        )
+      })}
+    </div>
+  )
 }

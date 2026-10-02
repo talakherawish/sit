@@ -363,10 +363,10 @@
       "paused_until": null
     },
     {
-      "id": "mohammad",
-      "name": "Mohammad Odeh",
+      "id": "tala",
+      "name": "Tala Kherawish",
       "phone": "+970599100202",
-      "email": "mohammad@example.com",
+      "email": "tala@example.com",
       "language": "en",
       "birthday": "1994-06-02",
       "preferred_contact": "sms",
@@ -431,22 +431,22 @@
   ],
   "bookings": [
     {
-      "id": "b-moh-today",
-      "renter_id": "mohammad",
+      "id": "b-tala-today",
+      "renter_id": "tala",
       "space_id": "focus-1",
       "date": "2026-10-01",
       "start": "09:00",
       "end": "10:00",
       "reason": "study",
       "reminder": "2h",
-      "series_id": "ser-moh",
+      "series_id": "ser-tala",
       "status": "used",
       "created_by": "renter",
       "source": "map"
     },
     {
-      "id": "b-moh-call",
-      "renter_id": "mohammad",
+      "id": "b-tala-call",
+      "renter_id": "tala",
       "space_id": "focus-3",
       "date": "2026-10-01",
       "start": "13:30",
@@ -550,29 +550,29 @@
       "source": "list"
     },
     {
-      "id": "b-moh-p1",
-      "renter_id": "mohammad",
+      "id": "b-tala-p1",
+      "renter_id": "tala",
       "space_id": "focus-1",
       "date": "2026-09-30",
       "start": "09:00",
       "end": "10:00",
       "reason": "study",
       "reminder": "2h",
-      "series_id": "ser-moh",
+      "series_id": "ser-tala",
       "status": "used",
       "created_by": "renter",
       "source": "map"
     },
     {
-      "id": "b-moh-p2",
-      "renter_id": "mohammad",
+      "id": "b-tala-p2",
+      "renter_id": "tala",
       "space_id": "focus-1",
       "date": "2026-09-29",
       "start": "09:00",
       "end": "10:00",
       "reason": "study",
       "reminder": "2h",
-      "series_id": "ser-moh",
+      "series_id": "ser-tala",
       "status": "used",
       "created_by": "renter",
       "source": "map"
@@ -580,8 +580,8 @@
   ],
   "series": [
     {
-      "id": "ser-moh",
-      "renter_id": "mohammad",
+      "id": "ser-tala",
+      "renter_id": "tala",
       "space_id": "focus-1",
       "days": [0, 1, 2, 3, 4],
       "from": "2026-10-04",
@@ -594,8 +594,8 @@
   ],
   "visits": [
     {
-      "id": "v-moh",
-      "renter_id": "mohammad",
+      "id": "v-tala",
+      "renter_id": "tala",
       "check_in": "2026-10-01T09:02",
       "check_out": null,
       "via": "sit"
@@ -662,8 +662,8 @@
       "id": "n-wifi",
       "tag": "wifi",
       "text": {
-        "en": "Wifi back to normal",
-        "ar": "عاد الواي فاي للعمل بشكل طبيعي"
+        "en": "Wi-Fi back to full speed",
+        "ar": "عاد الواي فاي إلى سرعته الكاملة"
       },
       "space_id": null,
       "posted_at": "2026-10-01T08:40",
@@ -708,8 +708,8 @@
       "reply": "Technician booked for this afternoon."
     },
     {
-      "id": "r-moh",
-      "renter_id": "mohammad",
+      "id": "r-tala",
+      "renter_id": "tala",
       "space_id": "public",
       "type": "wifi",
       "note": "Wifi drops on the quiet side",
@@ -931,6 +931,74 @@
         {
           "en": "Free for everyone in the building",
           "ar": "مجاني لكل من في المبنى"
+        }
+      ],
+      "speed_tests": [
+        {
+          "time": "2026-10-01T07:50",
+          "down": 6,
+          "up": 2,
+          "ping": 180
+        },
+        {
+          "time": "2026-10-01T08:35",
+          "down": 88,
+          "up": 39,
+          "ping": 14
+        },
+        {
+          "time": "2026-10-01T09:20",
+          "down": 94,
+          "up": 41,
+          "ping": 12
+        },
+        {
+          "time": "2026-10-01T10:20",
+          "down": 91,
+          "up": 40,
+          "ping": 13
+        },
+        {
+          "time": "2026-10-01T11:20",
+          "down": 72,
+          "up": 33,
+          "ping": 19
+        },
+        {
+          "time": "2026-10-01T12:20",
+          "down": 85,
+          "up": 38,
+          "ping": 15
+        },
+        {
+          "time": "2026-10-01T13:20",
+          "down": 93,
+          "up": 42,
+          "ping": 12
+        },
+        {
+          "time": "2026-10-01T14:20",
+          "down": 90,
+          "up": 40,
+          "ping": 13
+        },
+        {
+          "time": "2026-10-01T15:20",
+          "down": 96,
+          "up": 43,
+          "ping": 11
+        },
+        {
+          "time": "2026-10-01T16:20",
+          "down": 97,
+          "up": 44,
+          "ping": 11
+        },
+        {
+          "time": "2026-10-01T17:20",
+          "down": 98,
+          "up": 44,
+          "ping": 10
         }
       ]
     },

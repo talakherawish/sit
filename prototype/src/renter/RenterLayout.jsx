@@ -6,7 +6,7 @@ import { useRequireLogin } from '../lib/hooks'
 import { dateOf, minOfDay } from '../lib/logic'
 import { hm } from '../lib/time'
 import Icon, { SitMark } from '../components/Icon'
-import { ScreenId, Sheet, Toast } from '../components/ui'
+import { OverlayHost, ScreenId, Sheet, Toast } from '../components/ui'
 
 export default function RenterLayout() {
   const loc = useLocation()
@@ -27,17 +27,19 @@ export default function RenterLayout() {
       {/* iPhone bezel on desktop; full screen on a real phone */}
       <div className="mx-auto sm:rounded-[58px] sm:bg-[#1b1b1d] sm:p-[11px] sm:shadow-[0_30px_80px_rgba(16,24,40,0.28),inset_0_0_0_1.5px_#3a3a3d]">
         <div className="relative isolate h-dvh w-full overflow-hidden bg-white sm:h-[min(844px,calc(100dvh-70px))] sm:w-[390px] sm:rounded-[47px]">
-          <div className="absolute top-[11px] left-1/2 z-50 hidden h-[34px] w-[120px] -translate-x-1/2 rounded-full bg-black sm:block" aria-hidden="true" />
-          <TopBar />
-          <main ref={main} className="no-scrollbar absolute inset-0 overflow-x-hidden overflow-y-auto pt-[52px] pb-24 sm:pt-[104px] sm:pb-28">
-            <div key={loc.pathname} className="animate-screen">
-              <Outlet />
-            </div>
-          </main>
-          <TabBar />
-          <div className="absolute bottom-2 left-1/2 z-50 hidden h-[5px] w-[134px] -translate-x-1/2 rounded-full bg-black/85 sm:block" aria-hidden="true" />
-          <LoginGate />
-          <Toast />
+          <OverlayHost>
+            <div className="absolute top-[11px] left-1/2 z-50 hidden h-[34px] w-[120px] -translate-x-1/2 rounded-full bg-black sm:block" aria-hidden="true" />
+            <TopBar />
+            <main ref={main} className="no-scrollbar absolute inset-0 overflow-x-hidden overflow-y-auto pt-[52px] pb-24 sm:pt-[104px] sm:pb-28">
+              <div key={loc.pathname} className="animate-screen">
+                <Outlet />
+              </div>
+            </main>
+            <TabBar />
+            <div className="absolute bottom-2 left-1/2 z-50 hidden h-[5px] w-[134px] -translate-x-1/2 rounded-full bg-black/85 sm:block" aria-hidden="true" />
+            <LoginGate />
+            <Toast />
+          </OverlayHost>
         </div>
       </div>
     </div>

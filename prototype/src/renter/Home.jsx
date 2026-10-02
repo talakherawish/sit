@@ -3,13 +3,13 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL, useRequireLogin } from '../lib/hooks'
-import { activeNotices, dayBlocks, freeStarts, hoursFor, stateAt, nextFreeAt, dateOf, minOfDay } from '../lib/logic'
-import { fmtDate, hm } from '../lib/time'
+import { activeNotices, dayBlocks, freeStarts, hoursFor, stateAt, nextFreeAt, dateOf, minOfDay, speedTests } from '../lib/logic'
+import { hm } from '../lib/time'
 import FloorPlan from '../components/FloorPlan'
 import { DayStrip } from '../components/Calendar'
 import { AmenitySheet, useAmenityLine } from '../components/Amenities'
 import { MapListSwitch, ModeChips, WhenBar, useWhen } from '../components/Browse'
-import { Chip, Photo, ScreenId, Sheet } from '../components/ui'
+import { Photo, ScreenId, Sheet, TimeGrid } from '../components/ui'
 import Icon, { TechnoparkLogo } from '../components/Icon'
 
 /** R-01 Home: interactive floor plan (landing page) */
@@ -47,10 +47,7 @@ export default function Home() {
 
   return (
     <div className="space-y-7 px-4 pt-3">
-      <header className="px-1">
-        <p className="text-[13px] font-medium tracking-[0.08em] text-grey-ink uppercase">
-          {fmtDate(dateOf(now), lang, { weekday: 'long', day: 'numeric', month: 'long' })}
-        </p>
+      <header className="px-1 pt-2">
         <h1 className="font-head text-[34px] leading-[1.1] font-bold tracking-tight">
           {t(`home.greeting_${part}`)}
           {me && (
@@ -100,6 +97,7 @@ export default function Home() {
             <Icon name="next" size={16} className="text-grey-ink/60 rtl:rotate-180" />
           </Link>
           <CafeteriaRow onOpen={onSelect} />
+          <WifiRow onOpen={onSelect} />
           {latest && (
             <button onClick={() => setSheet('notices')} className="flex min-h-14 w-full items-center gap-3 px-5 py-2.5 text-start text-[15px]">
               <Icon name="megaphone" size={18} className="shrink-0 text-orange" />
@@ -160,28 +158,31 @@ export default function Home() {
         Technopark · Palestine
       </button>
 
-      <Sheet open={sheet === 'notices'} onClose={() => setSheet(null)} title={t('home.todays_status')}>
-        <ul className="divide-y divide-black/[0.07]">
+      <Sheet
+        open={sheet === 'notices'}
+        onClose={() => setSheet(null)}
+        title={t('home.todays_status')}
+        subtitle={t('home.n_notices', { count: notices.length })}
+      >
+        <ul className="divide-y divide-black/[0.07] overflow-hidden rounded-2xl bg-surface">
           {notices.map((n) => (
-            <li key={n.id} className="py-3">
-              <p className="text-[13px] text-grey-ink">
-                {t(`tag.${n.tag}`)} · {t('home.posted', { time: hm(minOfDay(n.posted_at)) })}
-              </p>
-              <p className="mt-0.5 text-[17px]">{L(n.text)}</p>
+            <li key={n.id} className="flex gap-3 px-4 py-3">
+              <span className="grid size-9 shrink-0 place-items-center rounded-[10px] bg-white text-orange">
+                <Icon name={NOTICE_ICON[n.tag] || 'megaphone'} size={18} />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-[17px] leading-snug">{L(n.text)}</span>
+                <span className="mt-0.5 block text-[13px] text-grey-ink">
+                  {t(`tag.${n.tag}`)} · {t('home.posted', { time: hm(minOfDay(n.posted_at)) })}
+                </span>
+              </span>
             </li>
           ))}
         </ul>
       </Sheet>
       {data.zones.map((z) => (
         <Sheet key={z.id} open={sheet === z.id} onClose={() => setSheet(null)} title={t('home.rules_for', { zone: L(z.name) })}>
-          <ul className="space-y-2">
-            {z.rules.map((r, k) => (
-              <li key={k} className="flex gap-3 text-[17px]">
-                <span className="mt-2.5 size-1.5 shrink-0 rounded-full bg-teal" />
-                {L(r)}
-              </li>
-            ))}
-          </ul>
+          <RulesList rules={z.rules} />
         </Sheet>
       ))}
       <Sheet open={sheet === 'about'} onClose={() => setSheet(null)} title={t('about.title')}>
@@ -207,6 +208,31 @@ function CafeteriaRow({ onOpen }) {
       <Icon name="cup" size={18} className="text-navy" />
       <span className="flex-1">{L(cafe.name)}</span>
       <span className={line.open ? 'font-medium text-[#2f5656]' : 'text-grey-ink'}>{line.text}</span>
+      <Icon name="next" size={16} className="text-grey-ink/60 rtl:rotate-180" />
+    </button>
+  )
+}
+
+/** Last Wi-Fi speed test, like a speed-test app: ↓ download · ↑ upload. */
+function WifiRow({ onOpen }) {
+  const { t } = useTranslation()
+  const L = useL()
+  const data = useStore((s) => s.data)
+  const now = useStore((s) => s.now)
+  const last = speedTests(data, now)[0]
+  return (
+    <button onClick={() => onOpen('wifi')} className="flex min-h-12 w-full items-center gap-3 px-5 text-start text-[15px]">
+      <Icon name="wifi" size={18} className="text-navy" />
+      <span className="flex-1">{L(data.amenities.find((a) => a.id === 'wifi').name)}</span>
+      {last ? (
+        <span className="flex items-baseline gap-2.5 tabular-nums" dir="ltr">
+          <span className="font-medium text-[#2f5656]">↓ {last.down}</span>
+          <span className="text-grey-ink">↑ {last.up}</span>
+          <span className="text-[13px] text-grey-ink">Mbps</span>
+        </span>
+      ) : (
+        <span className="text-grey-ink">{t('amenity.no_test')}</span>
+      )}
       <Icon name="next" size={16} className="text-grey-ink/60 rtl:rotate-180" />
     </button>
   )
@@ -295,6 +321,22 @@ function RoomsToday() {
   )
 }
 
+const NOTICE_ICON = { wifi: 'wifi', events: 'megaphone', ac: 'drop', cleaning: 'drop' }
+
+function RulesList({ rules }) {
+  const L = useL()
+  return (
+    <ul className="divide-y divide-black/[0.07] overflow-hidden rounded-2xl bg-surface">
+      {rules.map((r, k) => (
+        <li key={k} className="flex min-h-12 items-center gap-3 px-4 py-2.5 text-[16px] leading-snug">
+          <Icon name="check" size={16} className="shrink-0 text-teal" />
+          {L(r)}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 /** Sheet opened by tapping an object on the map. */
 function RoomSheet({ id, onClose, onJump }) {
   const { t } = useTranslation()
@@ -318,32 +360,51 @@ function RoomSheet({ id, onClose, onJump }) {
     const z = data.zones.find((x) => x.type === 'public_seating')
     const last = data.seat_log[data.seat_log.length - 1]
     const ago = Math.max(0, now - last.time)
+    const { taken, total } = data.seats
     return (
-      <Sheet open onClose={onClose} title={L(z.name)}>
-        <p className="font-head text-4xl font-bold">{t('home.seats_of', { taken: data.seats.taken, total: data.seats.total })}</p>
-        <p className="text-sm text-grey-ink">{t('home.updated_ago', { count: ago })}</p>
-        <h3 className="mt-3 font-semibold">{t('home.zone_rules')}</h3>
-        <ul className="list-disc ps-5">
-          {z.rules.map((r, i) => (
-            <li key={i}>{L(r)}</li>
-          ))}
-        </ul>
-        <p className="mt-3 rounded-lg bg-surface p-3 text-sm">{t('home.not_bookable')}</p>
+      <Sheet open onClose={onClose} title={L(z.name)} subtitle={t('home.updated_ago', { count: ago })}>
+        <div className="mb-5 flex items-end gap-3 rounded-[22px] bg-surface px-5 py-4">
+          <span className="flex items-baseline gap-1.5" dir="ltr">
+            <span className="font-head text-[48px] leading-none font-bold tracking-tight">{taken}</span>
+            <span className="font-head text-[22px] font-semibold text-grey-ink">/ {total}</span>
+          </span>
+          <span className="ms-auto pb-1 text-end text-[15px] leading-snug text-grey-ink">
+            {t('home.seats_taken')}
+            <br />
+            <span className="font-semibold text-[#2f5656]">{t('home.seats_free', { count: total - taken })}</span>
+          </span>
+        </div>
+        <h3 className="mb-1.5 px-1 text-[15px] font-semibold">{t('home.zone_rules')}</h3>
+        <RulesList rules={z.rules} />
+        <p className="mt-4 flex gap-2 px-1 text-[15px] text-grey-ink">
+          <Icon name="info" size={18} className="mt-0.5 shrink-0 text-navy" />
+          {t('home.not_bookable')}
+        </p>
       </Sheet>
     )
   }
 
   const sp = data.spaces.find((s) => s.id === id)
   const st = stateAt(data, id, when.date, when.min)
+  const meta = `${t('map.people', { n: sp.capacity })} · ${sp.size_m2} m²`
 
   if (st.state === 'down') {
     return (
-      <Sheet open onClose={onClose} title={L(sp.label)}>
-        <p className="mb-1 font-semibold text-[#a32f2f]">{t('room.down')}</p>
-        <p className="mb-4">{st.reason}</p>
-        <button className="btn-primary w-full" onClick={() => navigate('/r/filter')}>
-          {t('room.find_another')}
-        </button>
+      <Sheet
+        open
+        onClose={onClose}
+        title={L(sp.label)}
+        subtitle={meta}
+        footer={
+          <button className="btn-primary w-full" onClick={() => navigate('/r/filter')}>
+            {t('room.find_another')}
+          </button>
+        }
+      >
+        <div className="rounded-2xl bg-red/10 px-4 py-3.5">
+          <p className="font-semibold text-[#a32f2f]">{t('room.down')}</p>
+          <p className="mt-0.5 text-[15px]">{st.reason}</p>
+        </div>
       </Sheet>
     )
   }
@@ -352,37 +413,47 @@ function RoomSheet({ id, onClose, onJump }) {
     const nf = nextFreeAt(data, id, when.date, when.min)
     const others = data.spaces.filter((s) => s.id !== id && stateAt(data, s.id, when.date, when.min).state === 'free')
     return (
-      <Sheet open onClose={onClose} title={L(sp.label)}>
-        <p className="flex items-center gap-2 text-lg font-semibold">
-          <Icon name="lock" size={18} />
-          {t('room.booked_until', { time: hm(st.booking.end) })}
-        </p>
-        <p className="mb-3 text-grey-ink">{nf !== null ? t('room.next_free', { time: hm(nf) }) : t('room.no_free_today')}</p>
-        <h3 className="mb-2 font-semibold">{t('room.other_free')}</h3>
-        <div className="grid gap-2">
-          {others.length ? (
-            others.map((o) => (
-              <button key={o.id} onClick={() => onJump(o.id)} className="flex min-h-11 items-center justify-between rounded-lg bg-surface px-3 text-start">
-                <span>
-                  {L(o.label)} · {t('map.people', { n: o.capacity })}
-                </span>
-                <Icon name="next" size={18} className="rtl:rotate-180" />
-              </button>
-            ))
-          ) : (
-            <p className="text-grey-ink">{t('room.none_free')}</p>
-          )}
+      <Sheet
+        open
+        onClose={onClose}
+        title={L(sp.label)}
+        subtitle={meta}
+        footer={
+          <button className="btn-secondary w-full" onClick={() => navigate(`/r/room/${id}`)}>
+            {t('room.see_details')}
+          </button>
+        }
+      >
+        <div className="mb-5 flex gap-3 rounded-2xl bg-surface px-4 py-3.5">
+          <span className="grid size-9 shrink-0 place-items-center rounded-[10px] bg-white text-ink">
+            <Icon name="lock" size={18} />
+          </span>
+          <span>
+            <span className="block text-[17px] font-semibold">{t('room.booked_until', { time: hm(st.booking.end) })}</span>
+            <span className="block text-[15px] text-grey-ink">{nf !== null ? t('room.next_free', { time: hm(nf) }) : t('room.no_free_today')}</span>
+          </span>
         </div>
-        <button className="btn-link mt-2" onClick={() => navigate(`/r/room/${id}`)}>
-          {t('room.see_details')}
-        </button>
+        <h3 className="mb-1.5 px-1 text-[15px] font-semibold">{t('room.other_free')}</h3>
+        {others.length ? (
+          <div className="divide-y divide-black/[0.07] overflow-hidden rounded-2xl bg-surface">
+            {others.map((o) => (
+              <button key={o.id} onClick={() => onJump(o.id)} className="flex min-h-12 w-full items-center gap-3 px-4 text-start active:bg-black/[0.04]">
+                <span className="size-2 shrink-0 rounded-full bg-teal" aria-hidden="true" />
+                <span className="flex-1 text-[17px]">{L(o.label)}</span>
+                <span className="text-[15px] text-grey-ink">{t('map.people', { n: o.capacity })}</span>
+                <Icon name="next" size={16} className="text-grey-ink/60 rtl:rotate-180" />
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="px-1 text-grey-ink">{t('room.none_free')}</p>
+        )}
       </Sheet>
     )
   }
 
   const slotDay = day || when.date
   const starts = freeStarts(data, id, slotDay, now, 30)
-  const inRange = (m) => range && m >= range.start && m < range.end
   const tap = (m) => {
     if (range && m >= range.start && m + 30 > range.end) {
       let ok = true
@@ -398,18 +469,34 @@ function RoomSheet({ id, onClose, onJump }) {
     requireLogin('/r/book')
   }
   return (
-    <Sheet open onClose={onClose} title={L(sp.label)}>
-      <div className="mb-3 flex gap-3">
-        <Photo color={sp.photos[0]} className="!w-28 shrink-0" label={L(sp.label)} />
-        <div className="text-sm">
-          <p>
-            {t('map.people', { n: sp.capacity })} · {sp.size_m2} m²
-          </p>
-          <p className="text-grey-ink">{sp.features.map((f) => t(`feature.${f}`)).join(' · ')}</p>
-          <p className="mt-1 font-semibold text-[#2f5656]">{t('map.free')}</p>
+    <Sheet
+      open
+      onClose={onClose}
+      title={L(sp.label)}
+      subtitle={meta}
+      footer={
+        <div className="grid grid-cols-[auto_1fr] gap-2">
+          <button className="btn-secondary px-5" onClick={() => navigate(`/r/room/${id}`)}>
+            {t('room.details')}
+          </button>
+          <button className="btn-primary" onClick={book} disabled={!starts.length}>
+            {range ? <span dir="ltr">{t('room.book_range', { from: hm(range.start), to: hm(range.end) })}</span> : t('room.book_room')}
+          </button>
+        </div>
+      }
+    >
+      <div className="mb-5 flex items-center gap-3">
+        <Photo color={sp.photos[0]} className="!w-24 shrink-0 !rounded-xl" label={L(sp.label)} />
+        <div className="flex flex-wrap gap-1.5">
+          {sp.features.map((f) => (
+            <span key={f} className="rounded-full bg-surface px-2.5 py-1 text-[13px] text-ink">
+              {t(`feature.${f}`)}
+            </span>
+          ))}
         </div>
       </div>
-      <div className="mb-3">
+      <h3 className="mb-2 px-1 text-[15px] font-semibold">{t('when.day')}</h3>
+      <div className="mb-5">
         <DayStrip
           value={slotDay}
           onChange={(d) => {
@@ -418,32 +505,13 @@ function RoomSheet({ id, onClose, onJump }) {
           }}
         />
       </div>
-      <p className="mb-1 text-sm font-semibold">{t('room.pick_slots')}</p>
-      <p className="mb-2 text-xs text-grey-ink">{t('room.pick_hint')}</p>
-      <div className="mb-3 flex flex-wrap gap-2">
-        {starts.length ? (
-          starts.map((m) => (
-            <Chip key={m} active={inRange(m)} onClick={() => tap(m)}>
-              {hm(m)}
-            </Chip>
-          ))
-        ) : (
-          <p className="text-grey-ink">{t('room.no_free_today')}</p>
-        )}
-      </div>
-      {range && (
-        <p className="mb-2 font-semibold" dir="ltr">
-          {hm(range.start)}–{hm(range.end)}
-        </p>
+      <h3 className="px-1 text-[15px] font-semibold">{t('room.pick_slots')}</h3>
+      <p className="mb-2.5 px-1 text-[13px] text-grey-ink">{t('room.pick_hint')}</p>
+      {starts.length ? (
+        <TimeGrid times={starts} isActive={(m) => range && m >= range.start && m < range.end} onPick={tap} />
+      ) : (
+        <p className="rounded-2xl bg-surface px-4 py-3 text-grey-ink">{t('room.no_free_today')}</p>
       )}
-      <div className="grid grid-cols-2 gap-2">
-        <button className="btn-secondary" onClick={() => navigate(`/r/room/${id}`)}>
-          {t('room.see_details')}
-        </button>
-        <button className="btn-primary" onClick={book} disabled={!starts.length}>
-          {t('room.book_room')}
-        </button>
-      </div>
     </Sheet>
   )
 }

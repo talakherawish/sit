@@ -28,15 +28,17 @@ Every push to `main` builds and publishes the prototype to **GitHub Pages** via 
 
 ## Demo start state
 
-The clock starts at **Thu 1 Oct 2026, 09:30**, and the app opens logged in as **Mohammad** with a lived-in account (bookings, alerts, reports, profile). Pick **Guest** in P-01 for the browse-without-an-account story (US-1). Seeded data lives in `src/data/mock-data.json`; "Reset all data" in P-01 reloads it.
+The clock starts at **Thu 1 Oct 2026, 09:30**, and the app opens logged in as **Tala** with a lived-in account (bookings, alerts, reports, profile). Pick **Guest** in P-01 for the browse-without-an-account story (US-1). Seeded data lives in `src/data/mock-data.json`; "Reset all data" in P-01 reloads it.
 
 - **Larine** (Arabic) — Big Room 2 today 15:00–17:00, awaiting confirmation, reminder 2 h before; one AC report in progress.
-- **Mohammad** — recurring Focus Room 1, Sun–Thu 09:00–10:00 (checked in today), plus a client call in Focus Room 3 at 13:30 awaiting confirmation.
+- **Tala** — recurring Focus Room 1, Sun–Thu 09:00–10:00 (checked in today), plus a client call in Focus Room 3 at 13:30 awaiting confirmation.
 - **Omar** — no bookings; use him for the last-minute and "slot just taken" demos.
 
 Any 4-digit code passes on R-11; the real code is in the P-03 outbox.
 
-Screen IDs (R-06, S-01…) show under each title so reviewers can match screens to the spec. Turn them off with **Show screen IDs** in P-01 before a usability test.
+Screen IDs (R-06, S-01…) are hidden by default. Turn on **Show screen IDs** in P-01 to see them under each title and match screens to the spec.
+
+Wi-Fi speed on Home and in the Wi-Fi sheet comes from mocked hourly speed tests (`speed_tests` on the Wi-Fi amenity in `mock-data.json`); the shown result follows the simulated clock.
 
 ## Where things live
 
@@ -66,5 +68,5 @@ Brand colours are unchanged; text is #1D1D1F with #6E6E73 for secondary text (5:
 ## Choices the spec left open
 
 - **Daily status nudge (S-01):** the "No status posted today" banner clears when staff post a notice ticked _This is today's daily status_ (on by default for the first post of the day). The two seeded morning notices are ad-hoc, so the banner shows at start, as US-6 expects.
-- **Time simulator (P-02)** jumps relative to a _target booking_ you pick (defaults to the logged-in persona's next booking, else Larine's), so US-4 works for Larine or Mohammad. Time only moves forward; use Reset to go back.
+- **Time simulator (P-02)** jumps relative to a _target booking_ you pick (defaults to the logged-in persona's next booking, else Larine's), so US-4 works for Larine or Tala. Time only moves forward; use Reset to go back.
 - **Placeholders to swap:** the Technopark logo (`TechnoparkLogo` in `components/Icon.jsx`) and room photos (`Photo` in `components/ui.jsx`) are drawn stand-ins; room names, counts and hours are placeholders.

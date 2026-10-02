@@ -11,6 +11,9 @@ function buildData() {
   d.opening_hours = d.opening_hours.map((o) => ({ ...o, open: o.open && parseHm(o.open), close: o.close && parseHm(o.close) }))
   d.amenities.forEach((a) => {
     if (Array.isArray(a.hours)) a.hours = a.hours.map((o) => ({ ...o, open: o.open && parseHm(o.open), close: o.close && parseHm(o.close) }))
+    a.speed_tests?.forEach((x) => {
+      x.time = dt(x.time)
+    })
   })
   const fixBooking = (b) => {
     b.start = parseHm(b.start)
@@ -66,7 +69,7 @@ function buildData() {
   d.notifications = [
     {
       id: 'nt-m1',
-      renter_id: 'mohammad',
+      renter_id: 'tala',
       kind: 'notice',
       tpl: 'notice_alert',
       params: { text: d.notices.find((n) => n.id === 'n-event').text, spaceId: 'focus-3', time: '13:30' },
@@ -76,7 +79,7 @@ function buildData() {
     },
     {
       id: 'nt-m2',
-      renter_id: 'mohammad',
+      renter_id: 'tala',
       kind: 'report',
       tpl: 'report_status',
       params: { status: 'seen', spaceId: 'public' },
@@ -109,10 +112,10 @@ const initial = () => ({
   data: buildData(),
   now: dt(seed.start_now),
   // Opens as a real, set-up account. Switch to Guest in P-01 for the browse-only story (US-1).
-  renterId: 'mohammad',
+  renterId: 'tala',
   lang: 'en',
   receptionDevice: true,
-  showIds: true,
+  showIds: false,
   justTaken: false,
   guestId: 'guest-you',
   mode: 'browse',

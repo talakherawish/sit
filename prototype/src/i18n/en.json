@@ -32,7 +32,7 @@
     "later": "Later"
   },
   "home": {
-    "how": "How do you want to work?",
+    "how": "What are you here to do?",
     "seats_taken": "seats taken",
     "seats_aria": "{{taken}} of {{total}} seats taken in the public seating area",
     "closed_today": "Closed today",
@@ -67,7 +67,8 @@
     "seats_free_other": "{{count}} seats free",
     "greeting_morning": "Good morning",
     "greeting_afternoon": "Good afternoon",
-    "greeting_evening": "Good evening"
+    "greeting_evening": "Good evening",
+    "how_hint": "Rooms that suit it light up on the map."
   },
   "about": {
     "title": "About Sit",
@@ -81,7 +82,8 @@
     "day": "Day",
     "time": "Time",
     "now": "Now",
-    "show": "Show"
+    "show": "Show",
+    "subtitle": "See what is free on another day or at another time."
   },
   "legend": {
     "free": "Free",
@@ -115,7 +117,9 @@
     "see_details": "See details",
     "pick_slots": "Free slots",
     "pick_hint": "Tap a start time, then a later one to extend.",
-    "book_room": "Book room"
+    "book_room": "Book room",
+    "details": "Details",
+    "book_range": "Book {{from}}–{{to}}"
   },
   "feature": {
     "socket": "Sockets",
@@ -251,7 +255,7 @@
     "no_account": "No account with this number yet.",
     "send_code": "Send code",
     "new_here": "New here? Sign up",
-    "demo_hint": "Demo numbers: Larine +970 599100201 · Mohammad +970 599100202 · Omar +970 599100203",
+    "demo_hint": "Demo numbers: Larine +970 599100201 · Tala +970 599100202 · Omar +970 599100203",
     "code_sent": "We sent a code to {{phone}}.",
     "digit": "Digit {{n}}",
     "any_code": "Prototype: any 4 digits work (the real code is in the outbox).",
@@ -332,7 +336,15 @@
     "see_report": "See report",
     "open_reminder": "Confirm or cancel",
     "see_map": "See today's status",
-    "see_bookings": "My bookings"
+    "see_bookings": "My bookings",
+    "new": "New",
+    "earlier": "Earlier",
+    "kind_booking": "Booking",
+    "kind_notice": "Notice",
+    "kind_report": "Report",
+    "kind_cancel": "Cancelled",
+    "kind_reminder": "Reminder",
+    "kind_release": "Released"
   },
   "rate": {
     "title": "Rate your visit",
@@ -609,7 +621,17 @@
     "opens": "Closed · opens {{when}}",
     "closed": "Closed",
     "offers": "What's here",
-    "hours": "This week"
+    "hours": "This week",
+    "speed_line": "↓ {{down}} · ↑ {{up}} Mbps",
+    "download": "Mbps download",
+    "upload": "Upload",
+    "ping": "Ping",
+    "tested_at": "Speed test at {{time}}",
+    "tests_today": "Today's speed tests",
+    "no_test": "No speed test yet today",
+    "quality_great": "Great for video calls",
+    "quality_ok": "Fine for browsing and email",
+    "quality_poor": "Slow right now"
   },
   "cal": {
     "view": "Calendar view",

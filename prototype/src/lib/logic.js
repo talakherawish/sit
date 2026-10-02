@@ -117,6 +117,12 @@ export function amenityHoursFor(data, a, date) {
   return h && h.open !== null ? { open: h.open, close: h.close } : null
 }
 
+/** Speed tests run so far today, newest first (Wi-Fi amenity). */
+export function speedTests(data, now) {
+  const wifi = data.amenities.find((a) => a.id === 'wifi')
+  return (wifi?.speed_tests || []).filter((x) => x.time <= now && dateOf(x.time) === dateOf(now)).reverse()
+}
+
 /** Open now? If not, the next opening (date + minute) within two weeks. */
 export function amenityStatus(data, a, now) {
   const date = dateOf(now)
