@@ -581,14 +581,72 @@
       "renter_id": "tala",
       "check_in": "2026-10-01T09:02",
       "check_out": null,
-      "via": "sit"
+      "via": "sit",
+      "booking_id": "b-tala-today"
     },
     {
       "id": "v-shahd",
       "renter_id": "shahd",
       "check_in": "2026-10-01T09:28",
       "check_out": null,
-      "via": "sit"
+      "via": "sit",
+      "booking_id": "b-shahd"
+    },
+    {
+      "id": "v-tala-p1",
+      "renter_id": "tala",
+      "check_in": "2026-09-30T08:56",
+      "check_out": "2026-09-30T10:04",
+      "via": "sit",
+      "booking_id": "b-tala-p1"
+    },
+    {
+      "id": "v-ahmed-p1",
+      "renter_id": "ahmed",
+      "check_in": "2026-09-30T10:12",
+      "check_out": "2026-09-30T14:35",
+      "via": "walk_in",
+      "booking_id": null
+    },
+    {
+      "id": "v-tala-p2",
+      "renter_id": "tala",
+      "check_in": "2026-09-29T08:58",
+      "check_out": "2026-09-29T10:01",
+      "via": "sit",
+      "booking_id": "b-tala-p2"
+    },
+    {
+      "id": "v-fatima-p1",
+      "renter_id": "fatima",
+      "check_in": "2026-09-29T11:05",
+      "check_out": "2026-09-29T13:20",
+      "via": "walk_in",
+      "booking_id": null
+    },
+    {
+      "id": "v-shahd-p1",
+      "renter_id": "shahd",
+      "check_in": "2026-09-28T09:40",
+      "check_out": "2026-09-28T16:10",
+      "via": "walk_in",
+      "booking_id": null
+    },
+    {
+      "id": "v-leen-p1",
+      "renter_id": "leen",
+      "check_in": "2026-09-24T12:50",
+      "check_out": "2026-09-24T15:04",
+      "via": "sit",
+      "booking_id": "b-leen-past"
+    },
+    {
+      "id": "v-ahmed-p2",
+      "renter_id": "ahmed",
+      "check_in": "2026-09-24T09:10",
+      "check_out": "2026-09-24T11:45",
+      "via": "walk_in",
+      "booking_id": null
     }
   ],
   "seat_log": [

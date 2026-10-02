@@ -14,6 +14,8 @@ const PHONE_H = PHONE.h + PHONE.status + PHONE.bezel * 2
 const DESK = { w: 1280, h: 800, bar: 36 }
 const DESK_H = DESK.h + DESK.bar
 const GAP = 40
+// "Time & scenarios" button hidden while we rework it; the panel still opens with Ctrl+. or a triple tap on the staff logo.
+const SHOW_PANEL_BUTTON = false
 
 /**
  * Presentation view: Tala's phone and Rana's reception dashboard side by side. Both are the real app in
@@ -49,10 +51,12 @@ export default function Demo() {
           <h1 className="text-[17px] font-semibold">{t('demo.title')}</h1>
           <p className="text-[13px] text-grey-ink">{t('demo.hint')}</p>
         </div>
-        <button className="btn-secondary !min-h-10 !text-[15px]" onClick={() => set({ drawerOpen: true })}>
-          <Icon name="clock" size={18} />
-          {t('demo.panel')}
-        </button>
+        {SHOW_PANEL_BUTTON && (
+          <button className="btn-secondary !min-h-10 !text-[15px]" onClick={() => set({ drawerOpen: true })}>
+            <Icon name="clock" size={18} />
+            {t('demo.panel')}
+          </button>
+        )}
         <button
           className="btn-secondary !min-h-10 !text-[15px]"
           onClick={() => {

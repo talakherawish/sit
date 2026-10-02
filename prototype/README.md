@@ -36,6 +36,8 @@ Why each design choice was made, and which UX principle it follows: [10-presenta
 
 **Staff and renter stay in sync:** bookings, check-ins, seats, notices, reports and the simulated clock are shared between every open tab of the same browser (and kept across reloads), so a check-in on the staff dashboard shows up straight away in the renter app. There is no server, so two _different_ devices (e.g. staff laptop and your phone) do not share data. "Reset all data" in P-01 resets every tab.
 
+**People (S-06):** reception sees every renter account (contact details, how they like to be contacted, upcoming bookings, visits, whether they are inside now) and every visit, newest first, with the people inside now at the top. Search filters both lists; click a row to check that person in. People counted only with + / − on the seat counter are not named, so they are not listed.
+
 **Alerts:** when something changes for the signed-in renter (reception updates a report, a reminder is due, a booking is released or cancelled, a notice affects their booking), a banner drops in at the top of the app and the bell gets a red dot until they open Notifications (R-18). In the side-by-side demo, answer one of Tala's reports on the reception side and the banner appears on her phone.
 
 ## Demo start state
@@ -64,7 +66,7 @@ src/
   lib/                  time helpers, booking/availability logic, shared hooks
   components/           FloorPlan, BookingForm, mode chips / when bar, UI primitives
   renter/               R-01 … R-18
-  staff/                S-00 … S-05, S-10
+  staff/                S-00 … S-06, S-10
   prototype/            P-01 … P-04 drawer
 ```
 

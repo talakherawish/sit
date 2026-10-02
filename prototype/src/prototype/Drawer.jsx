@@ -182,6 +182,7 @@ function ScreenIndex() {
     ['S-03', '/s/seat-log'],
     ['S-04', '/s/notices'],
     ['S-05', '/s/reports'],
+    ['S-06', '/s/people'],
     ['S-10', '/s/settings/rooms'],
   ]
   return (

@@ -119,6 +119,15 @@ We worked in **Design Thinking loops**: build from the spec, review it as a user
 | Renters are **alerted**: a banner drops in as soon as something changes for them (a report update, a reminder, a released booking), and the bell keeps a red dot until they open Notifications | Without it, a reply only showed up if the renter happened to open My reports | Feedback after every action; recognition over recall |
 | Notifications are grouped into **New** and **Earlier**, each with an icon and the one action it needs | Same reason as Round 3: a flat list didn't show what mattered | Visual hierarchy |
 
+## Round 11: Everyone in one place
+
+| Decision | Why | Principle |
+|---|---|---|
+| Reception gets a **People** page: every renter account and every visit (who came, when, where, booked or walk-in), with people inside now at the top | Staff could only find someone by searching on Check-in, and had no record of who had been in | Visibility of system status; recognition over recall |
+| One search box filters both lists, and clicking a row opens that person on Check-in | Staff look people up by name or phone, then usually act on them | Consistency; fewer steps |
+| The page says plainly that people counted with + / − are not listed | The open-area count and the visitor list would otherwise look like they disagree | Honest system status |
+| The **Time & scenarios** button is hidden in the side-by-side demo for now; the panel still opens with Ctrl + . | We want to rework it before showing it in the demo | Minimalist design |
+
 ## Clicks to book (roughly)
 
 | Task | Before | Now |
