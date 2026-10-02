@@ -91,7 +91,7 @@ function buildData() {
     },
     {
       id: 'nt-1',
-      renter_id: 'larine',
+      renter_id: 'leen',
       kind: 'report',
       tpl: 'report_status',
       params: { status: 'in_progress', spaceId: 'big-2' },
@@ -307,7 +307,7 @@ export const useStore = create(
       set((s) => {
         s.data.bookings.push({
           id: uid('b'),
-          renter_id: 'sara',
+          renter_id: 'fatima',
           space_id: f.spaceId,
           date: f.date,
           start: f.start,

@@ -90,12 +90,14 @@ function Scenario() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const staff = pathname.startsWith('/s')
-  const omar = findRenter(s.data, 'omar')
+  const ahmed = findRenter(s.data, 'ahmed')
   const personas = [
     [null, 'Guest', 'Browses without an account'],
-    ['larine', 'Larine', 'Student · Arabic · Big Room 2 today 15:00'],
     ['tala', 'Tala', 'Remote worker · recurring Sun–Thu 09:00'],
-    ['omar', 'Omar', 'Freelancer · no bookings yet'],
+    ['leen', 'Leen', 'Student · Arabic · Big Room 2 today 15:00'],
+    ['fatima', 'Fatima', 'Focus Room 2 at 10:00 · Big Room 1 at 12:00'],
+    ['shahd', 'Shahd', 'In Focus Room 3 now · Focus Room 1 at 14:00'],
+    ['ahmed', 'Ahmed', 'Freelancer · no bookings yet'],
   ]
   return (
     <>
@@ -141,10 +143,10 @@ function Scenario() {
           onChange={(v) => s.set({ showIds: v })}
         />
         <Toggle
-          label="Omar is paused"
+          label="Ahmed is paused"
           hint="#31 — R-06 shows R-21"
-          checked={!!omar.paused_until && omar.paused_until > dateOf(s.now)}
-          onChange={(v) => s.setPaused('omar', v)}
+          checked={!!ahmed.paused_until && ahmed.paused_until > dateOf(s.now)}
+          onChange={(v) => s.setPaused('ahmed', v)}
         />
       </Section>
       <Section title="Data">
@@ -179,7 +181,7 @@ function ScreenIndex() {
     ['R-11', '/r/code'],
     ['R-12', '/r/login'],
     ['R-13', '/r/bookings'],
-    ['R-15', '/r/reminder/b-larine'],
+    ['R-15', '/r/reminder/b-leen'],
     ['R-16', '/r/report'],
     ['R-17', '/r/reports'],
     ['R-18', '/r/notifications'],
@@ -214,7 +216,7 @@ function TimeSim() {
   const navigate = useNavigate()
   const name = useSpaceName()
   const targets = s.data.bookings.filter((b) => ACTIVE.includes(b.status) && endAbs(b) > s.now).sort((a, b) => startAbs(a) - startAbs(b))
-  const preferred = targets.find((b) => b.renter_id === s.renterId && b.status !== 'used') || targets.find((b) => b.id === 'b-larine') || targets[0]
+  const preferred = targets.find((b) => b.renter_id === s.renterId && b.status !== 'used') || targets.find((b) => b.id === 'b-leen') || targets[0]
   const [pick, setPick] = useState(null)
   const target = targets.find((b) => b.id === pick) || preferred
   const [last, setLast] = useState(null)
@@ -233,7 +235,7 @@ function TimeSim() {
     const st = useStore.getState()
     let rid = Object.keys(st.pendingRating)[0]
     if (!rid) {
-      rid = target?.renter_id || 'larine'
+      rid = target?.renter_id || 'leen'
       const open = st.data.visits.find((v) => v.renter_id === rid && !v.check_out)
       if (open) st.checkOut(rid)
       else st.set({ pendingRating: { ...st.pendingRating, [rid]: null } })

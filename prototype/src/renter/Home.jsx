@@ -93,7 +93,7 @@ export default function Home() {
         </button>
 
         {/* Hours and amenities at a glance (US-1 AC2) */}
-        <div className="grid grid-cols-3 gap-2.5" aria-label={t('home.todays_status')}>
+        <div className="grid grid-cols-3 gap-2" aria-label={t('home.todays_status')}>
           <Tile
             to="/r/hours"
             icon="clock"
@@ -261,20 +261,20 @@ function SuitedRooms({ onOpen }) {
   )
 }
 
-/** Small glanceable card: icon + label on top, one short value underneath. */
+/** Small glanceable card: icon + label on top, one short value underneath (wraps rather than truncating on 375 px phones). */
 function Tile({ to, onClick, icon, label, value, good, ltr }) {
   const C = to ? Link : 'button'
   return (
     <C
       to={to}
       onClick={onClick}
-      className="flex min-h-[84px] min-w-0 flex-col justify-between gap-2 rounded-[20px] bg-surface px-3.5 py-3 text-start active:bg-black/[0.06]"
+      className="flex min-h-[84px] min-w-0 flex-col justify-between gap-2 rounded-[20px] bg-surface px-3 py-3 text-start active:bg-black/[0.06]"
     >
       <span className="flex items-center gap-1.5 text-[13px] text-grey-ink">
         <Icon name={icon} size={16} className="shrink-0 text-navy" />
         <span className="truncate">{label}</span>
       </span>
-      <span className={`truncate text-[15px] font-semibold tabular-nums ${good ? 'text-[#2f5656]' : 'text-ink'}`} dir={ltr ? 'ltr' : undefined}>
+      <span className={`text-[15px] leading-tight font-semibold tabular-nums ${good ? 'text-[#2f5656]' : 'text-ink'}`} dir={ltr ? 'ltr' : undefined}>
         {value}
       </span>
     </C>

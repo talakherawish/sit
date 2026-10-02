@@ -270,7 +270,7 @@
     "no_account": "No account with this number yet.",
     "send_code": "Send code",
     "new_here": "New here? Sign up",
-    "demo_hint": "Demo numbers: Larine +970 599100201 · Tala +970 599100202 · Omar +970 599100203",
+    "demo_hint": "Demo numbers: Leen +970 599100201 · Tala +970 599100202 · Ahmed +970 599100203",
     "code_sent": "We sent a code to {{phone}}.",
     "digit": "Digit {{n}}",
     "any_code": "Prototype: any 4 digits work (the real code is in the outbox).",
@@ -720,7 +720,7 @@
   },
   "demo": {
     "title": "Live demo: renter app and reception, side by side",
-    "hint": "Both screens share the same data. Try checking Larine in on the right and watch the seat count on the left.",
+    "hint": "Both screens share the same data. Try checking Leen in on the right and watch the seat count on the left.",
     "panel": "Time & scenarios",
     "reset": "Reset demo",
     "renter": "Renter app · Tala",

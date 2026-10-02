@@ -38,9 +38,11 @@ Why each design choice was made, and which UX principle it follows: [10-presenta
 
 The clock starts at **Thu 1 Oct 2026, 09:30**, and the app opens logged in as **Tala** with a lived-in account (bookings, alerts, reports, profile). Pick **Guest** in P-01 for the browse-without-an-account story (US-1). Seeded data lives in `src/data/mock-data.json`; "Reset all data" in P-01 reloads it.
 
-- **Larine** (Arabic) — Big Room 2 today 15:00–17:00, awaiting confirmation, reminder 2 h before; one AC report in progress.
-- **Tala** — recurring Focus Room 1, Sun–Thu 09:00–10:00 (checked in today), plus a client call in Focus Room 3 at 13:30 awaiting confirmation.
-- **Omar** — no bookings; use him for the last-minute and "slot just taken" demos.
+- **Tala Kherawish** — recurring Focus Room 1, Sun–Thu 09:00–10:00 (checked in today), plus a client call in Focus Room 3 at 13:30 awaiting confirmation.
+- **Leen Anabtawi** (Arabic) — Big Room 2 today 15:00–17:00, awaiting confirmation, reminder 2 h before; one AC report in progress.
+- **Fatima Alkilani** — Focus Room 2 at 10:00 and Big Room 1 at 12:00 today.
+- **Shahd Mallah** — checked in to Focus Room 3 (09:30–11:00), plus Focus Room 1 at 14:00.
+- **Ahmed Salamh** — no bookings yet; use him for the last-minute, "slot just taken" and paused-account demos.
 
 Any 4-digit code passes on R-11; the real code is in the P-03 outbox.
 
@@ -78,5 +80,5 @@ The header uses the Technopark Palestine logo (`public/brand/`). Colours come fr
 ## Choices the spec left open
 
 - **Daily status nudge (S-01):** the "No status posted today" banner clears when staff post a notice ticked _This is today's daily status_ (on by default for the first post of the day). The two seeded morning notices are ad-hoc, so the banner shows at start, as US-6 expects.
-- **Time simulator (P-02)** jumps relative to a _target booking_ you pick (defaults to the logged-in persona's next booking, else Larine's), so US-4 works for Larine or Tala. Time only moves forward; use Reset to go back.
+- **Time simulator (P-02)** jumps relative to a _target booking_ you pick (defaults to the logged-in persona's next booking, else Leen's), so US-4 works for Leen or Tala. Time only moves forward; use Reset to go back.
 - **Placeholders to swap:** the Technopark logo (`TechnoparkLogo` in `components/Icon.jsx`) and room photos (`Photo` in `components/ui.jsx`) are drawn stand-ins; room names, counts and hours are placeholders.
