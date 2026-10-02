@@ -12,6 +12,7 @@ import { Today, CheckIn, SeatLog } from './staff/Desk'
 import { Notices, ReportsInbox, RoomDown, BookFor } from './staff/Ops'
 import { Insights, NoShowSettings, RoomSettings } from './staff/Admin'
 import Drawer from './prototype/Drawer'
+import Demo from './prototype/Demo'
 
 export default function App() {
   useLangSync()
@@ -55,6 +56,7 @@ export default function App() {
           <Route path="settings/no-show" element={<NoShowSettings />} />
           <Route path="settings/rooms" element={<RoomSettings />} />
         </Route>
+        <Route path="/demo" element={<Demo />} />
         <Route path="*" element={<Navigate to="/r/home" replace />} />
       </Routes>
       <Drawer />

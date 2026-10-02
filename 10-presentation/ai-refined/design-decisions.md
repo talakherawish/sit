@@ -2,6 +2,8 @@
 
 Prototype: https://talakherawish.github.io/sit/ (renter app) · https://talakherawish.github.io/sit/s/today (reception dashboard)
 
+Presenting: https://talakherawish.github.io/sit/demo shows the renter phone and the reception dashboard side by side, sharing live data (check someone in on the right, watch the seat count change on the left).
+
 We worked in **Design Thinking loops**: build from the spec, review it as a user, fix, repeat. Each round below lists what changed, the problem behind it, and the UX principle it follows.
 
 ---

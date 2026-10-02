@@ -714,5 +714,14 @@
     "confirm_n_other": "Confirm {{count}} bookings",
     "edit": "Change room, days or time",
     "skipped": "Not available on {{days}} (room taken, or you already have a booking then), so those days are skipped."
+  },
+  "demo": {
+    "title": "Live demo: renter app and reception, side by side",
+    "hint": "Both screens share the same data. Try checking Larine in on the right and watch the seat count on the left.",
+    "panel": "Time & scenarios",
+    "reset": "Reset demo",
+    "renter": "Renter app · Tala",
+    "staff": "Reception dashboard · Rana",
+    "narrow": "The side-by-side demo needs a wider screen. Open each view on its own:"
   }
 }

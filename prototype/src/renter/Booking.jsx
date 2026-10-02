@@ -71,7 +71,8 @@ function QuickReview({ draft, onSubmit, onEdit }) {
   const dates = [...new Set(draft.dates?.length ? draft.dates : [draft.date])].filter((x) => hoursFor(data, x)).sort()
   const renterId = useStore((s) => s.renterId)
   // Skip days the room is taken, or you already have another booking at that time.
-  const mine = (x) => data.bookings.some((b) => b.renter_id === renterId && b.date === x && ACTIVE.includes(b.status) && b.start < draft.end && draft.start < b.end)
+  const mine = (x) =>
+    data.bookings.some((b) => b.renter_id === renterId && b.date === x && ACTIVE.includes(b.status) && b.start < draft.end && draft.start < b.end)
   const free = dates.filter((x) => isFree(data, sp.id, x, draft.start, draft.end) && !mine(x))
   const skipped = dates.filter((x) => !free.includes(x))
   const remOpts = free.length ? REMINDERS.map((k) => ({ k, at: reminderAt(free[0], draft.start, k) })).filter((o) => o.at > now) : []
