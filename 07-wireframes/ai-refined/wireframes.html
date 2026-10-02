@@ -92,15 +92,6 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
 .taps a{font-weight:600;text-decoration-color:var(--wire);text-underline-offset:3px}
 .path{font:400 12.5px/1.5 var(--f-mono);color:var(--muted)}
 
-/* navigation map */
-.ia-label{margin:30px 0 0;font:600 12px/1.4 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.ia{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:12px;margin-top:12px}
-.ia-col{min-width:0;padding:14px 16px 16px;background:var(--sheet);border:1px solid var(--fill-2);border-radius:12px}
-.ia-col h3{margin:0 0 2px;font:700 17px/1.2 var(--f-display);font-stretch:88%}
-.via{margin:0 0 10px;font:500 10.5px/1.4 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.ia-col ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px;font-size:13.5px;line-height:1.35}
-.ia-col li ul{margin:6px 0 2px 4px;padding-left:12px;border-left:1px solid var(--fill-2)}
-.ia-col code{margin-right:6px;font:500 11px var(--f-mono);color:var(--muted)}
 
 /* ---------- wireframe primitives (phone) ---------- */
 .wf{position:relative;flex:none;width:var(--phone-w);min-height:470px;display:flex;flex-direction:column;overflow:hidden;background:var(--sheet);color:var(--ink);border:1.5px solid var(--ink);border-radius:28px;font:400 9.5px/1.35 var(--f-body)}
@@ -364,7 +355,6 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
     <a href="#flow-6"><i>6</i>Report a problem</a>
     <a href="#flow-7"><i>7</i>Front desk</a>
     <a href="#edge"><i>!</i>Edge states</a>
-    <a href="#screens">Screens</a>
     <a href="#laws">Principles</a>
   </div>
   <div class="fn-bar"><i></i></div>
@@ -399,7 +389,6 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
     <a class="fcard alt" href="#edge"><span class="fc-top"><b class="fc-n">!</b></span><span class="fc-k">Edge states</span><span class="fc-t">When something goes wrong</span><span class="fc-p">Slot just taken · room out of service</span></a>
   </div>
   <div class="refs">
-    <a href="#screens"><b>Every screen</b><span>Tabs, sidebar and screen IDs</span></a>
     <a href="#laws"><b>Principles</b><span>Where each UX law shows up</span></a>
   </div>
 </section>
@@ -1406,42 +1395,6 @@ h2{margin:6px 0 10px;font-family:var(--f-display);font-weight:750;font-stretch:8
     <li><i class="pin">1</i><p>The clash is explained in one sentence, followed by other free times in the same room and other rooms free at the same time.<span class="law">Help users recover from errors</span></p></li>
     <li><i class="pin">2</i><p>A room that is down says why, and the only button leads to another room.<span class="law">Visibility of status · a way forward</span></p></li>
   </ol>
-</section>
-
-<!-- ============ NAVIGATION ============ -->
-<section class="sec" id="screens" data-pg aria-labelledby="h-nav">
-  <p class="eyebrow">Reference</p>
-  <h2 id="h-nav">Every screen and where it lives</h2>
-  <p class="intro">Four tabs on the phone, one sidebar at reception. Screens that belong to a task open from that task and don't get a tab.</p>
-
-  <p class="ia-label">Renter app · tab bar</p>
-  <div class="ia">
-    <div class="ia-col"><h3>Map</h3><p class="via">Tab 1 · default</p>
-      <ul><li><code>R-01</code>Home
-        <ul><li>Room sheet</li><li><code>R-03</code>Room details, with "Report a problem"</li><li><code>R-04</code>Opening hours</li></ul></li></ul></div>
-    <div class="ia-col"><h3>Rooms</h3><p class="via">Tab 2</p>
-      <ul><li><code>R-02</code>Rooms: Day view · List
-        <ul><li>Same room sheet</li></ul></li></ul></div>
-    <div class="ia-col"><h3>My bookings</h3><p class="via">Tab 3</p>
-      <ul><li><code>R-13</code>My bookings
-        <ul><li><code>R-08</code>Booking details</li><li><code>R-14</code>Move booking</li></ul></li></ul></div>
-    <div class="ia-col"><h3>Report</h3><p class="via">Tab 4</p>
-      <ul><li><code>R-16</code>Report an issue
-        <ul><li><code>R-17</code>My reports</li></ul></li></ul></div>
-    <div class="ia-col"><h3>Top bar</h3><p class="via">Every screen</p>
-      <ul><li>Logo → Home</li><li>Bell → <code>R-18</code>Notifications</li><li>عربي / EN language switch</li></ul></div>
-    <div class="ia-col"><h3>Inside a task</h3><p class="via">No tab</p>
-      <ul><li><code>R-06</code>Review booking</li><li><code>R-07</code>Slot just taken</li><li><code>R-08</code>Booking confirmed</li><li><code>R-15</code>Reminder (from SMS)</li></ul></div>
-  </div>
-
-  <p class="ia-label">Reception · sidebar</p>
-  <div class="ia">
-    <div class="ia-col"><h3>Today</h3><p class="via">Default</p><ul><li><code>S-01</code>Today<ul><li><code>S-03</code>Seat-count log</li></ul></li></ul></div>
-    <div class="ia-col"><h3>Check-in</h3><p class="via">&nbsp;</p><ul><li><code>S-02</code>Check-in / check-out</li></ul></div>
-    <div class="ia-col"><h3>Notices</h3><p class="via">&nbsp;</p><ul><li><code>S-04</code>Notices</li></ul></div>
-    <div class="ia-col"><h3>Reports</h3><p class="via">Count of new reports</p><ul><li><code>S-05</code>Reports inbox</li></ul></div>
-    <div class="ia-col"><h3>Settings</h3><p class="via">Read only</p><ul><li><code>S-10</code>Rooms and hours</li></ul></div>
-  </div>
 </section>
 
 <!-- ============ PRINCIPLES ============ -->
