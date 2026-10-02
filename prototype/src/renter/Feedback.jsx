@@ -291,7 +291,7 @@ export function Profile() {
               <legend className="mb-1 text-sm font-medium">{t('profile.language')}</legend>
               <div className="flex gap-2">
                 <Chip
-                  active={me.language === 'ar'}
+                  active={s.lang === 'ar'}
                   onClick={() => {
                     upd({ language: 'ar' })
                     s.setLang('ar')
@@ -300,7 +300,7 @@ export function Profile() {
                   العربية
                 </Chip>
                 <Chip
-                  active={me.language === 'en'}
+                  active={s.lang === 'en'}
                   onClick={() => {
                     upd({ language: 'en' })
                     s.setLang('en')

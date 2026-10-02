@@ -16,6 +16,16 @@
   --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', 'IBM Plex Sans Arabic', system-ui, sans-serif;
 }
 
+/* Gap under the status bar. Added to the home-screen app, where iOS blurs the top edge of the screen. */
+:root {
+  --app-top: 4px;
+}
+@media (display-mode: standalone) {
+  :root {
+    --app-top: 14px;
+  }
+}
+
 html,
 body {
   font-family: var(--font-body);

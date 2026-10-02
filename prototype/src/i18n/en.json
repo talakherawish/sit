@@ -56,7 +56,10 @@
     "greeting_afternoon": "Good afternoon",
     "greeting_evening": "Good evening",
     "how_hint": "Pick one and we'll list the rooms that suit it.",
-    "plan_hint": "Tap a room to see its day and book it."
+    "plan_hint": "Tap a room to see its day and book it.",
+    "hours": "Hours",
+    "until": "Until {{time}}",
+    "opens_at": "Opens {{time}}"
   },
   "about": {
     "title": "About Sit",

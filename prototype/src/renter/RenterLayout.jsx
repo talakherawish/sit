@@ -30,7 +30,10 @@ export default function RenterLayout() {
           <OverlayHost>
             <div className="absolute top-[11px] left-1/2 z-50 hidden h-[34px] w-[120px] -translate-x-1/2 rounded-full bg-black sm:block" aria-hidden="true" />
             <TopBar />
-            <main ref={main} className="no-scrollbar absolute inset-0 overflow-x-hidden overflow-y-auto pt-[52px] pb-24 sm:pt-[104px] sm:pb-28">
+            <main
+              ref={main}
+              className="no-scrollbar absolute inset-0 snap-y snap-proximity scroll-pt-[calc(52px+var(--app-top))] overflow-x-hidden overflow-y-auto pt-[calc(52px+var(--app-top))] pb-24 sm:scroll-pt-[104px] sm:pt-[104px] sm:pb-28"
+            >
               <div key={loc.pathname} className="animate-screen">
                 <Outlet />
               </div>
@@ -57,7 +60,7 @@ function TopBar() {
   const me = data.renters.find((r) => r.id === renterId)
   const unread = data.notifications.some((n) => n.renter_id === renterId && !n.read)
   return (
-    <header className="absolute inset-x-0 top-0 z-30 border-b border-black/[0.06] bg-white/80 backdrop-blur-xl backdrop-saturate-150">
+    <header className="absolute inset-x-0 top-0 z-30 border-b border-black/[0.06] bg-white/80 pt-[var(--app-top)] backdrop-blur-xl backdrop-saturate-150 sm:pt-0">
       <div className="hidden h-[52px] items-center justify-between px-8 pt-1 sm:flex" dir="ltr" aria-hidden="true">
         <span className="w-14 text-center text-[16px] font-semibold tracking-tight">{hm(minOfDay(now))}</span>
         <StatusIcons />
@@ -67,13 +70,16 @@ function TopBar() {
           <TechnoparkLogo />
         </Link>
         <div className="flex-1" />
-        <button
-          onClick={() => setLang(lang === 'en' ? 'ar' : 'en')}
-          className="min-h-11 px-2.5 text-[15px] font-medium text-navy"
-          aria-label={t('common.switch_lang')}
-        >
-          {lang === 'en' ? 'عربي' : 'EN'}
-        </button>
+        {/* Signed-in renters change language in their profile; guests get a quick switch here */}
+        {!me && (
+          <button
+            onClick={() => setLang(lang === 'en' ? 'ar' : 'en')}
+            className="min-h-11 px-2.5 text-[15px] font-medium text-navy"
+            aria-label={t('common.switch_lang')}
+          >
+            {lang === 'en' ? 'عربي' : 'EN'}
+          </button>
+        )}
         {me && (
           <Link to="/r/notifications" className="relative grid size-11 place-items-center text-navy" aria-label={t('nav.notifications')}>
             <Icon name="bell" />

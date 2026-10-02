@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL } from '../lib/hooks'
-import { activeNotices, hoursFor, stateAt, nextFreeAt, dateOf, minOfDay, speedTests } from '../lib/logic'
+import { activeNotices, amenityStatus, hoursFor, stateAt, nextFreeAt, dateOf, minOfDay, speedTests } from '../lib/logic'
 import { hm } from '../lib/time'
 import FloorPlan from '../components/FloorPlan'
 import RoomSheet, { RulesList } from '../components/RoomSheet'
-import { AmenitySheet, useAmenityLine } from '../components/Amenities'
+import { AmenitySheet } from '../components/Amenities'
 import { ModeChips, WhenBar, useWhen } from '../components/Browse'
 import { ScreenId, Sheet } from '../components/ui'
 import Icon, { TechnoparkLogo } from '../components/Icon'
@@ -52,10 +52,10 @@ export default function Home() {
   const part = min < 12 * 60 ? 'morning' : min < 17 * 60 ? 'afternoon' : 'evening'
 
   return (
-    <div className="space-y-10 px-4 pt-3 pb-4">
-      <div className="space-y-5">
-        <header className="px-1 pt-2">
-          <h1 className="font-head text-[34px] leading-[1.1] font-bold tracking-tight">
+    <div className="space-y-12 px-4 pt-6 pb-4">
+      <div className="snap-start scroll-mt-6 space-y-4">
+        <header className="px-1 pb-1">
+          <h1 className="font-head text-[30px] leading-[1.15] font-bold tracking-tight">
             {t(`home.greeting_${part}`)}
             {me && (
               <span className="text-grey-ink">
@@ -67,63 +67,73 @@ export default function Home() {
           <ScreenId id="R-01" className="mt-1" />
         </header>
 
-        {/* Live seats (US-1 AC1) + hours, amenities and the latest notice (US-1 AC2) */}
-        <section className="overflow-hidden rounded-[26px] bg-surface" aria-label={t('home.todays_status')}>
-          <button onClick={() => onSelect('public')} className="block w-full px-5 pt-4 pb-4 text-start" aria-label={t('home.seats_aria', { taken, total })}>
-            <span className="flex items-center gap-2 text-[13px] font-medium text-grey-ink">
-              <span className="live-dot size-2 rounded-full bg-teal" />
-              {t('home.live')} · {L(data.zones[0].name)}
+        {/* Live seats (US-1 AC1) */}
+        <button
+          onClick={() => onSelect('public')}
+          className="block w-full rounded-[24px] bg-surface px-5 pt-4 pb-5 text-start active:bg-black/[0.06]"
+          aria-label={t('home.seats_aria', { taken, total })}
+        >
+          <span className="flex items-center gap-2 text-[13px] font-medium text-grey-ink">
+            <span className="live-dot size-2 rounded-full bg-teal" />
+            {t('home.live')} · {L(data.zones[0].name)}
+          </span>
+          <span className="mt-1.5 flex items-end gap-2">
+            <span className="flex items-baseline gap-1.5" dir="ltr">
+              <span className="font-head text-[52px] leading-none font-bold tracking-tight">{taken}</span>
+              <span className="font-head text-[22px] font-semibold text-grey-ink">/ {total}</span>
             </span>
-            <span className="mt-1 flex items-end gap-2">
-              <span className="flex items-baseline gap-1.5" dir="ltr">
-                <span className="font-head text-[64px] leading-none font-bold tracking-tight">{taken}</span>
-                <span className="font-head text-[26px] font-semibold text-grey-ink">/ {total}</span>
+            <span className="ms-auto pb-1 text-end text-[17px] font-semibold text-[#2f5656]">{t('home.seats_free', { count: total - taken })}</span>
+          </span>
+          {/* one tick per seat */}
+          <span className="mt-4 flex h-5 items-end gap-[3px]" dir="ltr" aria-hidden="true">
+            {Array.from({ length: total }, (_, k) => (
+              <span key={k} className={`flex-1 rounded-full transition-all ${k < taken ? 'h-full bg-navy' : 'h-2 bg-black/[0.09]'}`} />
+            ))}
+          </span>
+        </button>
+
+        {/* Hours and amenities at a glance (US-1 AC2) */}
+        <div className="grid grid-cols-3 gap-2.5" aria-label={t('home.todays_status')}>
+          <Tile
+            to="/r/hours"
+            icon="clock"
+            label={t('home.hours')}
+            value={
+              !h
+                ? t('home.closed_today')
+                : min < h.open
+                  ? t('home.opens_at', { time: hm(h.open) })
+                  : min < h.close
+                    ? t('home.until', { time: hm(h.close) })
+                    : t('amenity.closed')
+            }
+            good={!!h && min >= h.open && min < h.close}
+          />
+          <CafeteriaTile onOpen={onSelect} />
+          <WifiTile onOpen={onSelect} />
+        </div>
+
+        {/* Latest notice (US-1 AC2) */}
+        {latest && (
+          <button
+            onClick={() => setSheet('notices')}
+            className="flex min-h-14 w-full items-center gap-3 rounded-[20px] bg-navy/[0.06] px-4 py-3 text-start active:bg-navy/[0.1]"
+          >
+            <Icon name="megaphone" size={18} className="shrink-0 text-navy" />
+            <span className="min-w-0 flex-1">
+              <span className="block truncate text-[15px] font-medium">{L(latest.text)}</span>
+              <span className="block text-[13px] text-grey-ink">
+                {t('home.posted', { time: hm(minOfDay(latest.posted_at)) })} · {t('home.n_notices', { count: notices.length })}
               </span>
-              <span className="ms-auto pb-1.5 text-end text-[15px] leading-snug text-grey-ink">
-                {t('home.seats_taken')}
-                <br />
-                <span className="font-semibold text-[#2f5656]">{t('home.seats_free', { count: total - taken })}</span>
-              </span>
             </span>
-            {/* one tick per seat */}
-            <span className="mt-3 flex h-6 items-end gap-[3px]" dir="ltr" aria-hidden="true">
-              {Array.from({ length: total }, (_, k) => (
-                <span key={k} className={`flex-1 rounded-full transition-all ${k < taken ? 'h-full bg-navy' : 'h-2.5 bg-black/[0.09]'}`} />
-              ))}
-            </span>
+            <Icon name="next" size={16} className="shrink-0 text-grey-ink/60 rtl:rotate-180" />
           </button>
-          <div className="divide-y divide-black/[0.07] border-t border-black/[0.07]">
-            <Link to="/r/hours" className="flex min-h-12 items-center gap-3 px-5 text-[15px]">
-              <Icon name="clock" size={18} className="text-navy" />
-              <span className="flex-1">{h ? t('home.open') : t('home.closed_today')}</span>
-              {h && (
-                <span className="text-grey-ink" dir="ltr">
-                  {hm(h.open)}–{hm(h.close)}
-                </span>
-              )}
-              <Icon name="next" size={16} className="text-grey-ink/60 rtl:rotate-180" />
-            </Link>
-            <CafeteriaRow onOpen={onSelect} />
-            <WifiRow onOpen={onSelect} />
-            {latest && (
-              <button onClick={() => setSheet('notices')} className="flex min-h-14 w-full items-center gap-3 px-5 py-2.5 text-start text-[15px]">
-                <Icon name="megaphone" size={18} className="shrink-0 text-navy" />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate">{L(latest.text)}</span>
-                  <span className="text-[13px] text-grey-ink">
-                    {t('home.posted', { time: hm(minOfDay(latest.posted_at)) })} · {t('home.n_notices', { count: notices.length })}
-                  </span>
-                </span>
-                <Icon name="next" size={16} className="shrink-0 text-grey-ink/60 rtl:rotate-180" />
-              </button>
-            )}
-          </div>
-        </section>
+        )}
       </div>
 
       {/* Floor plan */}
-      <section aria-labelledby="h-plan">
-        <div className="mb-1 px-1">
+      <section aria-labelledby="h-plan" className="snap-start scroll-mt-4">
+        <div className="mb-2 px-1">
           <h2 id="h-plan" className="font-head text-[24px] font-bold tracking-tight">
             {t('home.floor_plan')}
           </h2>
@@ -156,7 +166,7 @@ export default function Home() {
       </section>
 
       {/* What are you here to do? → rooms that suit it */}
-      <section aria-labelledby="h-how">
+      <section aria-labelledby="h-how" className="snap-start scroll-mt-4">
         <div className="-mx-4">
           <ModeChips headingId="h-how" />
         </div>
@@ -251,42 +261,57 @@ function SuitedRooms({ onOpen }) {
   )
 }
 
-function CafeteriaRow({ onOpen }) {
-  const L = useL()
-  const cafe = useStore((s) => s.data.amenities.find((a) => a.id === 'cafeteria'))
-  const line = useAmenityLine()(cafe)
+/** Small glanceable card: icon + label on top, one short value underneath. */
+function Tile({ to, onClick, icon, label, value, good, ltr }) {
+  const C = to ? Link : 'button'
   return (
-    <button onClick={() => onOpen('cafeteria')} className="flex min-h-12 w-full items-center gap-3 px-5 text-start text-[15px]">
-      <Icon name="cup" size={18} className="text-navy" />
-      <span className="flex-1">{L(cafe.name)}</span>
-      <span className={line.open ? 'font-medium text-[#2f5656]' : 'text-grey-ink'}>{line.text}</span>
-      <Icon name="next" size={16} className="text-grey-ink/60 rtl:rotate-180" />
-    </button>
+    <C
+      to={to}
+      onClick={onClick}
+      className="flex min-h-[84px] min-w-0 flex-col justify-between gap-2 rounded-[20px] bg-surface px-3.5 py-3 text-start active:bg-black/[0.06]"
+    >
+      <span className="flex items-center gap-1.5 text-[13px] text-grey-ink">
+        <Icon name={icon} size={16} className="shrink-0 text-navy" />
+        <span className="truncate">{label}</span>
+      </span>
+      <span className={`truncate text-[15px] font-semibold tabular-nums ${good ? 'text-[#2f5656]' : 'text-ink'}`} dir={ltr ? 'ltr' : undefined}>
+        {value}
+      </span>
+    </C>
   )
 }
 
-/** Last Wi-Fi speed test, like a speed-test app: ↓ download · ↑ upload. */
-function WifiRow({ onOpen }) {
+function CafeteriaTile({ onOpen }) {
+  const { t } = useTranslation()
+  const L = useL()
+  const data = useStore((s) => s.data)
+  const now = useStore((s) => s.now)
+  const cafe = data.amenities.find((a) => a.id === 'cafeteria')
+  const st = amenityStatus(data, cafe, now)
+  const value = st.open
+    ? t('home.until', { time: hm(st.until) })
+    : st.next?.date === dateOf(now)
+      ? t('home.opens_at', { time: hm(st.next.min) })
+      : t('amenity.closed')
+  return <Tile onClick={() => onOpen('cafeteria')} icon="cup" label={L(cafe.name)} value={value} good={st.open} />
+}
+
+/** Last Wi-Fi speed test (download); the sheet has the full ↓/↑ history. */
+function WifiTile({ onOpen }) {
   const { t } = useTranslation()
   const L = useL()
   const data = useStore((s) => s.data)
   const now = useStore((s) => s.now)
   const last = speedTests(data, now)[0]
   return (
-    <button onClick={() => onOpen('wifi')} className="flex min-h-12 w-full items-center gap-3 px-5 text-start text-[15px]">
-      <Icon name="wifi" size={18} className="text-navy" />
-      <span className="flex-1">{L(data.amenities.find((a) => a.id === 'wifi').name)}</span>
-      {last ? (
-        <span className="flex items-baseline gap-2.5 tabular-nums" dir="ltr">
-          <span className="font-medium text-[#2f5656]">↓ {last.down}</span>
-          <span className="text-grey-ink">↑ {last.up}</span>
-          <span className="text-[13px] text-grey-ink">Mbps</span>
-        </span>
-      ) : (
-        <span className="text-grey-ink">{t('amenity.no_test')}</span>
-      )}
-      <Icon name="next" size={16} className="text-grey-ink/60 rtl:rotate-180" />
-    </button>
+    <Tile
+      onClick={() => onOpen('wifi')}
+      icon="wifi"
+      label={L(data.amenities.find((a) => a.id === 'wifi').name)}
+      value={last ? `↓ ${last.down} Mbps` : t('amenity.no_test')}
+      good={!!last}
+      ltr={!!last}
+    />
   )
 }
 

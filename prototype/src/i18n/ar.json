@@ -53,7 +53,10 @@
     "greeting_afternoon": "مساء الخير",
     "greeting_evening": "مساء الخير",
     "how_hint": "اختر واحداً وسنعرض الغرف المناسبة له.",
-    "plan_hint": "اضغط على غرفة لترى يومها وتحجزها."
+    "plan_hint": "اضغط على غرفة لترى يومها وتحجزها.",
+    "hours": "الدوام",
+    "until": "حتى {{time}}",
+    "opens_at": "يفتح {{time}}"
   },
   "about": {
     "title": "عن Sit",
@@ -86,7 +89,8 @@
     "free": "متاحة",
     "down": "معطّلة",
     "booked": "محجوزة",
-    "until": "حتى {{time}}"
+    "until": "حتى {{time}}",
+    "opens_at": "يفتح {{time}}"
   },
   "room": {
     "down": "خارج الخدمة",
