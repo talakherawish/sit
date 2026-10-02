@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
-import { useL } from '../lib/hooks'
+import { useL, usePersonName } from '../lib/hooks'
 import { isPaused, dateOf } from '../lib/logic'
 import { fmtDate, hm, weekdayName } from '../lib/time'
 import { Card, PhaseBadge } from '../components/ui'
@@ -254,6 +254,7 @@ function SettingsTabs({ active }) {
 /** S-09 Settings: no-show limit (#31) */
 export function NoShowSettings() {
   const { t } = useTranslation()
+  const pn = usePersonName()
   const s = useStore()
   const rule = s.data.settings.no_show
   const paused = s.data.renters.filter((r) => isPaused(r, s.now))
@@ -286,7 +287,7 @@ export function NoShowSettings() {
             {paused.map((r) => (
               <li key={r.id} className="flex items-center justify-between py-2">
                 <span>
-                  <b>{r.name}</b> · {t('settings.until', { date: fmtDate(r.paused_until, s.lang) })} · {t('settings.n_noshows', { count: r.no_show_count })}
+                  <b>{pn(r)}</b> · {t('settings.until', { date: fmtDate(r.paused_until, s.lang) })} · {t('settings.n_noshows', { count: r.no_show_count })}
                 </span>
                 <button className="btn-secondary" onClick={() => s.setPaused(r.id, false)}>
                   {t('settings.lift')}

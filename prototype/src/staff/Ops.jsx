@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
-import { useL, useSpaceName } from '../lib/hooks'
+import { useL, useSpaceName, usePersonName } from '../lib/hooks'
 import { ACTIVE, NOTICE_TAGS, hoursFor, normPhone, startAbs, dateOf, minOfDay, renter as findRenter } from '../lib/logic'
 import { abs, fmtAbs, fmtDate, hm, parseHm, addDays } from '../lib/time'
 import BookingForm from '../components/BookingForm'
@@ -217,6 +217,7 @@ export function Notices() {
 /** S-05 Reports inbox (#22, #23) */
 export function ReportsInbox() {
   const { t } = useTranslation()
+  const pn = usePersonName()
   const name = useSpaceName()
   const s = useStore()
   const [edits, setEdits] = useState({})
@@ -241,7 +242,7 @@ export function ReportsInbox() {
               return (
                 <tr key={r.id} className={`border-b border-black/[0.06] align-top ${r.status === 'sent' ? 'bg-navy/[0.04]' : ''}`}>
                   <td className="py-3 text-sm">{fmtAbs(r.history[0].time, s.lang)}</td>
-                  <td className="font-medium">{findRenter(s.data, r.renter_id)?.name}</td>
+                  <td className="font-medium">{pn(findRenter(s.data, r.renter_id))}</td>
                   <td>{name(r.space_id)}</td>
                   <td>{r.types.map((k) => t(`issue.${k}`)).join(', ')}</td>
                   <td className="max-w-64 text-sm">
@@ -298,6 +299,7 @@ export function ReportsInbox() {
 /** S-06 Room down + cancel with notice (#21) */
 export function RoomDown() {
   const { t } = useTranslation()
+  const pn = usePersonName()
   const L = useL()
   const navigate = useNavigate()
   const s = useStore()
@@ -381,7 +383,7 @@ export function RoomDown() {
                     checked={!unchecked[b.id]}
                     onChange={(e) => setUnchecked({ ...unchecked, [b.id]: !e.target.checked })}
                   />
-                  <span className="font-medium">{findRenter(s.data, b.renter_id).name}</span>
+                  <span className="font-medium">{pn(findRenter(s.data, b.renter_id))}</span>
                   <span dir="ltr">
                     {hm(b.start)}–{hm(b.end)}
                   </span>
@@ -403,6 +405,7 @@ export function RoomDown() {
 /** S-07 Book for someone (#26) */
 export function BookFor() {
   const { t } = useTranslation()
+  const pn = usePersonName()
   const name = useSpaceName()
   const s = useStore()
   const [params] = useSearchParams()
@@ -417,16 +420,20 @@ export function BookFor() {
     : {}
   const r = findRenter(s.data, renterId)
   const ql = q.trim().toLowerCase()
-  const results = ql ? s.data.renters.filter((x) => x.name.toLowerCase().includes(ql) || (normPhone(ql) && normPhone(x.phone).includes(normPhone(ql)))) : []
+  const results = ql
+    ? s.data.renters.filter(
+        (x) => [x.name, x.name_ar].some((n) => n?.toLowerCase().includes(ql)) || (normPhone(ql) && normPhone(x.phone).includes(normPhone(ql))),
+      )
+    : []
   const upcoming = s.data.bookings
     .filter((b) => ACTIVE.includes(b.status) && b.date >= dateOf(s.now))
     .sort((a, b) => startAbs(a) - startAbs(b))
     .slice(0, 12)
   const submit = (f) => {
     const { ids, clashes } = s.createBooking({ ...f, renterId: r.id }, { createdBy: 'staff', source: 'staff' })
-    if (!ids.length) return s.showToast('toast.err_nothing_booked', { name: r.name })
-    if (clashes) s.showToast('toast.err_clash', { name: r.name, count: clashes })
-    else s.showToast('toast.staff_booked', { name: r.name })
+    if (!ids.length) return s.showToast('toast.err_nothing_booked', { name: pn(r) })
+    if (clashes) s.showToast('toast.err_clash', { name: pn(r), count: clashes })
+    else s.showToast('toast.staff_booked', { name: pn(r) })
     setFormKey(formKey + 1)
   }
   return (
@@ -438,7 +445,7 @@ export function BookFor() {
           {r ? (
             <div className="flex items-center justify-between rounded-lg bg-surface p-3">
               <span>
-                <b>{r.name}</b> · <span dir="ltr">{r.phone}</span>
+                <b>{pn(r)}</b> · <span dir="ltr">{r.phone}</span>
               </span>
               <button className="btn-link" onClick={() => setRenterId(null)}>
                 {t('bookfor.change')}
@@ -454,7 +461,7 @@ export function BookFor() {
                       className="flex min-h-11 w-full items-center justify-between rounded px-2 text-start hover:bg-black/[0.03]"
                       onClick={() => setRenterId(x.id)}
                     >
-                      <span>{x.name}</span>
+                      <span>{pn(x)}</span>
                       <span dir="ltr" className="text-sm text-grey-ink">
                         {x.phone}
                       </span>
@@ -496,7 +503,7 @@ export function BookFor() {
         <Card className="self-start">
           <h2 className="mb-3 font-head text-xl font-bold">2 · {t('bookfor.what')}</h2>
           {r ? (
-            <BookingForm key={formKey} renterId={r.id} initial={prefill} onSubmit={submit} submitLabel={t('bookfor.book', { name: r.name.split(' ')[0] })} />
+            <BookingForm key={formKey} renterId={r.id} initial={prefill} onSubmit={submit} submitLabel={t('bookfor.book', { name: pn(r, true) })} />
           ) : (
             <p className="text-grey-ink">{t('bookfor.pick_first')}</p>
           )}
@@ -508,7 +515,7 @@ export function BookFor() {
           <tbody>
             {upcoming.map((b) => (
               <tr key={b.id} className="border-b border-black/[0.06]">
-                <td className="py-2 font-medium">{findRenter(s.data, b.renter_id).name}</td>
+                <td className="py-2 font-medium">{pn(findRenter(s.data, b.renter_id))}</td>
                 <td>{name(b.space_id)}</td>
                 <td>
                   {fmtDate(b.date, s.lang)} ·{' '}

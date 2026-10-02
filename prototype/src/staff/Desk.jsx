@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
-import { useL, useSpaceName } from '../lib/hooks'
+import { useL, useSpaceName, STAFF, usePersonName } from '../lib/hooks'
 import { ACTIVE, activeNotices, normPhone, staffStatus, dateOf, endAbs, minOfDay, startAbs, renter as findRenter } from '../lib/logic'
 import { fmtAbs, hm } from '../lib/time'
 import { Card, Modal, PhaseBadge, ScreenId, StatusChip } from '../components/ui'
@@ -64,6 +64,7 @@ const NOTICE_ICON = { wifi: 'wifi', events: 'megaphone', ac: 'drop', cleaning: '
 /** S-01 Today */
 export function Today() {
   const { t } = useTranslation()
+  const pn = usePersonName()
   const L = useL()
   const navigate = useNavigate()
   const name = useSpaceName()
@@ -75,7 +76,7 @@ export function Today() {
     time: (a, b) => a.start - b.start,
     room: (a, b) => name(a.space_id).localeCompare(name(b.space_id)) || a.start - b.start,
     status: (a, b) => staffStatus(a).localeCompare(staffStatus(b)) || a.start - b.start,
-    renter: (a, b) => findRenter(s.data, a.renter_id).name.localeCompare(findRenter(s.data, b.renter_id).name),
+    renter: (a, b) => pn(findRenter(s.data, a.renter_id)).localeCompare(pn(findRenter(s.data, b.renter_id))),
   }
   const bookings = s.data.bookings.filter((b) => b.date === date).sort(order[sort])
   const notices = activeNotices(s.data, s.now)
@@ -175,7 +176,7 @@ export function Today() {
                         onClick={() => navigate(`/s/checkin?renter=${r.id}`)}
                         className="cursor-pointer border-b border-black/[0.05] last:border-0 hover:bg-black/[0.025]"
                       >
-                        <td className="px-4 py-3 font-medium">{r.name}</td>
+                        <td className="px-4 py-3 font-medium">{pn(r)}</td>
                         <td>{name(b.space_id)}</td>
                         <td dir="ltr" className="text-start tabular-nums">
                           {hm(b.start)}–{hm(b.end)}
@@ -200,6 +201,7 @@ export function Today() {
 /** S-02 Check-in / check-out */
 export function CheckIn() {
   const { t } = useTranslation()
+  const pn = usePersonName()
   const name = useSpaceName()
   const s = useStore()
   const [params] = useSearchParams()
@@ -211,14 +213,16 @@ export function CheckIn() {
   const bookersToday = new Set(s.data.bookings.filter((b) => b.date === date && ACTIVE.includes(b.status)).map((b) => b.renter_id))
   const open = new Set(s.data.visits.filter((v) => !v.check_out).map((v) => v.renter_id))
   const results = s.data.renters.filter((r) =>
-    ql ? r.name.toLowerCase().includes(ql) || (normPhone(ql) && normPhone(r.phone).includes(normPhone(ql))) : bookersToday.has(r.id) || open.has(r.id),
+    ql
+      ? [r.name, r.name_ar].some((n) => n?.toLowerCase().includes(ql)) || (normPhone(ql) && normPhone(r.phone).includes(normPhone(ql)))
+      : bookersToday.has(r.id) || open.has(r.id),
   )
 
   const doIn = (r, bookingId) => {
     const res = s.checkIn(r.id, bookingId)
-    if (res.error) return s.showToast(`toast.err_${res.error}`, { name: r.name })
+    if (res.error) return s.showToast(`toast.err_${res.error}`, { name: pn(r) })
     s.showToast(res.via === 'sit' ? 'toast.checked_in_room' : 'toast.checked_in_walk', {
-      name: r.name,
+      name: pn(r),
       room: res.bookingId ? name(s.data.bookings.find((b) => b.id === res.bookingId).space_id) : '',
     })
   }
@@ -227,7 +231,7 @@ export function CheckIn() {
   const seatsFull = s.data.seats.taken >= s.data.seats.total
   const doOut = (r) => {
     const via = s.checkOut(r.id)
-    s.showToast(via === 'sit' ? 'toast.checked_out_rate' : 'toast.checked_out', { name: r.name })
+    s.showToast(via === 'sit' ? 'toast.checked_out_rate' : 'toast.checked_out', { name: pn(r) })
   }
 
   return (
@@ -257,7 +261,7 @@ export function CheckIn() {
                 <li key={r.id} className={`flex flex-wrap items-start gap-3 py-4 ${pre?.id === r.id ? 'bg-navy/5' : ''}`}>
                   <div className="min-w-56 flex-1">
                     <p className="flex flex-wrap items-center gap-2 text-[17px] font-semibold">
-                      {r.name} {visit && <StatusChip status="checked_in" label={`${t('staff.inside')} · ${where}`} />}
+                      {pn(r)} {visit && <StatusChip status="checked_in" label={`${t('staff.inside')} · ${where}`} />}
                     </p>
                     <p className="text-[13px] text-grey-ink" dir="ltr">
                       {r.phone}
@@ -342,6 +346,7 @@ export function CheckIn() {
 /** S-03 Seat-count log */
 export function SeatLog() {
   const { t } = useTranslation()
+  const pn = usePersonName()
   const lang = useStore((s) => s.lang)
   const log = useStore((s) => s.data.seat_log)
   return (
@@ -371,7 +376,7 @@ export function SeatLog() {
                 </td>
                 <td>{t(`seat_source.${l.source}`)}</td>
                 <td className="font-head text-lg font-bold">{l.new_total}</td>
-                <td>{l.staff}</td>
+                <td>{l.staff === STAFF.name ? pn(STAFF) : l.staff}</td>
               </tr>
             ))}
           </tbody>

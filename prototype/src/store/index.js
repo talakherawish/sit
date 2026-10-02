@@ -253,27 +253,31 @@ export const useStore = create(
             if (f.repeat.kind === 'weekly' ? wd === weekday(f.date) : f.repeat.days.includes(wd)) dates.push(d)
           }
         }
-        const clash = (date) =>
-          s.data.bookings.some((x) => x.renter_id === f.renterId && x.date === date && ACTIVE.includes(x.status) && x.start < f.end && f.start < x.end)
-        for (const date of dates) {
-          if (!isFree(s.data, f.spaceId, date, f.start, f.end)) {
+        // Each item is one day with its own room and time; the classic form books one room/time on every date.
+        const items = f.items?.length ? f.items : dates.map((date) => ({ date, spaceId: f.spaceId, start: f.start, end: f.end }))
+        if (f.items?.length > 1) seriesId = seriesId || uid('series')
+        const clash = (it) =>
+          s.data.bookings.some((x) => x.renter_id === f.renterId && x.date === it.date && ACTIVE.includes(x.status) && x.start < it.end && it.start < x.end)
+        for (const it of items) {
+          const { date } = it
+          if (!isFree(s.data, it.spaceId, date, it.start, it.end)) {
             skipped++
             continue
           }
-          if (clash(date)) {
+          if (clash(it)) {
             skipped++
             clashes++
             continue
           }
-          const rAt = f.reminder ? reminderAt(date, f.start, f.reminder) : null
+          const rAt = f.reminder ? reminderAt(date, it.start, f.reminder) : null
           const remind = rAt !== null && rAt > s.now
           const b = {
             id: uid('b'),
             renter_id: f.renterId,
-            space_id: f.spaceId,
+            space_id: it.spaceId,
             date,
-            start: f.start,
-            end: f.end,
+            start: it.start,
+            end: it.end,
             reason: f.reason,
             reason_other: f.reason === 'other' ? f.reasonOther : undefined,
             reminder: remind ? f.reminder : null,
@@ -291,10 +295,17 @@ export const useStore = create(
         if (ids.length) {
           const r = findRenter(s.data, f.renterId)
           const first = s.data.bookings.find((b) => b.id === ids[0])
-          sendMessage(s, 'email', r.email || r.phone, 'receipt', { spaceId: f.spaceId, date: first.date, time: hm(first.start), count: ids.length }, ids[0])
+          sendMessage(
+            s,
+            'email',
+            r.email || r.phone,
+            'receipt',
+            { spaceId: first.space_id, date: first.date, time: hm(first.start), count: ids.length },
+            ids[0],
+          )
           if (createdBy === 'staff') {
-            sendMessage(s, 'sms', r.phone, 'staff_booked', { spaceId: f.spaceId, date: first.date, time: hm(first.start) }, ids[0])
-            notify(s, r.id, 'booking', 'staff_booked', { spaceId: f.spaceId, date: first.date, time: hm(first.start) }, '/r/bookings')
+            sendMessage(s, 'sms', r.phone, 'staff_booked', { spaceId: first.space_id, date: first.date, time: hm(first.start) }, ids[0])
+            notify(s, r.id, 'booking', 'staff_booked', { spaceId: first.space_id, date: first.date, time: hm(first.start) }, '/r/bookings')
           }
           logEvent(s, 'booking_created', { visitor_id: r.id, source, count: ids.length })
         }

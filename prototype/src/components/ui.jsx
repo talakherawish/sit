@@ -368,7 +368,7 @@ export function Segmented({ value, onChange, options, label, className = '' }) {
           role="tab"
           aria-selected={value === v}
           onClick={() => value !== v && onChange(v)}
-          className={`flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded-[8px] px-3.5 text-[14px] font-semibold transition ${
+          className={`flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded-[8px] px-2 text-[14px] font-semibold whitespace-nowrap transition ${
             value === v ? 'bg-white text-ink shadow-[0_2px_6px_rgba(0,0,0,0.1)]' : 'text-grey-ink'
           }`}
         >

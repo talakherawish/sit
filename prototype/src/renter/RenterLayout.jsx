@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
-import { openPanelOnTripleTap, useRequireLogin } from '../lib/hooks'
+import { openPanelOnTripleTap, usePersonName, useRequireLogin } from '../lib/hooks'
 import { dateOf, minOfDay } from '../lib/logic'
 import { hm } from '../lib/time'
 import Icon, { TechnoparkLogo } from '../components/Icon'
@@ -26,7 +26,7 @@ export default function RenterLayout() {
     <div className="min-h-dvh sm:grid sm:place-items-center sm:py-6">
       {/* iPhone bezel on desktop; full screen on a real phone */}
       <div className="mx-auto sm:rounded-[58px] sm:bg-[#1b1b1d] sm:p-[11px] sm:shadow-[0_30px_80px_rgba(16,24,40,0.28),inset_0_0_0_1.5px_#3a3a3d]">
-        <div className="relative isolate h-dvh w-full overflow-hidden bg-white sm:h-[min(844px,calc(100dvh-70px))] sm:w-[390px] sm:rounded-[47px]">
+        <div className="relative isolate h-dvh w-full overflow-hidden bg-white [--screen-h:100dvh] sm:h-[min(844px,calc(100dvh-70px))] sm:w-[390px] sm:rounded-[47px] sm:[--screen-h:min(844px,calc(100dvh-70px))]">
           <OverlayHost>
             <div className="absolute top-[11px] left-1/2 z-50 hidden h-[34px] w-[120px] -translate-x-1/2 rounded-full bg-black sm:block" aria-hidden="true" />
             <TopBar />
@@ -58,6 +58,7 @@ function TopBar() {
   const renterId = useStore((s) => s.renterId)
   const data = useStore((s) => s.data)
   const me = data.renters.find((r) => r.id === renterId)
+  const pn = usePersonName()
   const unread = data.notifications.some((n) => n.renter_id === renterId && !n.read)
   return (
     <header className="absolute inset-x-0 top-0 z-30 border-b border-black/[0.06] bg-white/80 pt-[var(--app-top)] backdrop-blur-xl backdrop-saturate-150 sm:pt-0">
@@ -88,7 +89,7 @@ function TopBar() {
         )}
         {me ? (
           <Link to="/r/profile" className="grid size-11 place-items-center" aria-label={t('nav.profile')}>
-            <span className="grid size-8 place-items-center rounded-full bg-navy text-[14px] font-semibold text-white">{me.name[0]}</span>
+            <span className="grid size-8 place-items-center rounded-full bg-navy text-[14px] font-semibold text-white">{pn(me)[0]}</span>
           </Link>
         ) : (
           <Link to="/r/login" className="ms-1 min-h-9 content-center rounded-full bg-navy px-4 text-[15px] font-semibold text-white">

@@ -86,6 +86,19 @@ We worked in **Design Thinking loops**: build from the spec, review it as a user
 | Reports can tick several issue types (e.g. AC and noise) | Real problems often come together | Match user needs; reduce extra reports |
 | Staff and renter tabs share the same live data | A check-in on the dashboard didn't appear in the app | Consistency; visibility of system status |
 
+## Round 8: First screen, booking without the map, flexible multi-day plans
+
+| Decision | Why | Principle |
+|---|---|---|
+| Home's first screen shows only the greeting, today's updates and a **Book a room** button; the floor plan starts below the fold | The floor plan title peeking at the bottom made the first screen feel busy | Visual hierarchy; Miller's Law (one idea per screen) |
+| **Book a room** button at the bottom of the first screen | Some people want to book by date, not by exploring the map | Fitts's Law (thumb zone); Von Restorff (the one filled button); clicks to treasure |
+| Book a room is a numbered flow: 1 Days → 2 Time → 3 Size → 4 Pick a room / Your days | Makes the steps obvious and the end in sight | Clear structure; reduce cognitive load |
+| Removed the **Monthly** option | "Pick days" already covers any days in any month | Hick's Law (fewer, non-overlapping choices) |
+| Several days become a **day-by-day plan**: each day has its own time and room, starting from the same room wherever it's free | Real schedules aren't identical every week; a busy room one day shouldn't block the whole booking | Flexibility and user control; error prevention |
+| The suggested time skips times you're already booked | The first suggestion used to clash with Tala's daily 09:00 booking | Prevent errors |
+| Review shows one card when every day is the same, or a day-by-day list when rooms or times differ | People should see exactly what they're about to book | Visibility of system status |
+| Arabic spellings of everyone's names when the app is in Arabic (تالا خريوش، لين عنبتاوي، فاطمة الكيلاني، شهد ملّاح، أحمد سلامة، رنا) | Names in Latin letters looked out of place in the Arabic interface | Localization; consistency |
+
 ## Clicks to book (roughly)
 
 | Task | Before | Now |

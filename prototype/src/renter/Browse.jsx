@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL, useRequireLogin } from '../lib/hooks'
-import { hoursFor, isFree, stateAt, nextFreeAt, dateOf, minOfDay } from '../lib/logic'
+import { hoursFor, isFree, stateAt, nextFreeAt, dateOf, minOfDay, ACTIVE } from '../lib/logic'
 import { addDays, fmtDate, hm, weekday, weekdayName, ceil30 } from '../lib/time'
 import { AmenityList, AmenitySheet } from '../components/Amenities'
 import CalendarPicker, { DayStrip } from '../components/Calendar'
@@ -255,7 +255,11 @@ export function Hours() {
   )
 }
 
-/** R-05 Find a room: one day, a weekly or monthly pattern, or any days you pick; results update as you go. */
+/**
+ * R-05 Book a room without the map: pick days (one day, weekly, or any days), a time and a size.
+ * One day lists the free rooms. Several days become a plan where every day has its own time and
+ * room, starting from the same time and room wherever that's free.
+ */
 export function FilterRooms() {
   const { t } = useTranslation()
   const L = useL()
@@ -264,67 +268,84 @@ export function FilterRooms() {
   const data = useStore((s) => s.data)
   const now = useStore((s) => s.now)
   const mode = useStore((s) => s.mode)
+  const renterId = useStore((s) => s.renterId)
   const set = useStore((s) => s.set)
   const today = dateOf(now)
   const firstOpen = Array.from({ length: 14 }, (_, i) => addDays(today, i)).find((d) => hoursFor(data, d))
   const openWeekdays = data.opening_hours.filter((o) => o.open !== null && o.open !== false).map((o) => o.weekday)
 
-  const [pattern, setPattern] = useState('one') // one | weekly | monthly | pick
+  const [pattern, setPattern] = useState('one') // one | weekly | pick
   const [day, setDay] = useState(firstOpen)
   const [weekdays, setWeekdays] = useState([weekday(firstOpen)])
   const [weeks, setWeeks] = useState(4)
-  const [dom, setDom] = useState(Number(firstOpen.slice(8)))
-  const [months, setMonths] = useState(3)
   const [picked, setPicked] = useState([firstOpen])
   const [start, setStart] = useState(null)
   const [dur, setDur] = useState(60)
   const [size, setSize] = useState('any')
+  const [overrides, setOverrides] = useState({}) // date -> { start, end, spaceId } changed on that day only
 
   const dates = (() => {
     if (pattern === 'one') return [day]
     if (pattern === 'pick') return [...picked].sort()
     const out = []
-    if (pattern === 'weekly') {
-      for (let i = 0; i < weeks * 7; i++) {
-        const d = addDays(today, i)
-        if (weekdays.includes(weekday(d)) && hoursFor(data, d)) out.push(d)
-      }
-    } else {
-      const [y, m] = today.split('-').map(Number)
-      for (let i = 0; i < months; i++) {
-        const dt = new Date(Date.UTC(y, m - 1 + i, dom))
-        if (dt.getUTCDate() !== dom) continue // e.g. the 31st in a 30-day month
-        const d = dt.toISOString().slice(0, 10)
-        if (d >= today && hoursFor(data, d)) out.push(d)
-      }
+    for (let i = 0; i < weeks * 7; i++) {
+      const d = addDays(today, i)
+      if (weekdays.includes(weekday(d)) && hoursFor(data, d)) out.push(d)
     }
     return out
   })()
 
-  const first = dates[0]
-  const h = first && hoursFor(data, first)
-  const times = []
-  if (h) for (let m = h.open; m + dur <= h.close; m += 30) if (first !== today || m >= ceil30(minOfDay(now))) times.push(m)
-  const st = times.includes(start) ? start : times[0]
-  const rooms = data.spaces
-    .filter((sp) => size === 'any' || (size === 'small' ? sp.kind === 'focus_room' : sp.kind === 'big_room'))
-    .map((sp) => ({ sp, free: st === undefined ? [] : dates.filter((d) => isFree(data, sp.id, d, st, st + dur)) }))
-    .filter((r) => r.free.length)
-    .sort((a, b) => b.free.length - a.free.length)
+  const fits = (sp) => size === 'any' || (size === 'small' ? sp.kind === 'focus_room' : sp.kind === 'big_room')
+  const startsOn = (d, len) => {
+    const h = hoursFor(data, d)
+    const out = []
+    if (h) for (let m = h.open; m + len <= h.close; m += 30) if (d !== today || m >= ceil30(minOfDay(now))) out.push(m)
+    return out
+  }
+  const mine = (d, s, e) => data.bookings.some((b) => b.renter_id === renterId && b.date === d && ACTIVE.includes(b.status) && b.start < e && s < b.end)
+  const freeRooms = (d, s, e) => data.spaces.filter((sp) => fits(sp) && isFree(data, sp.id, d, s, e))
 
-  const book = ({ sp, free }) => {
-    const reason = data.work_modes.find((m) => m.id === mode)?.default_reason || ''
-    set({ draft: { spaceId: sp.id, date: free[0], dates: free, start: st, end: st + dur, reason, source: 'filter' } })
+  const first = dates[0]
+  const times = first ? startsOn(first, dur) : []
+  // Until a time is chosen, start at the first time you are free and some room is too.
+  const okAt = (d, m) => !mine(d, m, m + dur) && freeRooms(d, m, m + dur).length > 0
+  const st = times.includes(start) ? start : (times.find((m) => okAt(first, m)) ?? times[0])
+
+  // Default room for the plan: the suitable room free on the most days at the usual time.
+  const usualStart = (d) => (startsOn(d, dur).includes(st) ? st : startsOn(d, dur)[0])
+  const preferred = data.spaces
+    .filter(fits)
+    .map((sp) => ({ id: sp.id, n: dates.filter((d) => usualStart(d) !== undefined && isFree(data, sp.id, d, usualStart(d), usualStart(d) + dur)).length }))
+    .sort((a, b) => b.n - a.n)[0]?.id
+
+  const plan = dates.map((d) => {
+    const o = overrides[d] || {}
+    const h = hoursFor(data, d)
+    const s = o.start ?? usualStart(d)
+    const e = s === undefined ? undefined : Math.min(o.end ?? s + dur, h.close)
+    const options = s === undefined ? [] : freeRooms(d, s, e)
+    const clash = s !== undefined && mine(d, s, e)
+    const room = clash ? null : options.find((sp) => sp.id === o.spaceId) || options.find((sp) => sp.id === preferred) || options[0] || null
+    return { date: d, start: s, end: e, room, options, clash }
+  })
+  const ready = plan.filter((p) => p.room)
+  const change = (d, patch) => setOverrides({ ...overrides, [d]: { ...overrides[d], ...patch } })
+
+  const reasonNow = data.work_modes.find((m) => m.id === mode)?.default_reason || ''
+  const go = (items) => {
+    set({ draft: { ...items[0], items, dates: items.map((it) => it.date), reason: reasonNow, source: 'filter' } })
     requireLogin('/r/book')
   }
   const short = (d) => fmtDate(d, lang, { weekday: 'short', day: 'numeric', month: 'short' })
+  const step = (n, label) => `${n} · ${label}`
+  const single = dates.length === 1
 
   return (
     <>
       <ScreenTitle id="R-05" title={t('filter.title')} phase="next" back />
       <div className="space-y-6 px-4 pb-4">
         <section>
-          <SectionLabel>{t('filter.days')}</SectionLabel>
+          <SectionLabel>{step(1, t('filter.days'))}</SectionLabel>
           <Segmented
             className="mb-3"
             label={t('filter.days')}
@@ -333,7 +354,6 @@ export function FilterRooms() {
             options={[
               ['one', t('filter.p_one')],
               ['weekly', t('filter.p_weekly')],
-              ['monthly', t('filter.p_monthly')],
               ['pick', t('filter.p_pick')],
             ]}
           />
@@ -373,31 +393,6 @@ export function FilterRooms() {
             </div>
           )}
 
-          {pattern === 'monthly' && (
-            <div className="space-y-3 rounded-2xl bg-surface p-4">
-              <label className="flex items-center justify-between gap-3">
-                <span className="text-[15px]">{t('filter.on_day')}</span>
-                <select className="min-h-11 rounded-xl bg-white px-3 text-[17px]" value={dom} onChange={(e) => setDom(+e.target.value)}>
-                  {Array.from({ length: 31 }, (_, i) => i + 1).map((n) => (
-                    <option key={n} value={n}>
-                      {n}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <div className="flex items-center justify-between gap-3">
-                <span className="text-[15px]">{t('filter.for')}</span>
-                <Segmented
-                  className="w-56"
-                  label={t('filter.for')}
-                  value={String(months)}
-                  onChange={(v) => setMonths(+v)}
-                  options={[2, 3, 6].map((n) => [String(n), t('filter.n_months', { count: n })])}
-                />
-              </div>
-            </div>
-          )}
-
           {pattern === 'pick' && (
             <>
               <CalendarPicker
@@ -406,7 +401,7 @@ export function FilterRooms() {
                 end={null}
                 selected={picked}
                 focus={picked[picked.length - 1]}
-                onToggle={(d) => setPicked(picked.includes(d) ? (picked.length > 1 ? picked.filter((x) => x !== d) : picked) : [...picked, d])}
+                onToggle={(d) => setPicked((p) => (p.includes(d) ? (p.length > 1 ? p.filter((x) => x !== d) : p) : [...p, d]))}
               />
               <p className="mt-1.5 px-1 text-[13px] text-grey-ink">{t('filter.pick_hint')}</p>
             </>
@@ -421,7 +416,7 @@ export function FilterRooms() {
           )}
         </section>
 
-        <Group label={t('book.time')}>
+        <Group label={step(2, single ? t('book.time') : t('filter.usual_time'))} footer={single ? null : t('filter.usual_time_hint')}>
           <GroupRow label={t('book.start')} htmlFor="fr-start">
             <RowSelect id="fr-start" value={st ?? ''} onChange={(e) => setStart(+e.target.value)}>
               {times.map((m) => (
@@ -443,7 +438,7 @@ export function FilterRooms() {
         </Group>
 
         <section>
-          <SectionLabel>{t('filter.size')}</SectionLabel>
+          <SectionLabel>{step(3, t('filter.size'))}</SectionLabel>
           <div className="flex gap-2">
             {['any', 'small', 'big'].map((k) => (
               <Chip key={k} active={size === k} onClick={() => setSize(k)}>
@@ -453,35 +448,123 @@ export function FilterRooms() {
           </div>
         </section>
 
-        <section aria-live="polite">
-          <SectionLabel>{dates.length ? t('filter.results', { count: rooms.length }) : t('filter.no_days')}</SectionLabel>
-          {rooms.length ? (
-            <div className="divide-y divide-black/[0.07] overflow-hidden rounded-2xl bg-surface">
-              {rooms.map((r) => {
-                const all = r.free.length === dates.length
-                return (
-                  <div key={r.sp.id} className="flex items-center gap-3 px-4 py-3">
+        {single ? (
+          <section aria-live="polite">
+            <SectionLabel>{step(4, t('filter.pick_room'))}</SectionLabel>
+            <p className="-mt-1 mb-2 px-1 text-[13px] text-grey-ink">{t('filter.results', { count: plan[0]?.options.length || 0 })}</p>
+            {plan[0]?.clash ? (
+              <p className="rounded-2xl bg-amber/15 px-4 py-3 text-[15px] text-[#7a4f00]">{t('filter.you_have_booking')}</p>
+            ) : plan[0]?.options.length ? (
+              <div className="divide-y divide-black/[0.07] overflow-hidden rounded-2xl bg-surface">
+                {plan[0].options.map((sp) => (
+                  <div key={sp.id} className="flex items-center gap-3 px-4 py-3">
                     <span className="min-w-0 flex-1">
-                      <span className="block text-[17px] font-semibold">{L(r.sp.label)}</span>
-                      <span className={`block text-[13px] ${all ? 'font-medium text-[#2f5656]' : 'text-[#7a4f00]'}`}>
-                        {dates.length === 1
-                          ? `${t('map.people', { n: r.sp.capacity })} · ${hm(st)}–${hm(st + dur)}`
-                          : all
-                            ? t('filter.free_all', { count: dates.length })
-                            : t('filter.free_some', { free: r.free.length, total: dates.length })}
+                      <span className="block text-[17px] font-semibold">{L(sp.label)}</span>
+                      <span className="block text-[13px] text-grey-ink">
+                        {t('map.people', { n: sp.capacity })} ·{' '}
+                        <span dir="ltr">
+                          {hm(plan[0].start)}–{hm(plan[0].end)}
+                        </span>
                       </span>
                     </span>
-                    <button className="btn-secondary !min-h-10 shrink-0" onClick={() => book(r)}>
-                      {r.free.length > 1 ? t('room.book_days', { count: r.free.length }) : t('list.book')}
+                    <button
+                      className="btn-secondary !min-h-10 shrink-0"
+                      onClick={() => go([{ date: day, spaceId: sp.id, start: plan[0].start, end: plan[0].end }])}
+                    >
+                      {t('list.book')}
                     </button>
                   </div>
-                )
-              })}
-            </div>
-          ) : (
-            dates.length > 0 && <p className="rounded-2xl bg-surface px-4 py-3 text-grey-ink">{t('filter.none')}</p>
-          )}
-        </section>
+                ))}
+              </div>
+            ) : (
+              dates.length > 0 && <p className="rounded-2xl bg-surface px-4 py-3 text-grey-ink">{t('filter.none')}</p>
+            )}
+          </section>
+        ) : (
+          dates.length > 0 && (
+            <section aria-live="polite">
+              <SectionLabel>{step(4, t('filter.your_days'))}</SectionLabel>
+              <p className="-mt-1 mb-2 px-1 text-[13px] text-grey-ink">{t('filter.your_days_hint')}</p>
+              <ul className="divide-y divide-black/[0.07] overflow-hidden rounded-2xl bg-surface">
+                {plan.map((p) => {
+                  const starts = startsOn(p.date, 30)
+                  const ends = []
+                  if (p.start !== undefined) for (let m = p.start + 30; m <= hoursFor(data, p.date).close; m += 30) ends.push(m)
+                  return (
+                    <li key={p.date} className="px-4 py-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[15px] font-semibold">{short(p.date)}</span>
+                        {p.room ? (
+                          <StatusChip status="free" label={t('filter.ready')} />
+                        ) : (
+                          <StatusChip status="awaiting_confirmation" label={p.clash ? t('filter.you_have_booking_short') : t('filter.no_room')} />
+                        )}
+                      </div>
+                      <div className="mt-2 grid grid-cols-[auto_auto_1fr] items-center gap-2" dir="ltr">
+                        <select
+                          aria-label={`${short(p.date)} · ${t('book.start')}`}
+                          className="min-h-10 rounded-lg bg-white px-2 text-[15px] tabular-nums"
+                          value={p.start ?? ''}
+                          onChange={(e) => {
+                            const s = +e.target.value
+                            change(p.date, { start: s, end: s + (p.end - p.start || dur) })
+                          }}
+                        >
+                          {starts.map((m) => (
+                            <option key={m} value={m}>
+                              {hm(m)}
+                            </option>
+                          ))}
+                        </select>
+                        <select
+                          aria-label={`${short(p.date)} · ${t('book.end')}`}
+                          className="min-h-10 rounded-lg bg-white px-2 text-[15px] tabular-nums"
+                          value={p.end ?? ''}
+                          onChange={(e) => change(p.date, { end: +e.target.value })}
+                        >
+                          {ends.map((m) => (
+                            <option key={m} value={m}>
+                              {hm(m)}
+                            </option>
+                          ))}
+                        </select>
+                        <select
+                          aria-label={`${short(p.date)} · ${t('book.room')}`}
+                          className="min-h-10 min-w-0 rounded-lg bg-white px-2 text-[15px] disabled:text-grey-ink"
+                          dir={lang === 'ar' ? 'rtl' : 'ltr'}
+                          value={p.room?.id ?? ''}
+                          disabled={!p.options.length || p.clash}
+                          onChange={(e) => change(p.date, { spaceId: e.target.value })}
+                        >
+                          {!p.room && <option value="">{t('filter.no_room')}</option>}
+                          {p.options.map((sp) => (
+                            <option key={sp.id} value={sp.id}>
+                              {L(sp.label)}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </li>
+                  )
+                })}
+              </ul>
+              <div className="mt-4 space-y-2">
+                <button
+                  className="btn-primary w-full"
+                  disabled={!ready.length}
+                  onClick={() => go(ready.map((p) => ({ date: p.date, spaceId: p.room.id, start: p.start, end: p.end })))}
+                >
+                  {t('filter.review_n', { count: ready.length })}
+                </button>
+                <p className="text-center text-[13px] text-grey-ink">
+                  {ready.length < plan.length
+                    ? t('filter.some_skipped', { count: plan.length - ready.length })
+                    : t('filter.rooms_used', { count: new Set(ready.map((p) => p.room.id)).size })}
+                </p>
+              </div>
+            </section>
+          )
+        )}
       </div>
     </>
   )

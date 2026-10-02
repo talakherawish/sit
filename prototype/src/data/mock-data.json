@@ -354,6 +354,7 @@
     {
       "id": "leen",
       "name": "Leen Anabtawi",
+      "name_ar": "لين عنبتاوي",
       "phone": "+970599100201",
       "email": "leen@example.com",
       "language": "ar",
@@ -365,6 +366,7 @@
     {
       "id": "tala",
       "name": "Tala Kherawish",
+      "name_ar": "تالا خريوش",
       "phone": "+970599100202",
       "email": "tala@example.com",
       "language": "en",
@@ -376,6 +378,7 @@
     {
       "id": "ahmed",
       "name": "Ahmed Salamh",
+      "name_ar": "أحمد سلامة",
       "phone": "+970599100203",
       "email": "ahmed@example.com",
       "language": "en",
@@ -387,6 +390,7 @@
     {
       "id": "fatima",
       "name": "Fatima Alkilani",
+      "name_ar": "فاطمة الكيلاني",
       "phone": "+970599100204",
       "email": "fatima@example.com",
       "language": "ar",
@@ -398,6 +402,7 @@
     {
       "id": "shahd",
       "name": "Shahd Mallah",
+      "name_ar": "شهد ملّاح",
       "phone": "+970599100206",
       "email": "shahd@example.com",
       "language": "ar",

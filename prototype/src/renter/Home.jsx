@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
-import { useL } from '../lib/hooks'
+import { useL, usePersonName } from '../lib/hooks'
 import { activeNotices, amenityStatus, hoursFor, stateAt, nextFreeAt, dateOf, minOfDay, speedTests } from '../lib/logic'
 import { hm } from '../lib/time'
 import FloorPlan from '../components/FloorPlan'
@@ -48,19 +48,21 @@ export default function Home() {
   const latest = notices[0]
   const { taken, total } = data.seats
   const me = data.renters.find((r) => r.id === renterId)
+  const pn = usePersonName()
   const min = minOfDay(now)
   const part = min < 12 * 60 ? 'morning' : min < 17 * 60 ? 'afternoon' : 'evening'
 
   return (
     <div className="space-y-12 px-4 pt-6 pb-4">
-      <div className="snap-start scroll-mt-6 space-y-4">
+      {/* First screen: greeting, today's updates and Book. Sized to the phone screen so the floor plan starts below the fold. */}
+      <div className="flex min-h-[calc(var(--screen-h)-120px-var(--app-top))] snap-start scroll-mt-6 flex-col gap-4 pb-8 sm:min-h-[calc(var(--screen-h)-172px)] sm:pb-12">
         <header className="px-1 pb-1">
           <h1 className="font-head text-[30px] leading-[1.15] font-bold tracking-tight">
             {t(`home.greeting_${part}`)}
             {me && (
               <span className="text-grey-ink">
                 {lang === 'ar' ? '، ' : ', '}
-                {me.name.split(' ')[0]}
+                {pn(me, true)}
               </span>
             )}
           </h1>
@@ -129,6 +131,15 @@ export default function Home() {
             <Icon name="next" size={16} className="shrink-0 text-grey-ink/60 rtl:rotate-180" />
           </button>
         )}
+
+        {/* Book without the map: days, time, size, then pick a room */}
+        <div className="mt-auto pt-2">
+          <Link to="/r/filter" className="btn-primary w-full">
+            <Icon name="calendar" size={20} />
+            {t('home.book_cta')}
+          </Link>
+          <p className="mt-2 text-center text-[13px] text-grey-ink">{t('home.book_cta_hint')}</p>
+        </div>
       </div>
 
       {/* Floor plan */}

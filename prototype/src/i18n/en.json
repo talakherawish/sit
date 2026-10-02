@@ -59,7 +59,9 @@
     "plan_hint": "Tap a room to see its day and book it.",
     "hours": "Hours",
     "until": "Until {{time}}",
-    "opens_at": "Opens {{time}}"
+    "opens_at": "Opens {{time}}",
+    "book_cta": "Book a room",
+    "book_cta_hint": "Choose days, time and size. No map needed."
   },
   "about": {
     "title": "About Sit",
@@ -68,13 +70,13 @@
   },
   "when": {
     "today_now": "Today · Now",
-    "find": "Find a room",
     "title": "When?",
     "day": "Day",
     "time": "Time",
     "now": "Now",
     "show": "Show",
-    "subtitle": "See what is free on another day or at another time."
+    "subtitle": "See what is free on another day or at another time.",
+    "find": "Book by date"
   },
   "legend": {
     "free": "Free",
@@ -160,7 +162,7 @@
     "today_cap": "Today"
   },
   "filter": {
-    "title": "Find a room",
+    "title": "Book a room",
     "duration": "Duration",
     "minutes_one": "{{count}} min",
     "minutes_other": "{{count}} min",
@@ -173,23 +175,31 @@
     "days": "Days",
     "p_one": "One day",
     "p_weekly": "Weekly",
-    "p_monthly": "Monthly",
     "p_pick": "Pick days",
     "every": "Every",
     "for": "For",
     "n_weeks_one": "{{count}} week",
     "n_weeks_other": "{{count}} weeks",
-    "n_months_one": "{{count}} month",
-    "n_months_other": "{{count}} months",
-    "on_day": "On day of the month",
     "pick_hint": "Tap any days you want, in any week.",
     "n_days_one": "{{count}} day",
     "n_days_other": "{{count}} days",
     "no_days": "No open days match. Try other days.",
-    "free_all_one": "Free on the day",
-    "free_all_other": "Free on all {{count}} days",
-    "free_some": "Free on {{free}} of {{total}} days",
-    "none": "No room is free at this time. Try another time or size."
+    "none": "No room is free at this time. Try another time or size.",
+    "pick_room": "Pick a room",
+    "usual_time": "Usual time",
+    "usual_time_hint": "Every day starts with this time. You can change any day below.",
+    "your_days": "Your days",
+    "your_days_hint": "Each day can have its own time and room. We start with the same room wherever it’s free.",
+    "ready": "Ready",
+    "no_room": "No room free",
+    "you_have_booking": "You already have a booking at this time. Pick another time.",
+    "you_have_booking_short": "You’re booked then",
+    "review_n_one": "Review {{count}} booking",
+    "review_n_other": "Review {{count}} bookings",
+    "some_skipped_one": "{{count}} day has no free room at that time and won’t be booked.",
+    "some_skipped_other": "{{count}} days have no free room at that time and won’t be booked.",
+    "rooms_used_one": "All in the same room.",
+    "rooms_used_other": "Split across {{count}} rooms."
   },
   "book": {
     "title": "Book a room",
@@ -716,7 +726,8 @@
     "confirm_n_one": "Confirm {{count}} booking",
     "confirm_n_other": "Confirm {{count}} bookings",
     "edit": "Change room, days or time",
-    "skipped": "Not available on {{days}} (room taken, or you already have a booking then), so those days are skipped."
+    "skipped": "Not available on {{days}} (room taken, or you already have a booking then), so those days are skipped.",
+    "n_days_rooms": "{{days}} days · {{rooms}} rooms"
   },
   "demo": {
     "title": "Live demo: renter app and reception, side by side",

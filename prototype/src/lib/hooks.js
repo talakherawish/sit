@@ -68,3 +68,16 @@ export function openPanelOnTripleTap() {
     useStore.getState().set({ drawerOpen: true })
   }
 }
+
+/** Reception staff on duty (the only staff account in the prototype). */
+export const STAFF = { name: 'Rana', name_ar: 'رنا' }
+
+/** A person's name in the current language (the Arabic spelling when there is one). `first` gives the first name only. */
+export function usePersonName() {
+  const lang = useStore((s) => s.lang)
+  return (r, first = false) => {
+    if (!r) return ''
+    const n = (lang === 'ar' && r.name_ar) || r.name
+    return first ? n.split(' ')[0] : n
+  }
+}

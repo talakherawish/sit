@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
-import { useL } from '../lib/hooks'
+import { useL, usePersonName } from '../lib/hooks'
 import { ACTIVE, dateOf, hoursFor, minOfDay, renter as findRenter } from '../lib/logic'
 import { ceil30, hm } from '../lib/time'
 import Icon from '../components/Icon'
@@ -21,6 +21,7 @@ const BLOCK = {
  */
 export default function RoomsDay() {
   const { t } = useTranslation()
+  const pn = usePersonName()
   const L = useL()
   const navigate = useNavigate()
   const s = useStore()
@@ -151,9 +152,9 @@ export default function RoomsDay() {
                       onClick={() => navigate(`/s/checkin?renter=${r.id}`)}
                       className={`absolute inset-y-2 flex flex-col justify-center overflow-hidden rounded-lg px-2 text-start ring-1 hover:brightness-95 ${BLOCK[b.status] || BLOCK.confirmed}`}
                       style={{ left: `calc(${pct(b.start)} + 1px)`, width: `calc(${pct(b.end)} - ${pct(b.start)} - 2px)` }}
-                      title={`${r.name} · ${hm(b.start)}–${hm(b.end)} · ${t(`status.${b.status}`)}`}
+                      title={`${pn(r)} · ${hm(b.start)}–${hm(b.end)} · ${t(`status.${b.status}`)}`}
                     >
-                      <span className="truncate text-[13px] leading-tight font-semibold">{r.name.split(' ')[0]}</span>
+                      <span className="truncate text-[13px] leading-tight font-semibold">{pn(r, true)}</span>
                       <span className="truncate text-[12px] leading-tight opacity-80">
                         {hm(b.start)}–{hm(b.end)}
                       </span>

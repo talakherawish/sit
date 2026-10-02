@@ -2,7 +2,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { fmtAbs } from '../lib/time'
-import { openPanelOnTripleTap } from '../lib/hooks'
+import { STAFF, openPanelOnTripleTap, usePersonName } from '../lib/hooks'
 import Icon, { TechnoparkLogo } from '../components/Icon'
 import { PhaseBadge, ScreenId, Toast } from '../components/ui'
 
@@ -17,6 +17,7 @@ const NAV = [
 ]
 
 export default function StaffLayout() {
+  const pn = usePersonName()
   const { t } = useTranslation()
   const reception = useStore((s) => s.receptionDevice)
   const lang = useStore((s) => s.lang)
@@ -98,9 +99,9 @@ export default function StaffLayout() {
             {lang === 'en' ? 'عربي' : 'English'}
           </button>
           <span className="flex items-center gap-2 text-[13px] text-grey-ink">
-            <span className="grid size-8 place-items-center rounded-full bg-teal text-[14px] font-semibold text-white">R</span>
+            <span className="grid size-8 place-items-center rounded-full bg-teal text-[14px] font-semibold text-white">{pn(STAFF)[0]}</span>
             <span>
-              <span className="block text-[14px] font-medium text-ink">Rana</span>
+              <span className="block text-[14px] font-medium text-ink">{pn(STAFF)}</span>
               {t('staff.reception')}
             </span>
           </span>

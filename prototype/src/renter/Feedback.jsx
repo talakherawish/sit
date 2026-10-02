@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
-import { useL, useSpaceName, useTemplate } from '../lib/hooks'
+import { useL, usePersonName, useSpaceName, useTemplate } from '../lib/hooks'
 import { ISSUE_TYPES, dateOf, endAbs, minOfDay, startAbs, renter as findRenter } from '../lib/logic'
 import { fmtAbs, fmtDate, hm } from '../lib/time'
 import { Card, Chip, Empty, Field, PhaseBadge, ScreenTitle, StatusChip } from '../components/ui'
@@ -190,6 +190,7 @@ const NOTIF_ICON = { booking: 'calendar', notice: 'megaphone', report: 'flag', c
 
 /** R-19 Rate your visit (#28) */
 export function Rate() {
+  const pn = usePersonName()
   const { t } = useTranslation()
   const navigate = useNavigate()
   const s = useStore()
@@ -208,7 +209,7 @@ export function Rate() {
     <>
       <ScreenTitle id="R-19" title={t('rate.title')} phase="next" />
       <form onSubmit={send} className="space-y-5 px-4">
-        <p>{t('rate.body', { name: me.name.split(' ')[0] })}</p>
+        <p>{t('rate.body', { name: pn(me, true) })}</p>
         <fieldset>
           <legend className="mb-1 font-medium">{t('rate.stars')}</legend>
           <div className="flex gap-1" dir="ltr">
@@ -250,6 +251,7 @@ export function Rate() {
 
 /** R-20 Profile and history (#29) */
 export function Profile() {
+  const pn = usePersonName()
   const { t } = useTranslation()
   const navigate = useNavigate()
   const name = useSpaceName()
@@ -264,9 +266,9 @@ export function Profile() {
       <div className="space-y-4 px-4">
         <Card>
           <div className="mb-3 flex items-center gap-3">
-            <span className="grid size-14 place-items-center rounded-full bg-navy font-head text-2xl font-bold text-white">{me.name[0]}</span>
+            <span className="grid size-14 place-items-center rounded-full bg-navy font-head text-2xl font-bold text-white">{pn(me)[0]}</span>
             <div>
-              <p className="font-semibold">{me.name}</p>
+              <p className="font-semibold">{pn(me)}</p>
               <p className="text-sm text-grey-ink" dir="ltr">
                 {me.phone}
               </p>
