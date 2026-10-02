@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useStore } from '../store'
 import { useTemplate, useSpaceName } from '../lib/hooks'
@@ -17,18 +17,16 @@ export default function Drawer() {
   const open = useStore((s) => s.drawerOpen)
   const tab = useStore((s) => s.drawerTab)
   const set = useStore((s) => s.set)
-  const unreadOutbox = useStore((s) => s.data.messages.length)
+  useEffect(() => {
+    if (new URLSearchParams(location.search).has('panel')) set({ drawerOpen: true })
+    const onKey = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === '.') set({ drawerOpen: !useStore.getState().drawerOpen })
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [set])
   return (
     <div dir="ltr" lang="en">
-      <button
-        onClick={() => set({ drawerOpen: !open })}
-        style={{ right: open ? 'min(400px, 92vw)' : 0 }}
-        className="fixed top-1/2 z-[70] flex -translate-y-1/2 items-center gap-1 rounded-l-lg bg-ink px-2 py-3 text-sm font-semibold text-white shadow-lg [writing-mode:vertical-rl]"
-        aria-expanded={open}
-        aria-controls="proto-drawer"
-      >
-        ⚙ Prototype {unreadOutbox > 0 && <span className="mt-1 rounded-full bg-orange px-1.5 py-0.5 text-xs [writing-mode:horizontal-tb]">{unreadOutbox}</span>}
-      </button>
       {open && (
         <aside
           id="proto-drawer"
@@ -50,7 +48,7 @@ export default function Drawer() {
                 role="tab"
                 aria-selected={tab === k}
                 onClick={() => set({ drawerTab: k })}
-                className={`min-h-11 px-1 font-semibold ${tab === k ? 'border-b-2 border-orange text-ink' : 'text-grey-ink'}`}
+                className={`min-h-11 px-1 font-semibold ${tab === k ? 'border-b-2 border-navy text-ink' : 'text-grey-ink'}`}
               >
                 {l}
               </button>
@@ -75,7 +73,7 @@ function Toggle({ label, hint, checked, onChange }) {
         <span className="font-medium">{label}</span>
         {hint && <span className="block text-xs text-grey-ink">{hint}</span>}
       </span>
-      <input type="checkbox" className="mt-1 size-5 shrink-0 accent-orange" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+      <input type="checkbox" className="mt-1 size-5 shrink-0 accent-navy" checked={checked} onChange={(e) => onChange(e.target.checked)} />
     </label>
   )
 }
@@ -120,7 +118,7 @@ function Scenario() {
                 s.loginAs(id)
                 if (!staff) navigate('/r/home')
               }}
-              className={`flex min-h-11 items-center justify-between rounded-lg px-3 text-left ring-1 ${s.renterId === id ? 'bg-orange/10 ring-2 ring-orange' : 'ring-grey/20'}`}
+              className={`flex min-h-11 items-center justify-between rounded-lg px-3 text-left ring-1 ${s.renterId === id ? 'bg-navy/[0.06] ring-2 ring-navy' : 'ring-grey/20'}`}
             >
               <span className="font-semibold">{name}</span>
               <span className="text-xs text-grey-ink">{hint}</span>
@@ -343,7 +341,7 @@ function Outbox() {
           <li key={m.id}>
             <button
               onClick={() => open(m)}
-              className={`w-full rounded-lg p-3 text-left ring-1 ring-grey/20 ${m.tpl === 'reminder' ? 'hover:bg-orange/5' : 'cursor-default'}`}
+              className={`w-full rounded-lg p-3 text-left ring-1 ring-grey/20 ${m.tpl === 'reminder' ? 'hover:bg-navy/5' : 'cursor-default'}`}
             >
               <p className="flex items-center gap-2 text-xs text-grey-ink">
                 <span className={`rounded px-1.5 font-bold text-white ${m.channel === 'sms' ? 'bg-teal' : 'bg-navy'}`}>{m.channel.toUpperCase()}</span>
@@ -367,7 +365,7 @@ function Analytics() {
   const counts = s.data.events.reduce((a, e) => ({ ...a, [e.name]: (a[e.name] || 0) + 1 }), {})
   return (
     <>
-      <div className="mb-4 rounded-lg bg-orange/10 p-3 ring-1 ring-orange">
+      <div className="mb-4 rounded-lg bg-navy/[0.06] p-3 ring-1 ring-navy">
         <p className="text-xs text-grey-ink">North Star · unique visitors today (#32)</p>
         <p className="text-4xl font-bold">{visitors}</p>
       </div>

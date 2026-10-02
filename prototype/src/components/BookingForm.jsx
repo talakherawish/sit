@@ -20,7 +20,10 @@ export default function BookingForm({ initial = {}, onSubmit, submitLabel, compa
   const [spaceId, setSpaceId] = useState(initial.spaceId || data.spaces[0].id)
   // `date` is the day whose free times the start/end pickers show; `dates` are all days being booked.
   const [date, setDate] = useState(initial.date && hoursFor(data, initial.date) ? initial.date : firstOpen)
-  const [dates, setDates] = useState([initial.date && hoursFor(data, initial.date) ? initial.date : firstOpen])
+  const [dates, setDates] = useState(() => {
+    const open = (initial.dates || []).filter((d) => hoursFor(data, d))
+    return open.length ? open : [initial.date && hoursFor(data, initial.date) ? initial.date : firstOpen]
+  })
   const [start, setStart] = useState(initial.start ?? null)
   const [end, setEnd] = useState(initial.end ?? null)
   const [reason, setReason] = useState(initial.reason || '')

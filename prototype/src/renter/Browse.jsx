@@ -1,116 +1,99 @@
 import { useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL, useRequireLogin } from '../lib/hooks'
-import { freeStarts, hoursFor, isFree, stateAt, nextFreeAt, dateOf, minOfDay } from '../lib/logic'
+import { hoursFor, isFree, stateAt, nextFreeAt, dateOf, minOfDay } from '../lib/logic'
 import { addDays, fmtDate, hm, weekday, weekdayName, ceil30 } from '../lib/time'
 import { AmenityList, AmenitySheet } from '../components/Amenities'
 import { DayStrip } from '../components/Calendar'
-import { MapListSwitch, ModeChips, WhenBar, useWhen } from '../components/Browse'
-import { Card, Chip, Field, PhaseBadge, Photo, ScreenTitle, StatusChip } from '../components/ui'
+import { WhenBar, useWhen } from '../components/Browse'
+import RoomSheet from '../components/RoomSheet'
+import DayTimeline from '../components/DayTimeline'
+import { Card, Chip, Field, PhaseBadge, Photo, ScreenTitle, SectionLabel, StatusChip } from '../components/ui'
 import Icon from '../components/Icon'
 
-/** R-02 Spaces list */
+/** R-02 Rooms: the same rooms as the map, as a list. Tapping one opens the same booking sheet. */
 export function SpacesList() {
-  const [amenity, setAmenity] = useState(null)
   const { t } = useTranslation()
   const L = useL()
-  const navigate = useNavigate()
-  const requireLogin = useRequireLogin()
   const data = useStore((s) => s.data)
-  const mode = useStore((s) => s.mode)
-  const set = useStore((s) => s.set)
   const when = useWhen()
-  const hl = data.work_modes.find((m) => m.id === mode)?.highlight_zone_types || []
-  const zt = (zid) => data.zones.find((z) => z.id === zid).type
+  const [open, setOpen] = useState(null)
   const pub = data.zones.find((z) => z.type === 'public_seating')
-  const book = (sp) => {
-    const st = when.min
-    const start = isFree(data, sp.id, when.date, ceil30(st), ceil30(st) + 30) ? ceil30(st) : undefined
-    set({ draft: { spaceId: sp.id, date: when.date, start, reason: data.work_modes.find((m) => m.id === mode)?.default_reason || '', source: 'list' } })
-    requireLogin('/r/book')
-  }
   const groups = [
     ['focus_room', t('list.focus_rooms')],
     ['big_room', t('list.big_rooms')],
   ]
+  const amenity = data.amenities.some((a) => a.id === open)
   return (
-    <div className="space-y-4">
-      <ScreenTitle id="R-02" title={t('list.title')} />
-      <ModeChips />
-      <WhenBar />
-      <div className="px-4">
-        <div className="mb-3 flex justify-end">
-          <MapListSwitch active="list" />
+    <div className="space-y-7 pb-4">
+      <div>
+        <ScreenTitle id="R-02" title={t('list.title')} />
+        <p className="-mt-1 px-5 text-[15px] text-grey-ink">{t('list.intro')}</p>
+        <div className="mt-3">
+          <WhenBar />
         </div>
-        <Card className={hl.includes('public_seating') ? 'ring-2 ring-orange' : ''}>
-          <div className="flex items-center justify-between">
-            <span className="font-semibold">{L(pub.name)}</span>
-            <span className="rounded-full bg-orange px-2.5 font-head text-[18px] font-bold text-white">
-              {data.seats.taken}/{data.seats.total}
-            </span>
-          </div>
-          <p className="text-sm text-grey-ink">{t('home.not_bookable')}</p>
-        </Card>
-        {groups.map(([kind, title]) => (
-          <section key={kind} className="mt-4">
-            <h2 className="mb-2 font-head text-xl font-bold">{title}</h2>
-            <div className="space-y-2">
-              {data.spaces
-                .filter((s) => s.kind === kind)
-                .map((sp) => {
-                  const st = stateAt(data, sp.id, when.date, when.min)
-                  const nf = nextFreeAt(data, sp.id, when.date, when.min)
-                  const match = hl.includes(zt(sp.zone_id))
-                  const dim = mode !== 'browse' && !match
-                  return (
-                    <div
-                      key={sp.id}
-                      className={`rounded-2xl bg-surface ring-1 ${match ? 'ring-2 ring-orange' : 'ring-transparent'} ${dim ? 'opacity-60' : ''}`}
-                    >
-                      <Link to={`/r/room/${sp.id}`} className="block p-3">
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="font-semibold">{L(sp.label)}</span>
-                          {st.state === 'free' ? (
-                            <StatusChip status="free" label={when.isNow ? t('list.free_now') : t('legend.free')} />
-                          ) : st.state === 'down' ? (
-                            <StatusChip status="down" label={t('map.down')} />
-                          ) : (
-                            <StatusChip status="booked" label={nf !== null ? t('list.free_from', { time: hm(nf) }) : t('map.booked')} />
-                          )}
-                        </div>
-                        <p className="text-sm text-grey-ink">
-                          {t('map.people', { n: sp.capacity })} · {sp.features.map((f) => t(`feature.${f}`)).join(' · ')}
-                        </p>
-                      </Link>
-                      <div className="flex gap-2 border-t border-grey/15 p-2">
-                        <button
-                          className="btn-secondary flex-1"
-                          onClick={() => {
-                            set({ selected: sp.id })
-                            navigate('/r/home')
-                          }}
-                        >
-                          <Icon name="map" size={18} />
-                          {t('list.show_on_map')}
-                        </button>
-                        <button className="btn-primary flex-1" onClick={() => book(sp)} disabled={st.state === 'down'}>
-                          {t('list.book')}
-                        </button>
-                      </div>
-                    </div>
-                  )
-                })}
-            </div>
-          </section>
-        ))}
-        <section className="mt-6">
-          <h2 className="mb-2 font-head text-xl font-bold">{t('amenity.title')}</h2>
-          <AmenityList onOpen={setAmenity} />
-        </section>
       </div>
-      {amenity && <AmenitySheet id={amenity} onClose={() => setAmenity(null)} />}
+
+      {groups.map(([kind, title]) => (
+        <section key={kind} className="px-4">
+          <SectionLabel>{title}</SectionLabel>
+          <div className="divide-y divide-black/[0.07] overflow-hidden rounded-2xl bg-surface">
+            {data.spaces
+              .filter((s) => s.kind === kind)
+              .map((sp) => {
+                const st = stateAt(data, sp.id, when.date, when.min)
+                const nf = st.state === 'booked' ? nextFreeAt(data, sp.id, when.date, when.min) : null
+                return (
+                  <button key={sp.id} onClick={() => setOpen(sp.id)} className="flex w-full items-center gap-3 px-4 py-3 text-start active:bg-black/[0.04]">
+                    <Photo color={sp.photos[0]} className="!w-16 shrink-0 !rounded-lg" label={L(sp.label)} />
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[17px] font-semibold">{L(sp.label)}</span>
+                      <span className="block truncate text-[13px] text-grey-ink">
+                        {t('map.people', { n: sp.capacity })} · {sp.features.map((f) => t(`feature.${f}`)).join(' · ')}
+                      </span>
+                      <span className="mt-0.5 block">
+                        {st.state === 'free' ? (
+                          <StatusChip status="free" label={when.isNow ? t('list.free_now') : t('legend.free')} />
+                        ) : st.state === 'down' ? (
+                          <StatusChip status="down" label={t('map.down')} />
+                        ) : (
+                          <StatusChip status="booked" label={nf !== null ? t('list.free_from', { time: hm(nf) }) : t('map.booked')} />
+                        )}
+                      </span>
+                    </span>
+                    <Icon name="next" size={16} className="shrink-0 text-grey-ink/60 rtl:rotate-180" />
+                  </button>
+                )
+              })}
+          </div>
+        </section>
+      ))}
+
+      <section className="px-4">
+        <SectionLabel>{t('list.walk_in')}</SectionLabel>
+        <button
+          onClick={() => setOpen('public')}
+          className="flex min-h-14 w-full items-center gap-3 rounded-2xl bg-surface px-4 text-start active:bg-black/[0.04]"
+        >
+          <span className="min-w-0 flex-1">
+            <span className="block text-[17px] font-semibold">{L(pub.name)}</span>
+            <span className="block text-[13px] text-grey-ink">{t('home.not_bookable')}</span>
+          </span>
+          <span className="text-[15px] font-semibold tabular-nums" dir="ltr">
+            {data.seats.taken} / {data.seats.total}
+          </span>
+          <Icon name="next" size={16} className="shrink-0 text-grey-ink/60 rtl:rotate-180" />
+        </button>
+      </section>
+
+      <section className="px-4">
+        <SectionLabel>{t('amenity.title')}</SectionLabel>
+        <AmenityList onOpen={setOpen} />
+      </section>
+
+      {amenity ? <AmenitySheet id={open} onClose={() => setOpen(null)} /> : <RoomSheet id={open} onClose={() => setOpen(null)} onJump={setOpen} />}
     </div>
   )
 }
@@ -126,21 +109,13 @@ export function RoomDetails() {
   const set = useStore((s) => s.set)
   const [photo, setPhoto] = useState(0)
   const [day, setDay] = useState(null)
+  const [range, setRange] = useState(null)
   const lang = useStore((s) => s.lang)
   const sp = data.spaces.find((s) => s.id === id)
   if (!sp) return <ScreenTitle id="R-03" title="—" back />
   const date = day || dateOf(now)
-  const slots = freeStarts(data, id, date, now, 30)
-  const book = (start) => {
-    set({
-      draft: {
-        spaceId: id,
-        date,
-        start,
-        end: start !== undefined ? (isFree(data, id, date, start, start + 60) ? start + 60 : start + 30) : undefined,
-        source: 'details',
-      },
-    })
+  const book = () => {
+    set({ draft: { spaceId: id, date, dates: [date], start: range?.start, end: range?.end, source: 'details' } })
     requireLogin('/r/book')
   }
   return (
@@ -196,26 +171,20 @@ export function RoomDetails() {
           </ul>
         </Card>
         <section>
-          <h2 className="mb-2 px-1 text-[15px] font-semibold">
-            {t('details.free_on', { date: fmtDate(date, lang, { weekday: 'long', day: 'numeric', month: 'short' }) })}
-          </h2>
-          <div className="mb-3">
-            <DayStrip value={date} onChange={setDay} />
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {slots.length ? (
-              slots.map((m) => (
-                <Chip key={m} onClick={() => book(m)}>
-                  {hm(m)}
-                </Chip>
-              ))
-            ) : (
-              <p className="text-grey-ink">{t('room.no_free_today')}</p>
-            )}
+          <SectionLabel>{t('details.free_on', { date: fmtDate(date, lang, { weekday: 'long', day: 'numeric', month: 'short' }) })}</SectionLabel>
+          <DayStrip
+            value={date}
+            onChange={(d) => {
+              setDay(d)
+              setRange(null)
+            }}
+          />
+          <div className="mt-4">
+            <DayTimeline spaceId={id} date={date} range={range} onChange={setRange} />
           </div>
         </section>
-        <button className="btn-primary w-full" onClick={() => book(slots[0])}>
-          {t('details.book')}
+        <button className="btn-primary w-full" onClick={book} disabled={!!sp.down}>
+          {range ? <span dir="ltr">{t('room.book_range', { from: hm(range.start), to: hm(range.end) })}</span> : t('details.book')}
         </button>
         <button
           className="btn-link"

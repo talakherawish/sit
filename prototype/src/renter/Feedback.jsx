@@ -161,9 +161,7 @@ export function Notifications() {
                   <Link key={n.id} to={n.link || '/r/home'} className="flex gap-3 px-4 py-3.5 active:bg-black/[0.04]">
                     <span className="relative grid size-10 shrink-0 place-items-center rounded-xl bg-white text-navy">
                       <Icon name={NOTIF_ICON[n.kind] || 'bell'} size={20} />
-                      {unread.has(n.id) && (
-                        <span className="absolute -end-0.5 -top-0.5 size-2.5 rounded-full bg-orange ring-2 ring-surface" aria-hidden="true" />
-                      )}
+                      {unread.has(n.id) && <span className="absolute -end-0.5 -top-0.5 size-2.5 rounded-full bg-red ring-2 ring-surface" aria-hidden="true" />}
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="flex items-baseline justify-between gap-2">
@@ -219,7 +217,7 @@ export function Rate() {
                 onClick={() => setStars(n)}
                 aria-label={t('rate.n_stars', { count: n })}
                 aria-pressed={stars >= n}
-                className={`grid size-12 place-items-center ${stars >= n ? 'text-orange' : 'text-grey/50'}`}
+                className={`grid size-12 place-items-center ${stars >= n ? 'text-amber' : 'text-grey/50'}`}
               >
                 <Icon name="star" size={36} filled={stars >= n} />
               </button>

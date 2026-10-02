@@ -15,6 +15,7 @@ export function MyBookings() {
   const navigate = useNavigate()
   const s = useStore()
   const [tab, setTab] = useState('upcoming')
+  const [sort, setSort] = useState('soonest') // soonest | latest | booked
   const [cancel, setCancel] = useState(null)
   const [whole, setWhole] = useState(false)
   const [expanded, setExpanded] = useState({})
@@ -23,8 +24,15 @@ export function MyBookings() {
   if (!me) return <NeedLogin returnTo="/r/bookings" />
 
   const mine = s.data.bookings.filter((b) => b.renter_id === me.id)
-  const upcoming = mine.filter((b) => endAbs(b) > s.now).sort((a, b) => startAbs(a) - startAbs(b))
-  const past = mine.filter((b) => endAbs(b) <= s.now).sort((a, b) => startAbs(b) - startAbs(a))
+  const order = {
+    soonest: (a, b) => startAbs(a) - startAbs(b),
+    latest: (a, b) => startAbs(b) - startAbs(a),
+    booked: (a, b) => b.created_at - a.created_at,
+  }
+  // "Soonest" on Past means the most recent visit first.
+  const by = tab === 'past' ? { soonest: order.latest, latest: order.soonest, booked: order.booked }[sort] : order[sort]
+  const upcoming = mine.filter((b) => endAbs(b) > s.now).sort(by)
+  const past = mine.filter((b) => endAbs(b) <= s.now).sort(by)
 
   // Collapse recurring series to their next booking (+ "N more").
   const seen = {}
@@ -54,7 +62,7 @@ export function MyBookings() {
       <ScreenTitle id="R-13" title={t('bookings.title')} />
       <div className="px-4">
         <Segmented
-          className="mb-4"
+          className="mb-3"
           label={t('bookings.title')}
           value={tab}
           onChange={setTab}
@@ -63,6 +71,20 @@ export function MyBookings() {
             ['past', t('bookings.past')],
           ]}
         />
+        <div className="mb-3 flex items-center justify-between px-1">
+          <span className="text-[13px] text-grey-ink">{t('bookings.count', { count: (tab === 'upcoming' ? upcoming : past).length })}</span>
+          <label className="relative flex min-h-11 items-center gap-1 text-[15px] font-medium text-navy">
+            <span className="sr-only">{t('bookings.sort')}</span>
+            <Icon name="chevrons" size={16} />
+            <select value={sort} onChange={(e) => setSort(e.target.value)} className="appearance-none bg-transparent pe-1 font-medium text-navy outline-none">
+              {['soonest', 'latest', 'booked'].map((k) => (
+                <option key={k} value={k}>
+                  {t(`bookings.sort_${tab === 'past' ? { soonest: 'newest', latest: 'oldest', booked: 'booked' }[k] : k}`)}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
         <div className="space-y-3">
           {!rows.length && <Empty>{tab === 'upcoming' ? t('bookings.none_upcoming') : t('bookings.none_past')}</Empty>}
           {rows.map((b) => {
@@ -96,12 +118,19 @@ export function MyBookings() {
                 )}
                 {tab === 'upcoming' && active && (
                   <>
-                    {b.status === 'awaiting_confirmation' && b.reminder_sent && (
-                      <Link to={`/r/reminder/${b.id}`} className="btn-link">
-                        {t('bookings.confirm_now')}
-                      </Link>
-                    )}
-                    <div className="mt-2 flex gap-2">
+                    {b.status === 'awaiting_confirmation' && !started && <p className="mt-2 text-[13px] text-grey-ink">{t('bookings.confirm_hint')}</p>}
+                    <div className="mt-3 flex gap-2">
+                      {b.status === 'awaiting_confirmation' && !started && (
+                        <button
+                          className="btn-secondary flex-1 !bg-navy !text-white"
+                          onClick={() => {
+                            s.confirmBooking(b.id)
+                            s.showToast('toast.confirmed')
+                          }}
+                        >
+                          {t('bookings.confirm')}
+                        </button>
+                      )}
                       <button className="btn-secondary flex-1" disabled={!canEdit} onClick={() => navigate(`/r/bookings/${b.id}/move`)}>
                         {t('bookings.change')}
                       </button>
@@ -146,7 +175,7 @@ export function MyBookings() {
               [true, t('bookings.whole_series')],
             ].map(([v, l]) => (
               <label key={String(v)} className="flex min-h-11 items-center gap-2">
-                <input type="radio" name="scope" className="size-5 accent-orange" checked={whole === v} onChange={() => setWhole(v)} />
+                <input type="radio" name="scope" className="size-5 accent-navy" checked={whole === v} onChange={() => setWhole(v)} />
                 {l}
               </label>
             ))}

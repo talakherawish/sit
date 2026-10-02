@@ -31,7 +31,7 @@ export function SeatCounter({ big }) {
           <span className="text-2xl text-grey-ink"> / {seats.total}</span>
         </p>
         <button
-          className="grid size-14 place-items-center rounded-lg bg-orange text-white disabled:bg-grey/30"
+          className="grid size-14 place-items-center rounded-lg bg-navy text-white disabled:bg-grey/30"
           disabled={seats.taken >= seats.total}
           onClick={() => adjust(+1)}
           aria-label={t('staff.plus')}
@@ -254,7 +254,7 @@ export function CheckIn() {
               const isIn = open.has(r.id)
               const todays = s.data.bookings.filter((b) => b.renter_id === r.id && b.date === date)
               return (
-                <li key={r.id} className={`flex flex-wrap items-center gap-3 py-3 ${pre?.id === r.id ? 'bg-orange/5' : ''}`}>
+                <li key={r.id} className={`flex flex-wrap items-center gap-3 py-3 ${pre?.id === r.id ? 'bg-navy/5' : ''}`}>
                   <div className="min-w-48 flex-1">
                     <p className="font-semibold">
                       {r.name} {isIn && <StatusChip status="checked_in" label={t('staff.inside')} />}

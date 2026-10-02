@@ -239,7 +239,7 @@ export function ReportsInbox() {
               const e = edits[r.id] || { status: r.status, reply: r.reply || '' }
               const dirty = e.status !== r.status || e.reply !== (r.reply || '')
               return (
-                <tr key={r.id} className={`border-b border-black/[0.06] align-top ${r.status === 'sent' ? 'bg-orange/5' : ''}`}>
+                <tr key={r.id} className={`border-b border-black/[0.06] align-top ${r.status === 'sent' ? 'bg-navy/[0.04]' : ''}`}>
                   <td className="py-3 text-sm">{fmtAbs(r.history[0].time, s.lang)}</td>
                   <td className="font-medium">{findRenter(s.data, r.renter_id)?.name}</td>
                   <td>{name(r.space_id)}</td>
@@ -377,7 +377,7 @@ export function RoomDown() {
                 <label className="flex min-h-11 items-center gap-3">
                   <input
                     type="checkbox"
-                    className="size-5 accent-orange"
+                    className="size-5 accent-navy"
                     checked={!unchecked[b.id]}
                     onChange={(e) => setUnchecked({ ...unchecked, [b.id]: !e.target.checked })}
                   />

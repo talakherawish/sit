@@ -57,3 +57,14 @@ export function useLangSync() {
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr'
   }, [lang])
 }
+
+// Reviewer shortcut: tapping the logo three times opens the prototype panel (it has no visible tab).
+let taps = []
+export function openPanelOnTripleTap() {
+  const now = Date.now()
+  taps = [...taps.filter((t) => now - t < 700), now]
+  if (taps.length >= 3) {
+    taps = []
+    useStore.getState().set({ drawerOpen: true })
+  }
+}

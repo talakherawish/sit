@@ -2,10 +2,10 @@ import { useEffect, useRef } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
-import { useRequireLogin } from '../lib/hooks'
+import { openPanelOnTripleTap, useRequireLogin } from '../lib/hooks'
 import { dateOf, minOfDay } from '../lib/logic'
 import { hm } from '../lib/time'
-import Icon, { SitMark } from '../components/Icon'
+import Icon, { TechnoparkLogo } from '../components/Icon'
 import { OverlayHost, ScreenId, Sheet, Toast } from '../components/ui'
 
 export default function RenterLayout() {
@@ -63,8 +63,8 @@ function TopBar() {
         <StatusIcons />
       </div>
       <div className="flex h-[52px] items-center gap-1 px-4">
-        <Link to="/r/home" aria-label={t('nav.home')} className="flex min-h-11 items-center">
-          <SitMark />
+        <Link to="/r/home" aria-label={t('nav.home')} className="flex min-h-11 items-center" onClick={openPanelOnTripleTap}>
+          <TechnoparkLogo />
         </Link>
         <div className="flex-1" />
         <button
@@ -77,7 +77,7 @@ function TopBar() {
         {me && (
           <Link to="/r/notifications" className="relative grid size-11 place-items-center text-navy" aria-label={t('nav.notifications')}>
             <Icon name="bell" />
-            {unread && <span className="absolute end-[11px] top-[10px] size-2 rounded-full bg-orange ring-2 ring-white" />}
+            {unread && <span className="absolute end-[11px] top-[10px] size-2 rounded-full bg-red ring-2 ring-white" />}
           </Link>
         )}
         {me ? (
@@ -138,7 +138,7 @@ function TabBar() {
             key={tab.key}
             onClick={tab.open}
             aria-current={active ? 'page' : undefined}
-            className={`flex min-h-[54px] flex-col items-center justify-center gap-0.5 text-[12px] font-medium transition-colors ${active ? 'text-orange' : 'text-grey-ink'}`}
+            className={`flex min-h-[54px] flex-col items-center justify-center gap-0.5 text-[12px] font-medium transition-colors ${active ? 'text-navy' : 'text-grey-ink'}`}
           >
             <Icon name={tab.icon} size={25} className={active ? 'stroke-[2.4]' : 'stroke-[1.8]'} />
             {t(`nav.${tab.key}`)}

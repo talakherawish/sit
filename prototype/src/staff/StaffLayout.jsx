@@ -2,6 +2,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { fmtAbs } from '../lib/time'
+import { openPanelOnTripleTap } from '../lib/hooks'
 import Icon, { TechnoparkLogo } from '../components/Icon'
 import { PhaseBadge, ScreenId, Toast } from '../components/ui'
 
@@ -47,9 +48,11 @@ export default function StaffLayout() {
       {/* Source-list sidebar, macOS style */}
       <aside className="sticky top-0 flex h-dvh w-64 shrink-0 flex-col border-e border-black/[0.06] bg-surface">
         <div className="px-5 pt-6 pb-5">
-          <TechnoparkLogo />
+          <button onClick={openPanelOnTripleTap} aria-label="Technopark Palestine">
+            <TechnoparkLogo />
+          </button>
         </div>
-        <p className="px-5 pb-2 text-[13px] font-medium text-grey-ink">Sit · {t('staff.desk')}</p>
+        <p className="px-5 pb-2 text-[13px] font-medium text-grey-ink">{t('staff.desk')}</p>
         <nav className="flex-1 space-y-0.5 px-3" aria-label={t('staff.nav')}>
           {NAV.map((n) => (
             <NavLink
@@ -64,7 +67,7 @@ export default function StaffLayout() {
               <Icon name={n.icon} size={19} className="text-navy" />
               <span className="flex-1">{t(`staff.nav_${n.key}`)}</span>
               {n.key === 'reports' && newReports > 0 && (
-                <span className="grid h-5 min-w-5 place-items-center rounded-full bg-orange px-1.5 text-[12px] font-semibold text-white">{newReports}</span>
+                <span className="grid h-5 min-w-5 place-items-center rounded-full bg-red px-1.5 text-[12px] font-semibold text-white">{newReports}</span>
               )}
               {n.phase && <PhaseBadge phase={n.phase} />}
             </NavLink>
@@ -81,7 +84,7 @@ export default function StaffLayout() {
             className="flex min-h-9 items-center gap-2 rounded-full bg-surface px-3.5"
             aria-label={t('home.seats_aria', { taken: seats.taken, total: seats.total })}
           >
-            <span className="size-2 rounded-full bg-orange" aria-hidden="true" />
+            <span className="live-dot size-2 rounded-full bg-teal" aria-hidden="true" />
             <span className="text-[15px] font-semibold tabular-nums" dir="ltr">
               {seats.taken} / {seats.total}
             </span>

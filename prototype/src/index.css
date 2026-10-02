@@ -6,7 +6,6 @@
   --color-grey: #6b7b7a;
   /* secondary text: 5:1 on white */
   --color-grey-ink: #6e6e73;
-  --color-orange: #f5821f;
   --color-ink: #1d1d1f;
   /* Light fill for cards and controls on white pages */
   --color-surface: #f5f5f7;
@@ -40,9 +39,9 @@ textarea {
 }
 
 @layer components {
-  /* Filled, tinted and plain buttons in the iOS idiom. White on orange stays 18px bold (contrast rule). */
+  /* Filled, tinted and plain buttons in the iOS idiom. Filled buttons use the brand navy. */
   .btn-primary {
-    @apply inline-flex min-h-[50px] items-center justify-center gap-2 rounded-[14px] bg-orange px-5 text-[18px] font-bold text-white transition active:scale-[0.98] active:brightness-95 disabled:cursor-not-allowed disabled:bg-black/[0.08] disabled:text-grey-ink disabled:shadow-none;
+    @apply inline-flex min-h-[50px] items-center justify-center gap-2 rounded-[14px] bg-navy px-5 text-[17px] font-semibold text-white transition active:scale-[0.98] active:brightness-95 disabled:cursor-not-allowed disabled:bg-black/[0.08] disabled:text-grey-ink disabled:shadow-none;
   }
   .btn-secondary {
     @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-[12px] bg-navy/[0.08] px-4 text-[16px] font-semibold text-navy transition active:scale-[0.98] active:bg-navy/[0.14] disabled:cursor-not-allowed disabled:opacity-40;

@@ -20,11 +20,13 @@ Every push to `main` builds and publishes the prototype to **GitHub Pages** via 
 
 ## Surfaces
 
-| Prefix             | Surface                       | Notes                                                                                  |
-| ------------------ | ----------------------------- | -------------------------------------------------------------------------------------- |
-| `/r/…`             | Renter app (R-01 – R-21)      | Rendered in a 390 px phone frame on desktop                                            |
-| `/s/…`             | Staff dashboard (S-00 – S-10) | Full width, reception computer only                                                    |
-| ⚙ tab on the right | Prototype panel (P-01 – P-04) | Reviewer-only: personas, switches, time simulator, outbox, analytics. Kept in English. |
+| Prefix       | Surface                       | Notes                                                                                  |
+| ------------ | ----------------------------- | -------------------------------------------------------------------------------------- |
+| `/r/…`       | Renter app (R-01 – R-21)      | Rendered in a 390 px phone frame on desktop                                            |
+| `/s/…`       | Staff dashboard (S-00 – S-10) | Full width, reception computer only                                                    |
+| Hidden panel | Prototype panel (P-01 – P-04) | Reviewer-only: personas, switches, time simulator, outbox, analytics. Kept in English. |
+
+Open the prototype panel by **tapping the Technopark logo three times**, pressing **Ctrl + .** (⌘ + . on a Mac), or adding `?panel` to the URL. It has no visible tab so the app looks like the real thing.
 
 ## Demo start state
 
@@ -58,12 +60,14 @@ src/
 
 iOS idiom on a white page: a bezel-and-Dynamic-Island phone frame on desktop, frosted nav and tab bars, large titles, inset grouped lists and forms, segmented controls, switches, bottom sheets and alerts. The floor plan is drawn as an architectural plan (walls, door swings, windows, furniture; one circle per public seat).
 
+Booking a room: tap it on the map (or in **Rooms**) and a sheet shows its whole opening day as a timeline, with booked, past and out-of-order stretches labelled. Tap a free time to start, tap another to stretch it, tap inside to shorten. **Book more days** in the same sheet adds a calendar to book that time on several days at once.
+
 Two deliberate departures from the spec's _Visual design_ section, made on request:
 
 - **Fonts:** the system font (SF Pro on Apple devices), then **Inter** from Google Fonts, then **IBM Plex Sans Arabic** for Arabic — instead of Barlow Semi Condensed.
 - **Corners:** iOS radii (12–28 px) instead of 8 px.
 
-Brand colours are unchanged; text is #1D1D1F with #6E6E73 for secondary text (5:1 on white), and cards use a #F5F5F7 fill.
+The header uses the Technopark Palestine logo (`public/brand/`). Colours come from it: navy for actions and selection, teal for “free”/live, red only for alerts and unread badges, amber for “awaiting”. Text is #1D1D1F with #6E6E73 for secondary text (5:1 on white), and cards use a #F5F5F7 fill.
 
 ## Choices the spec left open
 

@@ -108,7 +108,7 @@ export default function CalendarPicker({ spaceId, start, end, selected, focus, o
             >
               <span
                 className={`grid size-9 place-items-center rounded-full text-[16px] ${
-                  on ? 'bg-navy font-semibold text-white' : d === today ? 'font-bold text-orange' : 'text-ink'
+                  on ? 'bg-navy font-semibold text-white' : d === today ? 'font-bold text-teal' : 'text-ink'
                 } ${isFocus && on ? 'ring-2 ring-navy/30 ring-offset-2 ring-offset-surface' : ''}`}
               >
                 {Number(d.slice(8))}
@@ -160,7 +160,7 @@ export function DayStrip({ value, onChange, days = 14 }) {
             onClick={() => onChange(d)}
             aria-label={`${fmtDate(d, lang, { weekday: 'long', day: 'numeric', month: 'long' })}${closed ? ` — ${t('common.closed')}` : ''}`}
             className={`flex min-h-16 w-14 shrink-0 flex-col items-center justify-center rounded-2xl ${
-              on ? 'bg-ink text-white' : 'bg-surface text-ink'
+              on ? 'bg-navy text-white' : 'bg-surface text-ink'
             } disabled:bg-transparent disabled:text-grey-ink/50`}
           >
             <span className={`text-[12px] ${on ? 'text-white/80' : 'text-grey-ink'}`}>

@@ -1,10 +1,8 @@
-import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL } from '../lib/hooks'
 import { amenityStatus, stateAt, nextFreeAt } from '../lib/logic'
 import { hm } from '../lib/time'
-import Icon from './Icon'
 
 // Drawing palette: an architectural plan — dark walls, hairline furniture, quiet tints for room state.
 const WALL = '#2C2C2E'
@@ -13,12 +11,12 @@ const FURN = '#C7C7CC'
 const TEXT = '#1D1D1F'
 const SUB = '#6E6E73'
 const TEAL = '#588888'
-const ORANGE = '#F5821F'
+const SELECT = '#24508F'
 const ROOM_FILL = { free: '#E4EFEE', booked: '#EDEDF0', down: 'url(#hatch)' }
 const SEAT_TAKEN = '#8E8E93'
 
 /** Top-down plan of the Technopark ground floor. Rooms are tappable; public seating shows the staff count. */
-export default function FloorPlan({ date, min, mode, selected, onSelect, hint }) {
+export default function FloorPlan({ date, min, mode, selected, onSelect }) {
   const { t } = useTranslation()
   const L = useL()
   const data = useStore((s) => s.data)
@@ -29,8 +27,8 @@ export default function FloorPlan({ date, min, mode, selected, onSelect, hint })
   const lm = Object.fromEntries(data.landmarks.map((l) => [l.id, l]))
   const cafe = data.amenities.find((a) => a.id === 'cafeteria')
   const cafeOpen = useStore((s) => amenityStatus(s.data, cafe, s.now).open)
-  const pubOn = selected === 'public' || hl.includes('public_seating')
-  const dimPub = mode !== 'browse' && !pubOn
+  const pubOn = selected === 'public'
+  const dimPub = mode !== 'browse' && !pubOn && !hl.includes('public_seating')
 
   const press = (id) => ({
     role: 'button',
@@ -46,158 +44,125 @@ export default function FloorPlan({ date, min, mode, selected, onSelect, hint })
   })
 
   return (
-    <TransformWrapper minScale={1} maxScale={3.5} doubleClick={{ mode: 'zoomIn', step: 0.7 }} wheel={{ step: 0.12 }} panning={{ velocityDisabled: true }}>
-      {({ zoomIn, zoomOut, resetTransform }) => (
-        <div>
-          <div className="overflow-hidden rounded-[22px] bg-white ring-1 ring-black/[0.08]">
-            <TransformComponent wrapperStyle={{ width: '100%' }} contentStyle={{ width: '100%' }}>
-              <svg viewBox="0 0 360 330" className="block w-full select-none" style={{ direction: 'ltr' }} role="group" aria-label={t('map.aria')}>
-                <defs>
-                  <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                    <rect width="7" height="7" fill="#FBEDED" />
-                    <rect width="2" height="7" fill="#D64545" opacity=".45" />
-                  </pattern>
-                </defs>
-                <rect width="360" height="330" fill="#fff" />
+    <div className="overflow-hidden rounded-[22px] bg-white ring-1 ring-black/[0.08]">
+      <svg viewBox="0 0 360 330" className="block w-full select-none" style={{ direction: 'ltr' }} role="group" aria-label={t('map.aria')}>
+        <defs>
+          <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <rect width="7" height="7" fill="#FBEDED" />
+            <rect width="2" height="7" fill="#D64545" opacity=".45" />
+          </pattern>
+        </defs>
+        <rect width="360" height="330" fill="#fff" />
 
-                {/* Open-plan public seating: ten tables, one circle per real seat */}
-                <g {...press('public')} aria-label={t('map.public_aria', { taken, total })} opacity={dimPub ? 0.35 : 1}>
-                  <rect x={pub.map_shape.x} y={pub.map_shape.y} width={pub.map_shape.w} height={pub.map_shape.h} fill="#FCFBF9" />
-                  {pubOn && <rect x={10} y={106} width={204} height={126} rx="10" fill="none" stroke={ORANGE} strokeWidth="2" strokeDasharray="6 4" />}
-                  {/* name and count are separate runs so Arabic and digits never reorder into each other */}
-                  <text x="16" y="126" fontSize="13" fontWeight="600" fill={TEXT}>
-                    {L(pub.name)}
-                  </text>
-                  <text x="208" y="126" textAnchor="end" fontSize="13" fontWeight="500" fill={SUB} direction="ltr">
-                    {taken} / {total}
-                  </text>
-                  {[160, 208].map((cy, row) =>
-                    [26, 68, 110, 152, 194].map((cx, col) => {
-                      const table = row * 5 + col
-                      return (
-                        <g key={`${row}-${col}`}>
-                          <rect x={cx - 13} y={cy - 7} width="26" height="14" rx="3" fill="#fff" stroke={FURN} strokeWidth="1.2" />
-                          {[
-                            [-6, -14],
-                            [6, -14],
-                            [-6, 14],
-                            [6, 14],
-                          ].map(([dx, dy], k) => {
-                            const isTaken = table * 4 + k < taken
-                            return (
-                              <circle
-                                key={k}
-                                cx={cx + dx}
-                                cy={cy + dy}
-                                r="4.6"
-                                fill={isTaken ? SEAT_TAKEN : '#fff'}
-                                stroke={isTaken ? SEAT_TAKEN : TEAL}
-                                strokeWidth="1.3"
-                              />
-                            )
-                          })}
-                        </g>
-                      )
-                    }),
-                  )}
+        {/* Open-plan public seating: ten tables, one circle per real seat */}
+        <g {...press('public')} aria-label={t('map.public_aria', { taken, total })} opacity={dimPub ? 0.35 : 1}>
+          <rect x={pub.map_shape.x} y={pub.map_shape.y} width={pub.map_shape.w} height={pub.map_shape.h} fill="#FCFBF9" />
+          {pubOn && <rect x={10} y={106} width={204} height={126} rx="10" fill="none" stroke={SELECT} strokeWidth="2" strokeDasharray="6 4" />}
+          {/* name and count are separate runs so Arabic and digits never reorder into each other */}
+          <text x="16" y="126" fontSize="13" fontWeight="600" fill={TEXT}>
+            {L(pub.name)}
+          </text>
+          <text x="208" y="126" textAnchor="end" fontSize="13" fontWeight="500" fill={SUB} direction="ltr">
+            {taken} / {total}
+          </text>
+          {[160, 208].map((cy, row) =>
+            [26, 68, 110, 152, 194].map((cx, col) => {
+              const table = row * 5 + col
+              return (
+                <g key={`${row}-${col}`}>
+                  <rect x={cx - 13} y={cy - 7} width="26" height="14" rx="3" fill="#fff" stroke={FURN} strokeWidth="1.2" />
+                  {[
+                    [-6, -14],
+                    [6, -14],
+                    [-6, 14],
+                    [6, 14],
+                  ].map(([dx, dy], k) => {
+                    const isTaken = table * 4 + k < taken
+                    return (
+                      <circle
+                        key={k}
+                        cx={cx + dx}
+                        cy={cy + dy}
+                        r="4.6"
+                        fill={isTaken ? SEAT_TAKEN : '#fff'}
+                        stroke={isTaken ? SEAT_TAKEN : TEAL}
+                        strokeWidth="1.3"
+                      />
+                    )
+                  })}
                 </g>
+              )
+            }),
+          )}
+        </g>
 
-                {data.spaces.map((sp) => {
-                  const st = stateAt(data, sp.id, date, min)
-                  const on = selected === sp.id || hl.includes(zoneType(sp.zone_id))
-                  const dim = mode !== 'browse' && !on
-                  const until = st.state === 'free' ? null : nextFreeAt(data, sp.id, date, min)
-                  const big = sp.kind === 'big_room'
-                  const { map_x: x, map_y: y, map_w: w, map_h: h } = sp
-                  const cx = x + w / 2
-                  const label =
-                    st.state === 'free'
-                      ? t('map.room_free_aria', { name: L(sp.label), cap: sp.capacity })
-                      : st.state === 'booked'
-                        ? t('map.room_booked_aria', { name: L(sp.label), until: until !== null ? hm(until) : '—' })
-                        : t('map.room_down_aria', { name: L(sp.label) })
-                  const status =
-                    st.state === 'free'
-                      ? t('map.free')
-                      : st.state === 'down'
-                        ? t('map.down')
-                        : until !== null
-                          ? t('map.until', { time: hm(until) })
-                          : t('map.booked')
-                  return (
-                    <g key={sp.id} {...press(sp.id)} aria-label={label} opacity={dim ? 0.35 : 1}>
-                      <rect x={x} y={y} width={w} height={h} fill={ROOM_FILL[st.state]} />
-                      {big ? <MeetingTable x={x} y={y} /> : <Desk x={x} y={y} seats={sp.capacity} />}
-                      {on && <rect x={x + 4} y={y + 4} width={w - 8} height={h - 8} rx="6" fill="none" stroke={ORANGE} strokeWidth="2.5" />}
-                      <rect x={x} y={y} width={w} height={h} fill="none" stroke={WALL} strokeWidth="3" />
-                      {big ? <Door x={x} y={y + 70} side="left" /> : <Door x={x + 8} y={y + h} side="bottom" />}
-                      <text x={cx} y={y + (big ? 64 : 56)} textAnchor="middle" fontSize="13" fontWeight="600" fill={TEXT}>
-                        {L(sp.short)}
-                      </text>
-                      <text
-                        x={cx}
-                        y={y + (big ? 80 : 72)}
-                        textAnchor="middle"
-                        fontSize="12.5"
-                        fontWeight="500"
-                        fill={st.state === 'down' ? '#B03A3A' : st.state === 'free' ? '#2F5656' : SUB}
-                      >
-                        {status}
-                      </text>
-                      {st.state === 'booked' && <Lock x={x + w - 12} y={y + 12} />}
-                    </g>
-                  )
-                })}
-
-                <g {...press('cafeteria')} aria-label={L(lm.cafeteria.label)} opacity={mode !== 'browse' && selected !== 'cafeteria' ? 0.55 : 1}>
-                  <Cafeteria {...lm.cafeteria} label={L(lm.cafeteria.label)} open={cafeOpen} />
-                  {selected === 'cafeteria' && <SelectRing {...lm.cafeteria} />}
-                </g>
-                <g {...press('restrooms')} aria-label={L(lm.restrooms.label)} opacity={mode !== 'browse' && selected !== 'restrooms' ? 0.55 : 1}>
-                  <Restrooms {...lm.restrooms} label={L(lm.restrooms.label)} />
-                  {selected === 'restrooms' && <SelectRing {...lm.restrooms} />}
-                </g>
-                <Lobby {...lm.reception} label={L(lm.reception.label)} entrance={L(lm.entrance.label)} />
-
-                {/* Façade: thick exterior wall, windows, entrance opening */}
-                <rect x="4" y="4" width="352" height="322" fill="none" stroke={WALL} strokeWidth="6" />
-                {data.spaces
-                  .filter((s) => s.kind === 'focus_room')
-                  .map((s) => (
-                    <Window key={s.id} x1={s.map_x + 16} x2={s.map_x + 56} y={4} />
-                  ))}
-                {data.spaces
-                  .filter((s) => s.kind === 'big_room')
-                  .map((s) => (
-                    <Window key={s.id} y1={s.map_y + 22} y2={s.map_y + 82} x={356} vertical />
-                  ))}
-                <rect x={lm.entrance.x} y={320} width={lm.entrance.w} height={10} fill="#fff" />
-                <line x1={lm.entrance.x} x2={lm.entrance.x + lm.entrance.w} y1={326} y2={326} stroke={HAIR} strokeWidth="1" strokeDasharray="3 3" />
-              </svg>
-            </TransformComponent>
-          </div>
-          <div className="mt-1 flex items-center gap-1">
-            <p className="flex-1 px-1 text-[13px] text-grey-ink">{hint}</p>
-            {[
-              ['minus', () => zoomOut(0.5)],
-              ['plus', () => zoomIn(0.5)],
-            ].map(([ic, fn]) => (
-              <button
-                key={ic}
-                onClick={fn}
-                className="grid size-11 place-items-center rounded-full text-navy active:bg-black/5"
-                aria-label={t(`map.zoom_${ic}`)}
+        {data.spaces.map((sp) => {
+          const st = stateAt(data, sp.id, date, min)
+          const on = selected === sp.id
+          const dim = mode !== 'browse' && !on && !hl.includes(zoneType(sp.zone_id))
+          const until = st.state === 'free' ? null : nextFreeAt(data, sp.id, date, min)
+          const big = sp.kind === 'big_room'
+          const { map_x: x, map_y: y, map_w: w, map_h: h } = sp
+          const cx = x + w / 2
+          const label =
+            st.state === 'free'
+              ? t('map.room_free_aria', { name: L(sp.label), cap: sp.capacity })
+              : st.state === 'booked'
+                ? t('map.room_booked_aria', { name: L(sp.label), until: until !== null ? hm(until) : '—' })
+                : t('map.room_down_aria', { name: L(sp.label) })
+          const status =
+            st.state === 'free' ? t('map.free') : st.state === 'down' ? t('map.down') : until !== null ? t('map.until', { time: hm(until) }) : t('map.booked')
+          return (
+            <g key={sp.id} {...press(sp.id)} aria-label={label} opacity={dim ? 0.35 : 1}>
+              <rect x={x} y={y} width={w} height={h} fill={ROOM_FILL[st.state]} />
+              {big ? <MeetingTable x={x} y={y} /> : <Desk x={x} y={y} seats={sp.capacity} />}
+              {on && <rect x={x + 4} y={y + 4} width={w - 8} height={h - 8} rx="6" fill="none" stroke={SELECT} strokeWidth="2.5" />}
+              <rect x={x} y={y} width={w} height={h} fill="none" stroke={WALL} strokeWidth="3" />
+              {big ? <Door x={x} y={y + 70} side="left" /> : <Door x={x + 8} y={y + h} side="bottom" />}
+              <text x={cx} y={y + (big ? 64 : 56)} textAnchor="middle" fontSize="13" fontWeight="600" fill={TEXT}>
+                {L(sp.short)}
+              </text>
+              <text
+                x={cx}
+                y={y + (big ? 80 : 72)}
+                textAnchor="middle"
+                fontSize="12.5"
+                fontWeight="500"
+                fill={st.state === 'down' ? '#B03A3A' : st.state === 'free' ? '#2F5656' : SUB}
               >
-                <Icon name={ic} size={18} />
-              </button>
-            ))}
-            <button onClick={() => resetTransform()} className="min-h-11 rounded-full px-2 text-[15px] text-navy active:bg-black/5">
-              {t('map.reset')}
-            </button>
-          </div>
-        </div>
-      )}
-    </TransformWrapper>
+                {status}
+              </text>
+              {st.state === 'booked' && <Lock x={x + w - 12} y={y + 12} />}
+            </g>
+          )
+        })}
+
+        <g {...press('cafeteria')} aria-label={L(lm.cafeteria.label)} opacity={mode !== 'browse' && selected !== 'cafeteria' ? 0.55 : 1}>
+          <Cafeteria {...lm.cafeteria} label={L(lm.cafeteria.label)} open={cafeOpen} />
+          {selected === 'cafeteria' && <SelectRing {...lm.cafeteria} />}
+        </g>
+        <g {...press('restrooms')} aria-label={L(lm.restrooms.label)} opacity={mode !== 'browse' && selected !== 'restrooms' ? 0.55 : 1}>
+          <Restrooms {...lm.restrooms} label={L(lm.restrooms.label)} />
+          {selected === 'restrooms' && <SelectRing {...lm.restrooms} />}
+        </g>
+        <Lobby {...lm.reception} label={L(lm.reception.label)} entrance={L(lm.entrance.label)} />
+
+        {/* Façade: thick exterior wall, windows, entrance opening */}
+        <rect x="4" y="4" width="352" height="322" fill="none" stroke={WALL} strokeWidth="6" />
+        {data.spaces
+          .filter((s) => s.kind === 'focus_room')
+          .map((s) => (
+            <Window key={s.id} x1={s.map_x + 16} x2={s.map_x + 56} y={4} />
+          ))}
+        {data.spaces
+          .filter((s) => s.kind === 'big_room')
+          .map((s) => (
+            <Window key={s.id} y1={s.map_y + 22} y2={s.map_y + 82} x={356} vertical />
+          ))}
+        <rect x={lm.entrance.x} y={320} width={lm.entrance.w} height={10} fill="#fff" />
+        <line x1={lm.entrance.x} x2={lm.entrance.x + lm.entrance.w} y1={326} y2={326} stroke={HAIR} strokeWidth="1" strokeDasharray="3 3" />
+      </svg>
+    </div>
   )
 }
 
@@ -306,7 +271,7 @@ function Cafeteria({ x, y, w, h, label, open }) {
 }
 
 function SelectRing({ x, y, w, h }) {
-  return <rect x={x + 4} y={y + 4} width={w - 8} height={h - 8} rx="6" fill="none" stroke={ORANGE} strokeWidth="2.5" />
+  return <rect x={x + 4} y={y + 4} width={w - 8} height={h - 8} rx="6" fill="none" stroke={SELECT} strokeWidth="2.5" />
 }
 
 function Restrooms({ x, y, w, h, label }) {

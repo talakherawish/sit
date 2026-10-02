@@ -10,7 +10,7 @@ import { StaffTitle } from './StaffLayout'
 
 function Tile({ label, value, sub, north }) {
   return (
-    <div className={`rounded-2xl bg-surface p-4 ring-1 ${north ? 'ring-2 ring-orange' : 'ring-transparent'}`}>
+    <div className={`rounded-2xl bg-surface p-4 ring-1 ${north ? 'ring-2 ring-navy' : 'ring-transparent'}`}>
       <p className="text-sm text-grey-ink">{label}</p>
       <p className="font-head text-4xl font-bold">{value}</p>
       {sub && <p className="text-xs text-grey-ink">{sub}</p>}
@@ -157,7 +157,7 @@ export function Insights() {
               {t('insights.sit')}
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="size-3 rounded-sm bg-orange" />
+              <span className="size-3 rounded-sm bg-teal" />
               {t('insights.walk_in')}
             </span>
           </div>
@@ -183,7 +183,7 @@ export function Insights() {
                     <div className="flex items-center rounded-s bg-navy ps-1.5 font-semibold text-white" style={{ width: `${w.sit}%` }}>
                       {w.sit}%
                     </div>
-                    <div className="rounded-e bg-orange" style={{ width: `${w.walk_in}%` }} />
+                    <div className="rounded-e bg-teal" style={{ width: `${w.walk_in}%` }} />
                   </div>
                 </div>
               ))}

@@ -372,7 +372,7 @@ export function Chip({ active, onClick, children, disabled, label }) {
       aria-pressed={active}
       aria-label={label}
       className={`min-h-11 rounded-full px-4 text-[15px] font-medium whitespace-nowrap transition active:scale-[0.97] ${
-        active ? 'bg-ink text-white' : 'bg-surface text-ink'
+        active ? 'bg-navy text-white' : 'bg-surface text-ink'
       } disabled:cursor-not-allowed disabled:bg-transparent disabled:text-grey/70 disabled:line-through disabled:shadow-none`}
     >
       {children}
@@ -435,7 +435,7 @@ export function TimeGrid({ times, isActive, onPick }) {
             key={m}
             onClick={() => onPick(m)}
             aria-pressed={on}
-            className={`min-h-11 rounded-xl text-[15px] font-medium tabular-nums transition active:scale-[0.97] ${on ? 'bg-ink text-white' : 'bg-surface text-ink'}`}
+            className={`min-h-11 rounded-xl text-[15px] font-medium tabular-nums transition active:scale-[0.97] ${on ? 'bg-navy text-white' : 'bg-surface text-ink'}`}
           >
             {hm(m)}
           </button>

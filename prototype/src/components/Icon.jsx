@@ -49,32 +49,18 @@ export default function Icon({ name, className = '', size = 22, filled }) {
   )
 }
 
-export function SitMark({ className = '' }) {
-  return (
-    <span className={`inline-flex items-center gap-1.5 ${className}`}>
-      <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
-        <rect x="5" y="3" width="4" height="11" rx="2" fill="#F5821F" />
-        <rect x="5" y="11" width="14" height="4" rx="2" fill="#F5821F" />
-        <rect x="7" y="15" width="2.5" height="6" rx="1" fill="#F5821F" />
-        <rect x="15" y="15" width="2.5" height="6" rx="1" fill="#F5821F" />
-      </svg>
-      <span className="font-head text-[26px] leading-none font-bold text-navy">Sit</span>
-    </span>
-  )
-}
+const brand = (file) => `${import.meta.env.BASE_URL}brand/${file}`
 
-/** Stand-in for the Technopark logo; replace with the official brand file. */
-export function TechnoparkLogo({ light }) {
+/** Technopark Palestine logo: emblem + wordmark for bars, or the full stacked logo. */
+export function TechnoparkLogo({ full, className = '' }) {
+  if (full) return <img src={brand('technopark-logo.jpg')} alt="Technopark Palestine" className={`h-36 w-auto ${className}`} />
   return (
-    <div className="flex items-center gap-2" aria-label="Technopark Palestine">
-      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
-        <rect width="34" height="34" rx="4" fill="#588888" />
-        <path d="M8 10h18M17 10v16" stroke="#fff" strokeWidth="4" strokeLinecap="round" />
-      </svg>
-      <div className="leading-tight">
-        <div className={`text-[16px] font-bold tracking-wide ${light ? 'text-white' : 'text-navy'}`}>TECHNO PARK</div>
-        <div className={`text-[12px] font-light tracking-[0.2em] ${light ? 'text-white/85' : 'text-grey-ink'}`}>PALESTINE</div>
-      </div>
-    </div>
+    <span className={`inline-flex items-center gap-2.5 ${className}`} role="img" aria-label="Technopark Palestine" dir="ltr">
+      <img src={brand('technopark-mark.png')} alt="" className="h-9 w-auto rounded-[4px]" />
+      <span className="leading-none">
+        <span className="block text-[17px] font-bold tracking-[0.02em] text-navy">TECHNO PARK</span>
+        <span className="mt-1 block text-[12px] font-medium tracking-[0.3em] text-teal">PALESTINE</span>
+      </span>
+    </span>
   )
 }
