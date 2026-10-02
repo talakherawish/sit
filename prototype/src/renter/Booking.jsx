@@ -3,10 +3,10 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL, usePersonName, useSpaceName } from '../lib/hooks'
-import { ACTIVE, REASONS, REMINDERS, freeStarts, hoursFor, isFree, isPaused, dateOf, reminderAt, startAbs, renter as findRenter } from '../lib/logic'
-import { fmtDate, fmtAbs, hm, addDays } from '../lib/time'
+import { ACTIVE, REASONS, REMINDERS, freeStarts, hoursFor, isFree, reminderAt, startAbs, renter as findRenter } from '../lib/logic'
+import { fmtDate, fmtAbs, hm } from '../lib/time'
 import BookingForm from '../components/BookingForm'
-import { Card, Chip, Confirm, Group, GroupRow, Photo, ScreenTitle, SectionLabel, StatusChip } from '../components/ui'
+import { Chip, Confirm, Group, GroupRow, Photo, ScreenTitle, SectionLabel, StatusChip } from '../components/ui'
 import { useDuration } from '../components/DayTimeline'
 import Icon from '../components/Icon'
 import { NeedLogin } from './RenterLayout'
@@ -20,7 +20,6 @@ export function Book() {
   const pn = usePersonName()
   const me = findRenter(s.data, s.renterId)
   if (!me) return <NeedLogin returnTo="/r/book" />
-  if (isPaused(me, s.now)) return <Paused />
 
   const submit = (f) => {
     const source = s.draft?.source || 'list'
@@ -378,35 +377,6 @@ export function Confirmed() {
           setCancelling(false)
         }}
       />
-    </>
-  )
-}
-
-/** R-21 Booking paused (#31) */
-export function Paused() {
-  const { t } = useTranslation()
-  const lang = useStore((s) => s.lang)
-  const data = useStore((s) => s.data)
-  const now = useStore((s) => s.now)
-  const renterId = useStore((s) => s.renterId)
-  const me = findRenter(data, renterId)
-  const rule = data.settings.no_show
-  const until = me?.paused_until || addDays(dateOf(now), rule.pause)
-  return (
-    <>
-      <ScreenTitle id="R-21" title={t('paused.title')} phase="later" back />
-      <div className="space-y-4 px-4">
-        <Card className="border-s-4 border-amber">
-          <p className="text-lg font-semibold">
-            {t('paused.body', { count: me?.no_show_count ?? rule.count, date: fmtDate(until, lang, { day: 'numeric', month: 'short' }) })}
-          </p>
-          <p className="mt-2 text-sm text-grey-ink">{t('paused.rule', { count: rule.count, days: rule.days, pause: rule.pause })}</p>
-        </Card>
-        <p>{t('paused.browse')}</p>
-        <Link to="/r/home" className="btn-primary w-full">
-          {t('paused.to_map')}
-        </Link>
-      </div>
     </>
   )
 }

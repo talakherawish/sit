@@ -90,7 +90,6 @@ function Scenario() {
   const navigate = useNavigate()
   const { pathname } = useLocation()
   const staff = pathname.startsWith('/s')
-  const ahmed = findRenter(s.data, 'ahmed')
   const personas = [
     [null, 'Guest', 'Browses without an account'],
     ['tala', 'Tala', 'Remote worker · recurring Sun–Thu 09:00'],
@@ -142,12 +141,6 @@ function Scenario() {
           checked={s.showIds}
           onChange={(v) => s.set({ showIds: v })}
         />
-        <Toggle
-          label="Ahmed is paused"
-          hint="#31 — R-06 shows R-21"
-          checked={!!ahmed.paused_until && ahmed.paused_until > dateOf(s.now)}
-          onChange={(v) => s.setPaused('ahmed', v)}
-        />
       </Section>
       <Section title="Data">
         <button
@@ -187,7 +180,6 @@ function ScreenIndex() {
     ['R-18', '/r/notifications'],
     ['R-19', '/r/rate'],
     ['R-20', '/r/profile'],
-    ['R-21', '/r/paused'],
     ['S-01', '/s/today'],
     ['S-02', '/s/checkin'],
     ['S-03', '/s/seat-log'],
@@ -196,7 +188,6 @@ function ScreenIndex() {
     ['S-06', '/s/room-down'],
     ['S-07', '/s/book-for'],
     ['S-08', '/s/insights'],
-    ['S-09', '/s/settings/no-show'],
     ['S-10', '/s/settings/rooms'],
   ]
   return (

@@ -403,14 +403,6 @@
     "history": "Past bookings",
     "logout": "Log out"
   },
-  "paused": {
-    "title": "Booking paused",
-    "body_one": "You missed {{count}} booking this month. You can book again on {{date}}.",
-    "body_other": "You missed {{count}} bookings this month. You can book again on {{date}}.",
-    "rule": "Rule: {{count}} no-shows within {{days}} days pauses booking for {{pause}} days.",
-    "browse": "You can still browse the map, rooms and today's status.",
-    "to_map": "Back to the map"
-  },
   "status": {
     "awaiting_confirmation": "Awaiting confirmation",
     "confirmed": "Confirmed",
@@ -604,21 +596,6 @@
     "chart": "Show chart"
   },
   "settings": {
-    "title": "Settings",
-    "rooms_tab": "Rooms and hours",
-    "noshow_tab": "No-show limit",
-    "rule": "Rule",
-    "count": "No-shows",
-    "pause": "Pause length",
-    "noshows_within": "no-shows within",
-    "days_pauses": "days pauses booking for",
-    "days": "days",
-    "paused": "Paused renters",
-    "none_paused": "Nobody is paused.",
-    "until": "until {{date}}",
-    "n_noshows_one": "{{count}} no-show",
-    "n_noshows_other": "{{count}} no-shows",
-    "lift": "Lift pause",
     "rooms_title": "Rooms and hours",
     "readonly": "Read-only in the prototype. Data comes from mock-data.json.",
     "spaces": "Spaces",

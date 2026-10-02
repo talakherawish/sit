@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import seed from '../data/mock-data.json'
-import { abs, parseHm, addDays, weekday, split, hm } from '../lib/time'
+import { abs, parseHm, addDays, weekday, hm } from '../lib/time'
 import { hoursFor, reminderAt, isFree, dateOf, renter as findRenter, normPhone, ACTIVE, startAbs, endAbs } from '../lib/logic'
 
 const dt = (s) => (s ? abs(s.slice(0, 10), parseHm(s.slice(11, 16))) : null)
@@ -100,7 +100,6 @@ function buildData() {
       link: '/r/reports',
     },
   ]
-  d.settings = { no_show: { count: 3, days: 30, pause: 7 } }
   // 37 anonymous visitors already opened Sit this morning (North Star counter).
   const start = dt(seed.start_now)
   d.events = Array.from({ length: 37 }, (_, i) => ({ name: 'page_view', visitor_id: `guest-${i + 1}`, time: start - 90 + i * 2 }))
@@ -500,23 +499,12 @@ export const useStore = create(
         s.data.spaces.find((x) => x.id === spaceId).down = null
       }),
 
-    // ---- rating, profile, no-show ------------------------------------------------
+    // ---- rating, profile ------------------------------------------------
     sendRating: (rating) =>
       set((s) => {
         s.data.ratings.push({ ...rating, time: s.now })
         delete s.pendingRating[rating.renter_id]
         logEvent(s, 'rating_sent', { visitor_id: rating.renter_id, stars: rating.stars })
-      }),
-    setNoShowRule: (rule) =>
-      set((s) => {
-        s.data.settings.no_show = rule
-      }),
-    setPaused: (renterId, on) =>
-      set((s) => {
-        const r = findRenter(s.data, renterId)
-        r.paused_until = on ? addDays(dateOf(s.now), 14) : null
-        if (on) r.no_show_count = Math.max(r.no_show_count, s.data.settings.no_show.count)
-        else r.no_show_count = 0
       }),
     markNotificationsRead: (renterId) =>
       set((s) => {
@@ -560,9 +548,6 @@ function processTime(s) {
       release(s, b, r, 'unconfirmed')
     } else if (b.status === 'confirmed' && s.now >= start + 15) {
       release(s, b, r, 'no_checkin')
-      r.no_show_count += 1
-      const rule = s.data.settings.no_show
-      if (r.no_show_count >= rule.count) r.paused_until = addDays(split(s.now).date, rule.pause)
     }
   }
 }

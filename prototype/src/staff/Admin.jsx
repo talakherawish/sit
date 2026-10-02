@@ -1,11 +1,10 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
-import { useL, usePersonName } from '../lib/hooks'
-import { isPaused, dateOf } from '../lib/logic'
+import { useL } from '../lib/hooks'
+import { dateOf } from '../lib/logic'
 import { fmtDate, hm, weekdayName } from '../lib/time'
-import { Card, PhaseBadge } from '../components/ui'
+import { Card } from '../components/ui'
 import { StaffTitle } from './StaffLayout'
 
 function Tile({ label, value, sub, north }) {
@@ -237,70 +236,6 @@ export function Insights() {
   )
 }
 
-function SettingsTabs({ active }) {
-  const { t } = useTranslation()
-  return (
-    <div className="mb-5 flex gap-2">
-      <Link to="/s/settings/rooms" className={`btn-secondary ${active === 'rooms' ? '!bg-navy !text-white' : ''}`}>
-        {t('settings.rooms_tab')}
-      </Link>
-      <Link to="/s/settings/no-show" className={`btn-secondary ${active === 'noshow' ? '!bg-navy !text-white' : ''}`}>
-        {t('settings.noshow_tab')} <PhaseBadge phase="later" />
-      </Link>
-    </div>
-  )
-}
-
-/** S-09 Settings: no-show limit (#31) */
-export function NoShowSettings() {
-  const { t } = useTranslation()
-  const pn = usePersonName()
-  const s = useStore()
-  const rule = s.data.settings.no_show
-  const paused = s.data.renters.filter((r) => isPaused(r, s.now))
-  const num = (k) => (
-    <input
-      type="number"
-      min="1"
-      max="90"
-      className="input mx-1 inline-block !w-20 text-center"
-      value={rule[k]}
-      aria-label={t(`settings.${k}`)}
-      onChange={(e) => s.setNoShowRule({ ...rule, [k]: Math.max(1, +e.target.value || 1) })}
-    />
-  )
-  return (
-    <>
-      <StaffTitle id="S-09" title={t('settings.title')} phase="later" />
-      <SettingsTabs active="noshow" />
-      <div className="grid gap-5 xl:grid-cols-2">
-        <Card>
-          <h2 className="mb-3 font-head text-xl font-bold">{t('settings.rule')}</h2>
-          <p className="leading-[3]">
-            {num('count')} {t('settings.noshows_within')} {num('days')} {t('settings.days_pauses')} {num('pause')} {t('settings.days')}
-          </p>
-        </Card>
-        <Card>
-          <h2 className="mb-3 font-head text-xl font-bold">{t('settings.paused')}</h2>
-          {!paused.length && <p className="text-grey-ink">{t('settings.none_paused')}</p>}
-          <ul className="divide-y divide-black/[0.06]">
-            {paused.map((r) => (
-              <li key={r.id} className="flex items-center justify-between py-2">
-                <span>
-                  <b>{pn(r)}</b> · {t('settings.until', { date: fmtDate(r.paused_until, s.lang) })} · {t('settings.n_noshows', { count: r.no_show_count })}
-                </span>
-                <button className="btn-secondary" onClick={() => s.setPaused(r.id, false)}>
-                  {t('settings.lift')}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </Card>
-      </div>
-    </>
-  )
-}
-
 /** S-10 Settings: rooms and hours (#1, #4) — read-only in the prototype */
 export function RoomSettings() {
   const { t } = useTranslation()
@@ -309,7 +244,6 @@ export function RoomSettings() {
   return (
     <>
       <StaffTitle id="S-10" title={t('settings.rooms_title')} />
-      <SettingsTabs active="rooms" />
       <p className="mb-4 text-sm text-grey-ink">{t('settings.readonly')}</p>
       <div className="grid gap-5 xl:grid-cols-[2fr_1fr]">
         <Card>

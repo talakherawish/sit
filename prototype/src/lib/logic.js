@@ -94,8 +94,6 @@ export function reminderAt(date, start, reminder) {
 export const activeNotices = (data, now) =>
   data.notices.filter((n) => !n.removed && n.posted_at <= now && n.expires_at > now).sort((a, b) => b.posted_at - a.posted_at)
 
-export const isPaused = (r, now) => !!r?.paused_until && r.paused_until > dateOf(now)
-
 export const startAbs = (b) => abs(b.date, b.start)
 export const endAbs = (b) => abs(b.date, b.end)
 

@@ -224,12 +224,12 @@ export function ReportsInbox() {
   return (
     <>
       <StaffTitle id="S-05" title={t('inbox.title')} phase="next" />
-      <Card>
-        <table className="w-full">
+      <Card className="overflow-x-auto">
+        <table className="w-full min-w-[880px] text-[15px] [&_td]:px-2.5 [&_td]:py-3 [&_td:first-child]:ps-0 [&_td:last-child]:pe-0 [&_th]:px-2.5 [&_th:first-child]:ps-0">
           <thead className="text-[13px] font-medium text-grey-ink">
             <tr className="border-b border-black/[0.08]">
               {['time', 'renter', 'place', 'type', 'note', 'status', 'reply', ''].map((c) => (
-                <th key={c} className="py-2 text-start">
+                <th key={c} className="py-2 text-start font-medium">
                   {c && t(`inbox.col_${c}`)}
                 </th>
               ))}
@@ -240,19 +240,18 @@ export function ReportsInbox() {
               const e = edits[r.id] || { status: r.status, reply: r.reply || '' }
               const dirty = e.status !== r.status || e.reply !== (r.reply || '')
               return (
-                <tr key={r.id} className={`border-b border-black/[0.06] align-top ${r.status === 'sent' ? 'bg-navy/[0.04]' : ''}`}>
-                  <td className="py-3 text-sm">{fmtAbs(r.history[0].time, s.lang)}</td>
-                  <td className="font-medium">{pn(findRenter(s.data, r.renter_id))}</td>
-                  <td>{name(r.space_id)}</td>
-                  <td>{r.types.map((k) => t(`issue.${k}`)).join(', ')}</td>
-                  <td className="max-w-64 text-sm">
+                <tr key={r.id} className={`border-b border-black/[0.06] align-middle last:border-0 ${r.status === 'sent' ? 'bg-navy/[0.04]' : ''}`}>
+                  <td className="min-w-22 text-sm text-grey-ink">{fmtAbs(r.history[0].time, s.lang)}</td>
+                  <td className="font-semibold">{pn(findRenter(s.data, r.renter_id))}</td>
+                  <td className="whitespace-nowrap">{name(r.space_id)}</td>
+                  <td className="whitespace-nowrap">{r.types.map((k) => t(`issue.${k}`)).join(', ')}</td>
+                  <td className="max-w-60 min-w-36 text-sm">
                     {r.note}
                     {r.photo && <span className="block text-grey-ink">📎 {r.photo}</span>}
                   </td>
                   <td>
-                    <StatusChip status={r.status} label={t(`report_status.${r.status}`)} />
                     <select
-                      className="input mt-1 !min-h-10 !w-36"
+                      className="input !min-h-10 !w-32 !px-3 !text-[15px]"
                       value={e.status}
                       onChange={(ev) => setEdits({ ...edits, [r.id]: { ...e, status: ev.target.value } })}
                       aria-label={t('inbox.col_status')}
@@ -266,7 +265,7 @@ export function ReportsInbox() {
                   </td>
                   <td>
                     <input
-                      className="input !min-h-10"
+                      className="input !min-h-10 min-w-36 !px-3 !text-[15px]"
                       value={e.reply}
                       placeholder={t('inbox.reply_ph')}
                       onChange={(ev) => setEdits({ ...edits, [r.id]: { ...e, reply: ev.target.value } })}
@@ -275,7 +274,7 @@ export function ReportsInbox() {
                   </td>
                   <td>
                     <button
-                      className="btn-primary !min-h-10 !text-base"
+                      className="btn-primary !min-h-10 !px-4 !text-[15px]"
                       disabled={!dirty}
                       onClick={() => {
                         s.updateReport(r.id, e.status, e.reply)

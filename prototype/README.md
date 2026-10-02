@@ -22,7 +22,7 @@ Every push to `main` builds and publishes the prototype to **GitHub Pages** via 
 
 | Prefix       | Surface                       | Notes                                                                                  |
 | ------------ | ----------------------------- | -------------------------------------------------------------------------------------- |
-| `/r/…`       | Renter app (R-01 – R-21)      | Rendered in a 390 px phone frame on desktop                                            |
+| `/r/…`       | Renter app (R-01 – R-20)      | Rendered in a 390 px phone frame on desktop                                            |
 | `/s/…`       | Staff dashboard (S-00 – S-10) | Full width, reception computer only                                                    |
 | Hidden panel | Prototype panel (P-01 – P-04) | Reviewer-only: personas, switches, time simulator, outbox, analytics. Kept in English. |
 
@@ -42,7 +42,7 @@ The clock starts at **Thu 1 Oct 2026, 09:30**, and the app opens logged in as **
 - **Leen Anabtawi** (Arabic) — Big Room 2 today 15:00–17:00, awaiting confirmation, reminder 2 h before; one AC report in progress.
 - **Fatima Alkilani** — Focus Room 2 at 10:00 and Big Room 1 at 12:00 today.
 - **Shahd Mallah** — checked in to Focus Room 3 (09:30–11:00), plus Focus Room 1 at 14:00.
-- **Ahmed Salamh** — no bookings yet; use him for the last-minute, "slot just taken" and paused-account demos.
+- **Ahmed Salamh** — no bookings yet; use him for the last-minute and "slot just taken" demos.
 
 Any 4-digit code passes on R-11; the real code is in the P-03 outbox.
 
@@ -59,7 +59,7 @@ src/
   store/                one Zustand store: bookings, seats, notices, reports, messages, events + time rules
   lib/                  time helpers, booking/availability logic, shared hooks
   components/           FloorPlan, BookingForm, mode chips / when bar, UI primitives
-  renter/               R-01 … R-21
+  renter/               R-01 … R-20
   staff/                S-00 … S-10
   prototype/            P-01 … P-04 drawer
 ```

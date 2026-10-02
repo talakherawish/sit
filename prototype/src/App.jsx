@@ -3,14 +3,14 @@ import { useLangSync } from './lib/hooks'
 import RenterLayout from './renter/RenterLayout'
 import Home from './renter/Home'
 import { SpacesList, RoomDetails, Hours, FilterRooms } from './renter/Browse'
-import { Book, SlotTaken, Confirmed, Paused } from './renter/Booking'
+import { Book, SlotTaken, Confirmed } from './renter/Booking'
 import { SignUp, Code, Login } from './renter/Auth'
 import { MyBookings, MoveBooking, Reminder } from './renter/Manage'
 import { Report, MyReports, Notifications, Rate, Profile } from './renter/Feedback'
 import StaffLayout from './staff/StaffLayout'
 import { Today, CheckIn, SeatLog } from './staff/Desk'
 import { Notices, ReportsInbox, RoomDown, BookFor } from './staff/Ops'
-import { Insights, NoShowSettings, RoomSettings } from './staff/Admin'
+import { Insights, RoomSettings } from './staff/Admin'
 import Drawer from './prototype/Drawer'
 import Demo from './prototype/Demo'
 
@@ -41,7 +41,6 @@ export default function App() {
           <Route path="notifications" element={<Notifications />} />
           <Route path="rate" element={<Rate />} />
           <Route path="profile" element={<Profile />} />
-          <Route path="paused" element={<Paused />} />
         </Route>
         <Route path="/s" element={<StaffLayout />}>
           <Route index element={<Navigate to="today" replace />} />
@@ -53,7 +52,6 @@ export default function App() {
           <Route path="room-down" element={<RoomDown />} />
           <Route path="book-for" element={<BookFor />} />
           <Route path="insights" element={<Insights />} />
-          <Route path="settings/no-show" element={<NoShowSettings />} />
           <Route path="settings/rooms" element={<RoomSettings />} />
         </Route>
         <Route path="/demo" element={<Demo />} />
