@@ -439,7 +439,8 @@
   "seat_source": {
     "manual": "Manual",
     "check_in": "Check-in",
-    "check_out": "Check-out"
+    "check_out": "Check-out",
+    "reset": "Reset"
   },
   "created_by": {
     "renter": "By renter",
@@ -511,7 +512,11 @@
     "checkin_from": "check-in from {{time}}",
     "check_in_to": "Check in · {{room}}",
     "check_in_walk": "Check in · walk-in",
-    "seats_full": "Public seating full"
+    "seats_full": "Public seating full",
+    "reset_seats": "Reset to 0",
+    "reset_title": "Reset the seat count to 0?",
+    "reset_body": "{{count}} people are counted in the open area now. Reset when the area is empty, for example at closing. It is saved in the seat log.",
+    "reset_ok": "Reset"
   },
   "notices": {
     "title": "Notices",

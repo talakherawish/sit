@@ -5,7 +5,7 @@ import { useStore } from '../store'
 import { useL, useSpaceName, STAFF, usePersonName } from '../lib/hooks'
 import { ACTIVE, activeNotices, normPhone, staffStatus, dateOf, endAbs, minOfDay, startAbs, renter as findRenter } from '../lib/logic'
 import { fmtAbs, hm } from '../lib/time'
-import { Card, Modal, PhaseBadge, ScreenId, StatusChip } from '../components/ui'
+import { Card, Confirm, Modal, PhaseBadge, ScreenId, StatusChip } from '../components/ui'
 import Icon from '../components/Icon'
 import { SignUpForm } from '../renter/Auth'
 import { StaffTitle } from './StaffLayout'
@@ -15,6 +15,8 @@ export function SeatCounter() {
   const { t } = useTranslation()
   const seats = useStore((s) => s.data.seats)
   const adjust = useStore((s) => s.adjustSeats)
+  const reset = useStore((s) => s.resetSeats)
+  const [resetting, setResetting] = useState(false)
   const { taken, total } = seats
   return (
     <section className="rounded-[22px] bg-surface p-5">
@@ -51,10 +53,27 @@ export function SeatCounter() {
       </span>
       <div className="mt-3 flex items-center justify-between gap-2">
         <p className="text-[13px] text-grey-ink">{t('staff.counter_hint')}</p>
-        <Link to="/s/seat-log" className="btn-link shrink-0 !text-[15px]">
-          {t('staff.view_log')}
-        </Link>
+        <span className="flex shrink-0 items-center gap-4">
+          <button className="btn-link !text-[15px] !text-[#a32f2f] disabled:opacity-40" disabled={taken === 0} onClick={() => setResetting(true)}>
+            {t('staff.reset_seats')}
+          </button>
+          <Link to="/s/seat-log" className="btn-link !text-[15px]">
+            {t('staff.view_log')}
+          </Link>
+        </span>
       </div>
+      <Confirm
+        open={resetting}
+        title={t('staff.reset_title')}
+        body={t('staff.reset_body', { count: taken })}
+        okLabel={t('staff.reset_ok')}
+        danger
+        onOk={() => {
+          reset()
+          setResetting(false)
+        }}
+        onCancel={() => setResetting(false)}
+      />
     </section>
   )
 }

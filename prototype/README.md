@@ -3,7 +3,7 @@
 Clickable prototype of **Sit**, Technopark's seat and room booking app, built from the _Foothill Prototype Specification_ (Oct 1, 2026).
 All data is mocked in the browser: no server, no real SMS or email.
 
-**Live:** https://talakherawish.github.io/sit/ (renter app) · https://talakherawish.github.io/sit/s/today (staff dashboard) · https://talakherawish.github.io/sit/demo (both side by side, sharing live data, for presenting) · https://talakherawish.github.io/sit/wireframes/ (wireframes)
+**Live:** https://talakherawish.github.io/sit/renter (renter app) · https://talakherawish.github.io/sit/staff (staff dashboard) · https://talakherawish.github.io/sit/demo (both side by side, sharing live data, for presenting) · https://talakherawish.github.io/sit/wireframes/ (wireframes)
 
 ```bash
 npm install

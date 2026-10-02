@@ -373,6 +373,10 @@ export const useStore = create(
       set((s) => {
         changeSeats(s, delta, 'manual')
       }),
+    resetSeats: () =>
+      set((s) => {
+        changeSeats(s, -s.data.seats.taken, 'reset')
+      }),
 
     /** Returns 'sit' when the renter had a booking today, else 'walk_in'. */
     /**
