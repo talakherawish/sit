@@ -8,7 +8,8 @@ import { fmtDate, hm, weekday, weekdayName } from '../lib/time'
 import { AmenityList, AmenitySheet } from '../components/Amenities'
 import BookingPlanner from '../components/BookingPlanner'
 import RoomAvailability from '../components/RoomAvailability'
-import { Card, Photo, ScreenTitle } from '../components/ui'
+import { Card, ScreenTitle } from '../components/ui'
+import { PhotoCarousel } from '../components/RoomPhoto'
 import Icon from '../components/Icon'
 
 /**
@@ -52,7 +53,6 @@ export function RoomDetails() {
   const plan = useStore((s) => s.plan)
   const set = useStore((s) => s.set)
   const today = dateOf(now)
-  const [photo, setPhoto] = useState(0)
   const [day, setDay] = useState(today)
   const [range, setRange] = useState(null)
   const sp = data.spaces.find((s) => s.id === id)
@@ -73,24 +73,7 @@ export function RoomDetails() {
     <>
       <ScreenTitle id="R-03" title={L(sp.label)} back />
       <div className="space-y-6 px-4">
-        <div>
-          <div
-            className="no-scrollbar flex snap-x snap-mandatory gap-2 overflow-x-auto"
-            dir="ltr"
-            onScroll={(e) => setPhoto(Math.round(e.currentTarget.scrollLeft / e.currentTarget.clientWidth))}
-          >
-            {sp.photos.map((c, i) => (
-              <div key={i} className="w-full shrink-0 snap-center">
-                <Photo color={c} i={i} label={t('details.photo', { n: i + 1, room: L(sp.label) })} />
-              </div>
-            ))}
-          </div>
-          <div className="mt-2 flex justify-center gap-1.5" aria-hidden="true">
-            {sp.photos.map((_, i) => (
-              <span key={i} className={`size-2 rounded-full ${i === photo ? 'bg-navy' : 'bg-grey/40'}`} />
-            ))}
-          </div>
-        </div>
+        <PhotoCarousel space={sp} />
         {sp.down && (
           <p className="rounded-lg bg-red/10 p-3 font-medium text-[#a32f2f]">
             {t('room.down')}: {sp.down.reason}

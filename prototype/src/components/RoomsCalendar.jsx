@@ -14,7 +14,7 @@ const ROW = 32 // px per half hour
  *
  * Free time is picked right in the grid (`selection` / `onSelect`), like a room's day timeline: tap a
  * free time to pick it (an hour if free, else half an hour), tap another free time in the same room to
- * stretch it, tap inside to shorten it. The pick shows as a deep blue block.
+ * stretch it, tap the picked time again to drop it. The pick shows as a deep blue block.
  */
 export default function RoomsCalendar({ date, onPick, onMine, selection, onSelect }) {
   const { t } = useTranslation()
@@ -45,7 +45,7 @@ export default function RoomsCalendar({ date, onPick, onMine, selection, onSelec
   const pick = (sp, m) => {
     const sel = selection
     if (!sel || sel.spaceId !== sp.id) return onSelect({ spaceId: sp.id, start: m, end: allFree(sp.id, m, m + 60) ? m + 60 : m + 30 })
-    if (m >= sel.start && m < sel.end) return onSelect(sel.end - sel.start === 30 ? null : { ...sel, end: m + 30 })
+    if (m >= sel.start && m < sel.end) return onSelect(null)
     const start = Math.min(sel.start, m)
     const end = Math.max(sel.end, m + 30)
     onSelect(allFree(sp.id, start, end) ? { spaceId: sp.id, start, end } : { spaceId: sp.id, start: m, end: m + 30 })

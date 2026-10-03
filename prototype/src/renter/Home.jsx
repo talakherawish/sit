@@ -1,23 +1,24 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL, usePersonName, useSpaceName } from '../lib/hooks'
 import { REMINDERS, activeNotices, amenityStatus, hoursFor, isFree, reminderAt, startAbs, dateOf, minOfDay, speedTests } from '../lib/logic'
-import { ceil30, hm } from '../lib/time'
+import { ceil30, fmtDate, hm } from '../lib/time'
 import { useDuration } from '../components/DayTimeline'
 import Receipt from '../components/Receipt'
 import RoomSheet, { RulesList } from '../components/RoomSheet'
-import RoomsCalendar, { RoomsLegend } from '../components/RoomsCalendar'
+import RoomsCalendar from '../components/RoomsCalendar'
 import { AmenitySheet } from '../components/Amenities'
-import { Chip, Confirm, ScreenId, Sheet, StatusChip } from '../components/ui'
-import Icon, { TechnoparkLogo } from '../components/Icon'
+import { Chip, Confirm, Overlay, ScreenId, Sheet } from '../components/ui'
+import Icon from '../components/Icon'
 
 const NOTICE_ICON = { wifi: 'wifi', events: 'megaphone', ac: 'drop', cleaning: 'drop' }
 
 /**
- * R-01 Today: everything about today only. "Know before you go" (seats, hours, cafeteria, Wi-Fi, notices),
- * your next booking, then every room's day; tap a free time to book it. Later days are on Book ahead.
+ * R-01 Today: everything about today only. "Know before you go" (seats, hours, cafeteria, Wi-Fi, one notice),
+ * your next booking as one small row, a Book button, then every room's day; tap a free time to book it.
+ * Later days are on Book ahead.
  */
 export default function Home() {
   const { t } = useTranslation()
@@ -29,7 +30,7 @@ export default function Home() {
   const set = useStore((s) => s.set)
   const lang = useStore((s) => s.lang)
   const renterId = useStore((s) => s.renterId)
-  const [sheet, setSheet] = useState(null) // 'notices' | 'about' | zone id for rules | null
+  const [sheet, setSheet] = useState(null) // 'notices' | zone id for rules | null
   const [roomSheet, setRoomSheet] = useState(null)
 
   // Arriving with a room already selected (e.g. from a notification) opens its sheet.
@@ -49,7 +50,8 @@ export default function Home() {
   const today = dateOf(now)
   const h = hoursFor(data, today)
   const notices = activeNotices(data, now)
-  const latest = notices[0]
+  // Only one notice on Today: an event comes first (it changes how the day feels), else the latest.
+  const latest = notices.find((n) => n.tag === 'events') || notices[0]
   const { taken, total } = data.seats
   const me = data.renters.find((r) => r.id === renterId)
   const pn = usePersonName()
@@ -62,6 +64,18 @@ export default function Home() {
   const pick =
     rawPick && rawPick.date === today && rawPick.start >= ceil30(min) && isFree(data, rawPick.spaceId, today, rawPick.start, rawPick.end) ? rawPick : null
   const setPick = (sel) => set({ todayPick: sel ? { reminder: null, ...sel, date: today } : null })
+
+  // Book: pick the soonest free hour in any room (half an hour if that's all there is) and bring the grid up.
+  const grid = useRef(null)
+  let soonest = null
+  for (let m = h ? Math.max(h.open, ceil30(min)) : Infinity; !soonest && m + 30 <= h?.close; m += 30) {
+    const sp = data.spaces.find((s) => isFree(data, s.id, today, m, m + 30))
+    if (sp) soonest = { spaceId: sp.id, start: m, end: m + 60 <= h.close && isFree(data, sp.id, today, m, m + 60) ? m + 60 : m + 30 }
+  }
+  const bookSoonest = () => {
+    setPick(soonest)
+    grid.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 
   return (
     <div className="space-y-7 pt-6 pb-4">
@@ -129,36 +143,40 @@ export default function Home() {
             onClick={() => setSheet('notices')}
             className="flex min-h-14 w-full items-center gap-3 rounded-[20px] bg-navy/[0.06] px-4 py-3 text-start active:bg-navy/[0.1]"
           >
-            <Icon name="megaphone" size={18} className="shrink-0 text-navy" />
+            <Icon name={NOTICE_ICON[latest.tag] || 'megaphone'} size={18} className="shrink-0 text-navy" />
             <span className="min-w-0 flex-1">
               <span className="block truncate text-[15px] font-medium">{L(latest.text)}</span>
               <span className="block text-[13px] text-grey-ink">
-                {t('home.posted', { time: hm(minOfDay(latest.posted_at)) })} · {t('home.n_notices', { count: notices.length })}
+                {t(`tag.${latest.tag}`)} · {t('home.posted', { time: hm(minOfDay(latest.posted_at)) })}
               </span>
             </span>
             <Icon name="next" size={16} className="shrink-0 text-grey-ink/60 rtl:rotate-180" />
           </button>
         )}
+
+        {me && <NextBooking renterId={me.id} />}
+
+        {soonest && (
+          <button onClick={bookSoonest} className="btn-primary flex w-full items-center gap-2 !px-5">
+            <Icon name="plus" size={20} className="shrink-0" />
+            <span className="flex-1 text-start">{t('home.book_cta')}</span>
+            <span className="text-[15px] font-medium opacity-80">{t('today.next_free', { time: hm(soonest.start) })}</span>
+          </button>
+        )}
       </section>
 
-      {me && <NextBooking renterId={me.id} />}
-
       {/* Every room's day; tap free time to book it (today only) */}
-      <section aria-labelledby="h-rooms">
+      <section ref={grid} aria-labelledby="h-rooms">
         <div className="mb-2 px-5">
           <h2 id="h-rooms" className="font-head text-[24px] font-bold tracking-tight">
             {t('today.rooms')}
           </h2>
           <p className="text-[15px] text-grey-ink">{t('today.rooms_hint')}</p>
         </div>
-        {h && (
-          <div className="mb-1 px-4">
-            <RoomsLegend />
-          </div>
-        )}
         <RoomsCalendar date={today} onPick={(id) => onSelect(id)} onMine={(id) => navigate(`/r/confirmed/${id}`)} selection={pick} onSelect={setPick} />
         <QuickBook pick={pick} onChange={setPick} />
-        <div className="mt-4 px-4">
+        {/* room for the Confirm booking bar so it never hides the end of the page */}
+        <div className={`mt-4 px-4 ${pick ? 'pb-16' : ''}`}>
           <Link to="/r/list" className="flex min-h-14 w-full items-center gap-3 rounded-2xl bg-surface px-4 active:bg-black/[0.06]">
             <Icon name="calendar" size={20} className="shrink-0 text-navy" />
             <span className="min-w-0 flex-1">
@@ -170,10 +188,6 @@ export default function Home() {
         </div>
       </section>
 
-      <button onClick={() => setSheet('about')} className="mx-auto block min-h-11 px-4 text-[13px] text-grey-ink">
-        Technopark · Palestine
-      </button>
-
       <Sheet
         open={sheet === 'notices'}
         onClose={() => setSheet(null)}
@@ -181,7 +195,7 @@ export default function Home() {
         subtitle={t('home.n_notices', { count: notices.length })}
       >
         <ul className="divide-y divide-black/[0.07] overflow-hidden rounded-2xl bg-surface">
-          {notices.map((n) => (
+          {[latest, ...notices.filter((n) => n !== latest)].filter(Boolean).map((n) => (
             <li key={n.id} className="flex gap-3 px-4 py-3">
               <span className="grid size-9 shrink-0 place-items-center rounded-[10px] bg-white text-navy">
                 <Icon name={NOTICE_ICON[n.tag] || 'megaphone'} size={18} />
@@ -201,23 +215,26 @@ export default function Home() {
           <RulesList rules={z.rules} />
         </Sheet>
       ))}
-      <Sheet open={sheet === 'about'} onClose={() => setSheet(null)} title={t('about.title')}>
-        <TechnoparkLogo full className="mx-auto" />
-        <p className="mt-5 text-[17px]">{t('about.body')}</p>
-        <p className="mt-3 font-head text-[22px] leading-snug font-semibold tracking-tight text-navy">“{t('about.vision')}”</p>
-      </Sheet>
       {data.amenities.some((a) => a.id === roomSheet) ? (
         <AmenitySheet id={roomSheet} onClose={closeRoom} />
       ) : (
-        <RoomSheet id={roomSheet} onClose={closeRoom} onJump={onSelect} />
+        <RoomSheet
+          id={roomSheet}
+          onClose={closeRoom}
+          onJump={onSelect}
+          onBook={(sel) => {
+            closeRoom()
+            setPick(sel)
+          }}
+        />
       )}
     </div>
   )
 }
 
 /**
- * Your next booking today (only the closest one that hasn't started), with Confirm when it's waiting
- * and Cancel. The rest of your bookings are on My bookings.
+ * Your next booking today (only the closest one that hasn't started), as one small row the height of the
+ * notice: tap it to open the booking, or Confirm / Cancel right there. The rest are on My bookings.
  */
 function NextBooking({ renterId }) {
   const { t } = useTranslation()
@@ -235,38 +252,36 @@ function NextBooking({ renterId }) {
   if (!next) return null
   const waiting = next.status === 'awaiting_confirmation'
   return (
-    <section className="px-4" aria-labelledby="h-next">
-      <h2 id="h-next" className="mb-1.5 px-1 text-[15px] font-semibold">
-        {t('today.next')}
-      </h2>
-      <div className="rounded-[22px] bg-surface p-4">
-        <Link to={`/r/confirmed/${next.id}`} className="-m-1 flex items-start justify-between gap-3 rounded-xl p-1 active:bg-black/[0.04]">
-          <span className="min-w-0">
-            <span className="block truncate text-[17px] font-semibold">{name(next.space_id)}</span>
-            <span dir="ltr" className="block text-[15px] text-grey-ink tabular-nums">
+    <div className="flex min-h-14 w-full items-center gap-2 rounded-[20px] bg-surface py-2 ps-4 pe-2" aria-label={t('today.next')}>
+      <Link to={`/r/confirmed/${next.id}`} className="flex min-w-0 flex-1 items-center gap-3 active:opacity-60">
+        <Icon name="ticket" size={18} className="shrink-0 text-navy" />
+        <span className="min-w-0">
+          <span className="block truncate text-[13px] text-grey-ink">{waiting ? t('today.next') : `${t('today.next')} · ${t('status.confirmed')}`}</span>
+          <span className="block truncate text-[15px] font-medium">
+            {name(next.space_id, true)} ·{' '}
+            <span dir="ltr" className="tabular-nums">
               {hm(next.start)}–{hm(next.end)}
             </span>
           </span>
-          <StatusChip status={next.status} />
-        </Link>
-        {waiting && <p className="mt-2 text-[13px] text-grey-ink">{t('bookings.confirm_hint')}</p>}
-        <div className="mt-3 flex gap-2">
-          {waiting && (
-            <button
-              className="btn-primary !min-h-11 flex-1"
-              onClick={() => {
-                confirmBooking(next.id)
-                showToast('toast.confirmed')
-              }}
-            >
-              {t('bookings.confirm')}
-            </button>
-          )}
-          <button className="btn-danger !min-h-11 flex-1" onClick={() => setCancelling(true)}>
-            {t('bookings.cancel')}
-          </button>
-        </div>
-      </div>
+        </span>
+      </Link>
+      {waiting && (
+        <button
+          className="min-h-9 shrink-0 rounded-full bg-navy px-3 text-[15px] font-semibold text-white active:opacity-80"
+          onClick={() => {
+            confirmBooking(next.id)
+            showToast('toast.confirmed')
+          }}
+        >
+          {t('bookings.confirm')}
+        </button>
+      )}
+      <button
+        className="min-h-9 shrink-0 rounded-full bg-black/[0.05] px-3 text-[15px] font-medium text-[#c23b3b] active:bg-black/[0.1]"
+        onClick={() => setCancelling(true)}
+      >
+        {t('bookings.cancel')}
+      </button>
       <Confirm
         open={cancelling}
         title={t('bookings.cancel_title')}
@@ -279,14 +294,15 @@ function NextBooking({ renterId }) {
           setCancelling(false)
         }}
       />
-    </section>
+    </div>
   )
 }
 
 /**
- * Booking for today without leaving Today: once a time is picked in the grid, this panel rises at the
- * bottom with the room and time, the reminder (or "Starts within 2 hours, so it's confirmed now") and
- * Confirm. No "What's it for?": it's a quick booking. Confirming shows the receipt, then "Booked · Undo".
+ * Booking for today without leaving Today. Picking a time in the grid slides a small "Confirm booking" bar
+ * out from behind the tab bar, so the grid stays free to keep choosing. Drag it up (or tap it) for the
+ * receipt: room, day, time, length and reminder; drag it down to tuck it away again. Tapping the picked
+ * time again drops it and the bar slides away. Confirming shows the receipt, then "Booked · Undo".
  */
 function QuickBook({ pick, onChange }) {
   const { t } = useTranslation()
@@ -295,9 +311,22 @@ function QuickBook({ pick, onChange }) {
   const pn = usePersonName()
   const s = useStore()
   const [receipt, setReceipt] = useState(null)
+  const [open, setOpen] = useState(false)
+  const [drag, setDrag] = useState(null) // { from, dy } while dragging
+  const [last, setLast] = useState(pick) // keeps the bar filled in while it slides away
+  const details = useRef(null)
+  const [detailsH, setDetailsH] = useState(0)
   const today = dateOf(s.now)
-  const remOpts = pick ? REMINDERS.map((k) => ({ k, at: reminderAt(today, pick.start, k) })).filter((o) => o.at > s.now) : []
-  const reminder = remOpts.some((o) => o.k === pick?.reminder) ? pick.reminder : null
+
+  if (pick && pick !== last) setLast(pick)
+  if (!pick && open) setOpen(false)
+  const shown = pick || last
+  useLayoutEffect(() => {
+    if (details.current) setDetailsH(details.current.offsetHeight)
+  }, [shown, s.lang])
+
+  const remOpts = shown ? REMINDERS.map((k) => ({ k, at: reminderAt(today, shown.start, k) })).filter((o) => o.at > s.now) : []
+  const reminder = remOpts.some((o) => o.k === shown?.reminder) ? shown.reminder : null
 
   const confirm = () => {
     if (!s.renterId) return s.set({ gate: { returnTo: '/r/home' } })
@@ -317,46 +346,97 @@ function QuickBook({ pick, onChange }) {
     s.showToast('toast.booked', {}, () => useStore.getState().removeBookings(ids))
   }
 
+  // How far the panel is pushed down behind the tab bar: 0 = receipt showing, detailsH = just the bar.
+  const offset = !pick ? detailsH + 140 : Math.min(detailsH, Math.max(0, (open ? 0 : detailsH) + (drag?.dy || 0)))
+  const down = (e) => {
+    if (e.target.closest('button')) return
+    e.currentTarget.setPointerCapture(e.pointerId)
+    setDrag({ from: e.clientY, dy: 0 })
+  }
+  const move = (e) => drag && setDrag({ ...drag, dy: e.clientY - drag.from })
+  const up = () => {
+    if (!drag) return
+    // A tap toggles; a drag settles on whichever side it was let go nearer to
+    setOpen(Math.abs(drag.dy) < 6 ? !open : offset < detailsH / 2)
+    setDrag(null)
+  }
+  const Row = ({ label, children }) => (
+    <div className="flex items-baseline justify-between gap-4 py-2">
+      <span className="shrink-0 text-[15px] text-grey-ink">{label}</span>
+      <span className="min-w-0 text-end text-[15px] font-medium">{children}</span>
+    </div>
+  )
+
   return (
     <>
-      {pick && (
-        // Sits just above the tab bar while you scroll the grid
-        <div className="animate-drop sticky bottom-[66px] z-20 mx-3 mt-3 rounded-[22px] bg-white p-4 shadow-[0_10px_40px_rgba(16,24,40,0.22)] ring-1 ring-black/[0.06] sm:bottom-[86px]">
-          <div className="flex items-start gap-3">
-            <span className="min-w-0 flex-1">
-              <span className="block text-[17px] font-semibold">{name(pick.spaceId)}</span>
-              <span className="block text-[15px] text-grey-ink">
-                <span dir="ltr" className="tabular-nums">
-                  {hm(pick.start)}–{hm(pick.end)}
-                </span>{' '}
-                · {dur(pick.end - pick.start)}
-              </span>
-            </span>
-            <button
-              onClick={() => onChange(null)}
-              className="-me-1 grid size-9 shrink-0 place-items-center rounded-full bg-black/[0.06] text-grey-ink"
-              aria-label={t('timeline.clear')}
+      {shown && (
+        <Overlay>
+          {(pos) => (
+            // Below the tab bar (z-30) in the stack, so it slides out from behind it
+            <div
+              className={`${pos} inset-x-0 bottom-0 z-20 px-2 ${drag ? '' : 'transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0,1)]'}`}
+              style={{ transform: `translateY(${offset}px)`, pointerEvents: pick ? undefined : 'none' }}
+              onTransitionEnd={(e) => e.target === e.currentTarget && !pick && setLast(null)}
+              role="region"
+              aria-label={t('today.confirm_booking')}
             >
-              <Icon name="close" size={16} />
-            </button>
-          </div>
-          <p className="mt-3 mb-1.5 text-[13px] font-semibold">{t('book.reminder')}</p>
-          {remOpts.length ? (
-            <div className="flex flex-wrap gap-2">
-              {remOpts.map((o) => (
-                <Chip key={o.k} active={reminder === o.k} onClick={() => onChange({ ...pick, reminder: reminder === o.k ? null : o.k })}>
-                  {t(`reminder.${o.k}`)}
-                </Chip>
-              ))}
+              <div className="animate-sheet rounded-t-[24px] bg-white shadow-[0_-8px_30px_rgba(16,24,40,0.16)] ring-1 ring-black/[0.06]">
+                <div
+                  className="cursor-grab touch-none px-4 pt-2 select-none active:cursor-grabbing"
+                  onPointerDown={down}
+                  onPointerMove={move}
+                  onPointerUp={up}
+                  onPointerCancel={up}
+                >
+                  <div className="mx-auto h-[5px] w-9 rounded-full bg-black/15" />
+                  <div className="flex items-center gap-3 pt-2 pb-3">
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[15px] font-semibold">{name(shown.spaceId)}</span>
+                      <span className="block text-[13px] text-grey-ink">
+                        <span dir="ltr" className="tabular-nums">
+                          {hm(shown.start)}–{hm(shown.end)}
+                        </span>{' '}
+                        · {dur(shown.end - shown.start)}
+                      </span>
+                    </span>
+                    <button className="min-h-11 shrink-0 rounded-full bg-navy px-5 text-[15px] font-semibold text-white active:opacity-80" onClick={confirm}>
+                      {t('today.confirm_booking')}
+                    </button>
+                  </div>
+                </div>
+                {/* The receipt; it fades as it tucks behind the tab bar */}
+                <div ref={details} className="px-5" style={{ opacity: detailsH ? 1 - offset / detailsH : 0 }} aria-hidden={!open}>
+                  <div className="divide-y divide-dashed divide-black/15 border-t border-dashed border-black/15">
+                    <Row label={t('receipt.room')}>{name(shown.spaceId)}</Row>
+                    <Row label={t('book.date')}>{fmtDate(today, s.lang, { weekday: 'long', day: 'numeric', month: 'long' })}</Row>
+                    <Row label={t('book.time')}>
+                      <span dir="ltr" className="tabular-nums">
+                        {hm(shown.start)}–{hm(shown.end)}
+                      </span>{' '}
+                      · {dur(shown.end - shown.start)}
+                    </Row>
+                  </div>
+                  <p className="mt-2 mb-1.5 text-[13px] font-semibold">{t('book.reminder')}</p>
+                  {remOpts.length ? (
+                    <div className="flex flex-wrap gap-2">
+                      {remOpts.map((o) => (
+                        <Chip key={o.k} active={reminder === o.k} onClick={() => onChange({ ...shown, reminder: reminder === o.k ? null : o.k })}>
+                          {t(`reminder.${o.k}`)}
+                        </Chip>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="rounded-xl bg-surface px-3 py-2 text-[13px]">{t('book.no_reminder')}</p>
+                  )}
+                  <p className="mt-2 text-[12px] text-grey-ink">{t(reminder ? 'book.reminder_hint' : 'today.untap')}</p>
+                  <div className="h-3" />
+                </div>
+                {/* room for the tab bar, which the panel sits behind */}
+                <div className="h-[59px] sm:h-[79px]" />
+              </div>
             </div>
-          ) : (
-            <p className="rounded-xl bg-surface px-3 py-2 text-[13px]">{t('book.no_reminder')}</p>
           )}
-          {reminder && <p className="mt-1.5 text-[12px] text-grey-ink">{t('book.reminder_hint')}</p>}
-          <button className="btn-primary mt-3 w-full" onClick={confirm}>
-            {t('review.confirm')}
-          </button>
-        </div>
+        </Overlay>
       )}
       {receipt && <Receipt bookings={receipt.bookings} email={receipt.email} reminder={receipt.reminder} onDone={done} />}
     </>

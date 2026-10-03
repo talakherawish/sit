@@ -401,41 +401,6 @@ export function Card({ children, className = '' }) {
   return <div className={`rounded-2xl bg-surface p-4 ${className}`}>{children}</div>
 }
 
-/** Placeholder room "photo" — swap with real Technopark photos. */
-export function Photo({ color, label, i = 0, className = '' }) {
-  const shapes = [
-    <g key="a">
-      <rect x="20" y="70" width="160" height="12" rx="2" fill="#fff" opacity=".85" />
-      <rect x="40" y="82" width="6" height="30" fill="#fff" opacity=".7" />
-      <rect x="154" y="82" width="6" height="30" fill="#fff" opacity=".7" />
-      <circle cx="70" cy="60" r="10" fill="#fff" opacity=".6" />
-      <circle cx="130" cy="60" r="10" fill="#fff" opacity=".6" />
-    </g>,
-    <g key="b">
-      <rect x="30" y="20" width="140" height="70" rx="4" fill="#fff" opacity=".85" />
-      <path d="M45 75 L85 45 L110 65 L130 50 L155 75 Z" fill={color} opacity=".5" />
-    </g>,
-    <g key="c">
-      <rect x="25" y="25" width="60" height="80" rx="3" fill="#fff" opacity=".6" />
-      <rect x="115" y="25" width="60" height="80" rx="3" fill="#fff" opacity=".6" />
-      <line x1="55" y1="25" x2="55" y2="105" stroke={color} strokeWidth="2" />
-      <line x1="145" y1="25" x2="145" y2="105" stroke={color} strokeWidth="2" />
-    </g>,
-  ]
-  return (
-    <svg viewBox="0 0 200 120" className={`block w-full rounded-2xl ${className}`} role="img" aria-label={label}>
-      <defs>
-        <linearGradient id={`ph-${color.slice(1)}-${i}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor={color} />
-          <stop offset="1" stopColor={color} stopOpacity=".78" />
-        </linearGradient>
-      </defs>
-      <rect width="200" height="120" fill={`url(#ph-${color.slice(1)}-${i})`} />
-      {shapes[i % 3]}
-    </svg>
-  )
-}
-
 export function Empty({ children }) {
   return <p className="rounded-2xl bg-surface px-4 py-8 text-center text-grey-ink">{children}</p>
 }

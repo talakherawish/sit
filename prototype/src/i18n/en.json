@@ -121,7 +121,10 @@
     "more_days": "Book more days",
     "more_days_hint": "Same time on every day you pick. Days marked “Not free” are skipped.",
     "more_days_pick_time": "Pick a time above to see which days are free.",
-    "another_day": "Book another day"
+    "another_day": "Book another day",
+    "today": "Today",
+    "other_days": "Other days",
+    "today_only": "Just today"
   },
   "feature": {
     "socket": "Sockets",
@@ -787,7 +790,10 @@
     "rooms_hint": "Tap a free time to book it.",
     "ahead": "Book another day",
     "ahead_hint": "Later dates, or a booking that repeats",
-    "next": "Your next booking"
+    "next": "Your next booking",
+    "confirm_booking": "Confirm booking",
+    "untap": "Tap the picked time again to remove it.",
+    "next_free": "Next free {{time}}"
   },
   "account": {
     "title": "Account",

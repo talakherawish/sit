@@ -2,10 +2,12 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
-import { useL, useRequireLogin } from '../lib/hooks'
+import { useL } from '../lib/hooks'
 import { dateOf, minOfDay, nextFreeAt, stateAt } from '../lib/logic'
 import { hm } from '../lib/time'
 import DayTimeline from './DayTimeline'
+import RoomAvailability from './RoomAvailability'
+import { PhotoCarousel } from './RoomPhoto'
 import { Sheet } from './ui'
 import Icon from './Icon'
 
@@ -25,13 +27,13 @@ export function RulesList({ rules }) {
 }
 
 /**
- * Bottom sheet for public seating or a room tapped on Today: the room's free times today only.
- * Later days are booked in the Book ahead form.
+ * Bottom sheet for public seating or a room tapped on Today: its photos and its day today, with the
+ * room's calendar one tap away for other days.
  */
-export default function RoomSheet({ id, onClose, onJump }) {
+export default function RoomSheet({ id, onClose, onJump, onBook }) {
   if (!id) return null
   if (id === 'public') return <PublicSheet onClose={onClose} />
-  return <TodayRoomSheet key={id} id={id} onClose={onClose} onJump={onJump} />
+  return <TodayRoomSheet key={id} id={id} onClose={onClose} onJump={onJump} onBook={onBook} />
 }
 
 function PublicSheet({ onClose }) {
@@ -61,48 +63,41 @@ function PublicSheet({ onClose }) {
 
 const roomMeta = (t, sp) => `${t('map.people', { n: sp.capacity })} · ${sp.size_m2} m² · ${sp.features.map((f) => t(`feature.${f}`)).join(' · ')}`
 
-/** From Today: the room's free times today only. Tap a time, then Book goes to Review. */
-function TodayRoomSheet({ id, onClose, onJump }) {
+/**
+ * From Today: the room's photos and its day today. Pick a time and Book hands it to Today's Confirm
+ * booking bar. "Other days" quietly opens the room's month calendar in place; pick a later day and Book
+ * carries the room, day and time into the Book ahead form.
+ */
+function TodayRoomSheet({ id, onClose, onJump, onBook }) {
   const { t } = useTranslation()
   const L = useL()
   const navigate = useNavigate()
-  const requireLogin = useRequireLogin()
   const data = useStore((s) => s.data)
   const now = useStore((s) => s.now)
+  const plan = useStore((s) => s.plan)
   const set = useStore((s) => s.set)
-  const [range, setRange] = useState(null)
   const today = dateOf(now)
+  const [range, setRange] = useState(null)
+  const [calendar, setCalendar] = useState(false)
+  const [day, setDay] = useState(today)
   const min = minOfDay(now)
   const sp = data.spaces.find((s) => s.id === id)
   const st = stateAt(data, id, today, min)
-
-  if (st.state === 'down') {
-    return (
-      <Sheet
-        open
-        onClose={onClose}
-        title={L(sp.label)}
-        subtitle={roomMeta(t, sp)}
-        footer={
-          <button className="btn-primary w-full" onClick={onClose}>
-            {t('room.find_another')}
-          </button>
-        }
-      >
-        <div className="rounded-2xl bg-red/10 px-4 py-3.5">
-          <p className="font-semibold text-[#a32f2f]">{t('room.down')}</p>
-          <p className="mt-0.5 text-[15px]">{st.reason}</p>
-        </div>
-      </Sheet>
-    )
-  }
-
+  const down = st.state === 'down'
   const nf = st.state === 'booked' ? nextFreeAt(data, id, today, min) : null
   const others = st.state === 'booked' ? data.spaces.filter((s) => s.id !== id && stateAt(data, s.id, today, min).state === 'free') : []
+
   const book = () => {
-    set({ draft: { spaceId: id, date: today, dates: [today], start: range.start, end: range.end, source: 'today' } })
+    if (day === today) return onBook({ spaceId: id, start: range.start, end: range.end })
+    const p = plan || {}
+    set({ plan: { ...p, room: id, dates: [day], start: range?.start ?? p.start ?? null, end: range?.end ?? p.end ?? null } })
     onClose()
-    requireLogin('/r/book')
+    navigate('/r/list')
+  }
+  const toggleCalendar = () => {
+    setCalendar(!calendar)
+    setDay(today)
+    setRange(null)
   }
 
   return (
@@ -112,18 +107,33 @@ function TodayRoomSheet({ id, onClose, onJump }) {
       title={L(sp.label)}
       subtitle={roomMeta(t, sp)}
       footer={
-        <div className="grid grid-cols-[auto_1fr] gap-2">
-          <button className="btn-secondary px-5" onClick={() => navigate(`/r/room/${id}`)}>
-            {t('room.details')}
+        down ? (
+          <button className="btn-primary w-full" onClick={onClose}>
+            {t('room.find_another')}
           </button>
-          <button className="btn-primary" onClick={book} disabled={!range}>
-            {!range ? t('room.pick_time') : <span dir="ltr">{t('room.book_range', { from: hm(range.start), to: hm(range.end) })}</span>}
+        ) : (
+          <button className="btn-primary w-full" onClick={book} disabled={!range && day === today}>
+            {range ? (
+              <span dir="ltr">{t('room.book_range', { from: hm(range.start), to: hm(range.end) })}</span>
+            ) : day === today ? (
+              t('room.pick_time')
+            ) : (
+              t('details.book_room')
+            )}
           </button>
-        </div>
+        )
       }
     >
-      {st.state === 'booked' && (
-        <div className="mb-5 rounded-2xl bg-surface px-4 py-3">
+      <PhotoCarousel space={sp} className="mb-4" />
+
+      {down && (
+        <div className="mb-4 rounded-2xl bg-red/10 px-4 py-3.5">
+          <p className="font-semibold text-[#a32f2f]">{t('room.down')}</p>
+          <p className="mt-0.5 text-[15px]">{st.reason}</p>
+        </div>
+      )}
+      {st.state === 'booked' && !calendar && (
+        <div className="mb-4 rounded-2xl bg-surface px-4 py-3">
           <p className="flex items-center gap-2 text-[15px] font-semibold">
             <Icon name="lock" size={16} />
             {t('room.booked_until', { time: hm(st.booking.end) })}
@@ -141,17 +151,35 @@ function TodayRoomSheet({ id, onClose, onJump }) {
           )}
         </div>
       )}
-      <DayTimeline spaceId={id} date={today} range={range} onChange={setRange} />
-      <button
-        className="btn-link mx-auto mt-3 flex"
-        onClick={() => {
-          onClose()
-          navigate('/r/list')
-        }}
-      >
-        <Icon name="calendar" size={18} />
-        {t('room.another_day')}
-      </button>
+
+      {/* Today's day, with a quiet way into the room's calendar */}
+      <div className="mb-1.5 flex items-center justify-between gap-2 px-1">
+        <h3 className="text-[15px] font-semibold">{!calendar && t('room.today')}</h3>
+        <button
+          onClick={toggleCalendar}
+          className="-me-2 flex min-h-9 items-center gap-1 rounded-full px-2 text-[13px] font-medium text-navy"
+          aria-expanded={calendar}
+        >
+          <Icon name="calendar" size={15} />
+          {calendar ? t('room.today_only') : t('room.other_days')}
+        </button>
+      </div>
+      {calendar ? (
+        <div className="animate-fade">
+          <RoomAvailability
+            id={id}
+            day={day}
+            onDay={(d) => {
+              setDay(d)
+              setRange(null)
+            }}
+            range={range}
+            onRange={setRange}
+          />
+        </div>
+      ) : (
+        <DayTimeline spaceId={id} date={today} range={range} onChange={setRange} />
+      )}
     </Sheet>
   )
 }

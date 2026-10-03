@@ -6,7 +6,8 @@ import { useL, usePersonName, useReasonText, useReportBooking, useSpaceName } fr
 import { ACTIVE, REASONS, REMINDERS, endAbs, freeStarts, hoursFor, isFree, reminderAt, startAbs, renter as findRenter } from '../lib/logic'
 import { fmtDate, fmtAbs, hm } from '../lib/time'
 import BookingForm from '../components/BookingForm'
-import { Chip, Confirm, Group, GroupRow, Photo, ScreenTitle, SectionLabel, StatusChip } from '../components/ui'
+import { Chip, Confirm, Group, GroupRow, ScreenTitle, SectionLabel, StatusChip } from '../components/ui'
+import { RoomPhoto } from '../components/RoomPhoto'
 import { useDuration } from '../components/DayTimeline'
 import Icon from '../components/Icon'
 import { NeedLogin } from './RenterLayout'
@@ -128,7 +129,7 @@ function QuickReview({ draft, onSubmit, onEdit }) {
       ) : (
         <section className="overflow-hidden rounded-[22px] bg-surface">
           <div className="flex items-center gap-3 p-4">
-            <Photo color={sp.photos[0]} className="!w-20 shrink-0 !rounded-xl" label={L(sp.label)} />
+            <RoomPhoto space={sp} className="!w-20 shrink-0 !rounded-xl" label={L(sp.label)} />
             <div>
               <p className="text-[19px] font-semibold">{L(sp.label)}</p>
               <p className="text-[13px] text-grey-ink">
@@ -335,7 +336,7 @@ export function Confirmed() {
           </div>
         )}
         <Link to={`/r/room/${sp.id}`} className="flex items-center gap-4 rounded-2xl bg-surface p-3 active:bg-black/[0.04]">
-          <Photo color={sp.photos[0]} className="!w-24 shrink-0 !rounded-xl" label={name(sp.id)} />
+          <RoomPhoto space={sp} className="!w-24 shrink-0 !rounded-xl" label={name(sp.id)} />
           <span className="min-w-0 flex-1">
             <span className="block text-[17px] font-semibold">{name(sp.id)}</span>
             <span className="block text-[15px] text-grey-ink">{t('map.people', { n: sp.capacity })}</span>
