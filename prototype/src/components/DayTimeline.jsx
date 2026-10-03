@@ -82,7 +82,7 @@ export default function DayTimeline({ spaceId, date, range, onChange }) {
   const help = note ? note : !range ? t('timeline.tap_start') : range.end - range.start === 30 ? t('timeline.tap_end') : t('timeline.tap_inside')
   const BLOCK = {
     booked: 'bg-[#E4E6EB] text-ink/75',
-    mine: 'bg-teal/20 text-[#2f5656]',
+    mine: 'bg-navy/10 text-navy',
     past: 'bg-transparent text-grey-ink/70',
     down: 'hatch text-[#a32f2f]',
   }
@@ -142,14 +142,15 @@ export default function DayTimeline({ spaceId, date, range, onChange }) {
           {/* labelled stretches */}
           {blocks.map((b) =>
             b.kind === 'free' ? (
-              <span
+              // Same "Free" colour as the map and the rooms grid; taps go through to the half-hour buttons below
+              <div
                 key={`f${b.from}`}
-                className="pointer-events-none absolute start-3 flex items-center gap-1.5 text-[13px] font-medium text-[#2f5656]"
-                style={{ top: top(b.from) + 13 }}
+                className="pointer-events-none absolute inset-x-1.5 flex items-start gap-1.5 overflow-hidden rounded-lg bg-free px-2.5 pt-[12px] text-[13px] font-medium text-[#2f5656]"
+                style={{ top: top(b.from) + 2, height: top(b.to) - top(b.from) - 4 }}
               >
-                <span className="size-1.5 rounded-full bg-teal" />
+                <span className="mt-[6px] size-1.5 shrink-0 rounded-full bg-teal" />
                 {t('timeline.free')} · {span(b.from, b.to)}
-              </span>
+              </div>
             ) : (
               <div
                 key={`${b.key}${b.from}`}

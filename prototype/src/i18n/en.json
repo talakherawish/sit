@@ -20,7 +20,10 @@
     "map": "Map",
     "list": "Rooms",
     "bookings": "My bookings",
-    "report": "Report"
+    "report": "Report",
+    "today": "Today",
+    "ahead": "Book ahead",
+    "account": "Account"
   },
   "gate": {
     "title": "Log in to continue",
@@ -42,7 +45,7 @@
     "n_notices_other": "{{count}} notices",
     "todays_status": "Today's status",
     "rules_for": "{{zone}}: rules",
-    "seats_of": "{{taken}} of {{total}} seats taken",
+    "seats_of": "{{taken}} of {{total}} taken",
     "updated_ago_one": "Updated by staff {{count}} min ago",
     "updated_ago_other": "Updated by staff {{count}} min ago",
     "zone_rules": "Zone rules",
@@ -61,7 +64,9 @@
     "until": "Until {{time}}",
     "opens_at": "Opens {{time}}",
     "book_cta": "Book a room",
-    "book_cta_hint": "See every room and its free times. No map needed."
+    "book_cta_hint": "See every room and its free times. No map needed.",
+    "seats_free_word_one": "seat free",
+    "seats_free_word_other": "seats free"
   },
   "about": {
     "title": "About Sit",
@@ -115,7 +120,8 @@
     "book_days_other": "Book {{count}} days",
     "more_days": "Book more days",
     "more_days_hint": "Same time on every day you pick. Days marked “Not free” are skipped.",
-    "more_days_pick_time": "Pick a time above to see which days are free."
+    "more_days_pick_time": "Pick a time above to see which days are free.",
+    "another_day": "Book another day"
   },
   "feature": {
     "socket": "Sockets",
@@ -214,7 +220,7 @@
     "reason_required": "Pick a reason to book",
     "reason_other": "Tell us the reason",
     "reminder": "Reminder",
-    "no_reminder": "Your booking starts soon, so no reminder is needed — it's confirmed straight away.",
+    "no_reminder": "Starts within 2 hours, so it’s confirmed now. No need to confirm later.",
     "no_reminder_short": "None (starts soon)",
     "reminder_hint": "Confirm from the reminder, or the room is released 1 hour before.",
     "repeat": "Repeat",
@@ -234,9 +240,9 @@
     "clash": "Already booked at this time: {{list}}. Those days will be skipped."
   },
   "reason": {
-    "study": "Study / focused work",
-    "group_project": "Group project",
-    "client_call": "Client call",
+    "study": "Focused work",
+    "group_project": "Group work",
+    "client_call": "Call",
     "meeting": "Meeting",
     "interview": "Interview",
     "other": "Other"
@@ -317,7 +323,8 @@
     "sort_booked": "Recently booked",
     "count_one": "{{count}} booking",
     "count_other": "{{count}} bookings",
-    "sort_newest": "Newest first"
+    "sort_newest": "Newest first",
+    "in_room": "Checked in · until {{time}}"
   },
   "move": {
     "title": "Move booking",
@@ -335,7 +342,7 @@
     "rule3": "Released rooms show as free on the map straight away."
   },
   "report": {
-    "title": "Report an issue",
+    "title": "Report a problem",
     "mine": "My reports",
     "new": "New report",
     "none": "You haven't reported anything.",
@@ -345,7 +352,8 @@
     "photo": "Photo (optional)",
     "send": "Send",
     "staff_reply": "Staff reply",
-    "type_hint": "Pick all that apply."
+    "type_hint": "Pick all that apply.",
+    "about_booking": "About this booking"
   },
   "issue": {
     "ac": "AC",
@@ -408,7 +416,7 @@
     "awaiting_confirmation": "Awaiting confirmation",
     "confirmed": "Confirmed",
     "checked_in": "Checked in",
-    "used": "Used",
+    "used": "Checked in",
     "released": "Released",
     "cancelled": "Cancelled",
     "cancelled_by_staff": "Cancelled by staff",
@@ -739,7 +747,11 @@
     "confirm_n_other": "Confirm {{count}} bookings",
     "edit": "Change room, days or time",
     "skipped": "Not available on {{days}} (room taken, or you already have a booking then), so those days are skipped.",
-    "n_days_rooms": "{{days}} days · {{rooms}} rooms"
+    "n_days_rooms": "{{days}} days · {{rooms}} rooms",
+    "optional": "optional",
+    "n_dates_range_one": "{{count}} date · {{from}}",
+    "n_dates_range_other": "{{count}} dates · {{from}} – {{to}}",
+    "show_less": "Show less"
   },
   "demo": {
     "title": "Live demo: renter app and reception, side by side",
@@ -756,5 +768,56 @@
     "yours": "Yours",
     "you": "Yours",
     "free_at": "{{room}} free at {{time}}. Book"
+  },
+  "today": {
+    "yours": "Your bookings today",
+    "rooms": "Rooms today",
+    "rooms_hint": "Tap a free time to book it.",
+    "ahead": "Book another day",
+    "ahead_hint": "Later dates, or a booking that repeats"
+  },
+  "account": {
+    "title": "Account",
+    "report": "Report a problem",
+    "new_reply": "New reply"
+  },
+  "ahead": {
+    "title": "Book ahead",
+    "intro_time": "Pick the days and a time, then a room that’s free.",
+    "intro_room": "Pick a room, then the days and times it’s free.",
+    "by_time": "By time",
+    "by_room": "By room",
+    "how_hint": "Optional. Rooms that suit it come first, and it’s saved as your booking’s reason.",
+    "days": "Days",
+    "tap_days": "Tap every day you need.",
+    "pick_days": "Pick days",
+    "time": "Time",
+    "choose_start": "Choose",
+    "length": "Length",
+    "rooms": "Rooms",
+    "rooms_for_one": "Rooms for {{count}} date",
+    "rooms_for_other": "Rooms for all {{count}} dates",
+    "pick_first": "Pick days and a start time to see which rooms are free.",
+    "free_all_one": "Free",
+    "free_all_other": "Free all {{count}} times",
+    "free_some": "Free {{free}} of {{count}}",
+    "other_rooms": "Other rooms",
+    "map_hint": "Tap a room to see the days it’s free.",
+    "times_on": "Times on {{date}}",
+    "book_n_one": "Book {{count}} date",
+    "book_n_other": "Book {{count}} dates",
+    "n_dates_one": "{{count}} date",
+    "n_dates_other": "{{count}} dates",
+    "closed_skipped_one": "{{count}} closed day skipped",
+    "closed_skipped_other": "{{count}} closed days skipped"
+  },
+  "repeat": {
+    "title": "Repeat every week",
+    "none": "Just these days",
+    "2w": "2 weeks",
+    "1m": "1 month",
+    "until": "Until…",
+    "until_label": "Until",
+    "every_week_until": "Same days every week, until {{date}}"
   }
 }

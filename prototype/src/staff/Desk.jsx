@@ -198,7 +198,7 @@ export function Today() {
                         <td dir="ltr" className="text-start tabular-nums">
                           {hm(b.start)}–{hm(b.end)}
                         </td>
-                        <td className="text-grey-ink">{b.reason === 'other' ? b.reason_other : t(`reason.${b.reason}`)}</td>
+                        <td className="text-grey-ink">{!b.reason ? '—' : b.reason === 'other' ? b.reason_other : t(`reason.${b.reason}`)}</td>
                         <td className="pe-4">
                           <StatusChip status={st} label={t(`staff_status.${st}`)} />
                         </td>

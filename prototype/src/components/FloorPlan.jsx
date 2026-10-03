@@ -15,12 +15,17 @@ const SELECT = '#24508F'
 const ROOM_FILL = { free: '#E4EFEE', booked: '#EDEDF0', down: 'url(#hatch)' }
 const SEAT_TAKEN = '#8E8E93'
 
-/** Top-down plan of the Technopark ground floor. Rooms are tappable; public seating shows the staff count. */
-export default function FloorPlan({ date, min, mode, selected, onSelect }) {
+/**
+ * Top-down plan of the Technopark ground floor. Rooms are tappable; public seating shows the staff count.
+ * `plain` (Book ahead) drops the live free/booked colours and shows each room's size instead; `highlight`
+ * (zone types) dims the rooms that don't suit the chosen activity.
+ */
+export default function FloorPlan({ date, min, mode = 'browse', selected, onSelect, plain, highlight }) {
   const { t } = useTranslation()
   const L = useL()
   const data = useStore((s) => s.data)
-  const hl = data.work_modes.find((m) => m.id === mode)?.highlight_zone_types || []
+  const hl = highlight || data.work_modes.find((m) => m.id === mode)?.highlight_zone_types || []
+  const filtering = !!highlight || mode !== 'browse'
   const zoneType = (zid) => data.zones.find((z) => z.id === zid).type
   const { taken, total } = data.seats
   const pub = data.zones.find((z) => z.type === 'public_seating')
@@ -28,7 +33,7 @@ export default function FloorPlan({ date, min, mode, selected, onSelect }) {
   const cafe = data.amenities.find((a) => a.id === 'cafeteria')
   const cafeOpen = useStore((s) => amenityStatus(s.data, cafe, s.now).open)
   const pubOn = selected === 'public'
-  const dimPub = mode !== 'browse' && !pubOn && !hl.includes('public_seating')
+  const dimPub = filtering && !pubOn && !hl.includes('public_seating')
 
   const press = (id) => ({
     role: 'button',
@@ -97,9 +102,9 @@ export default function FloorPlan({ date, min, mode, selected, onSelect }) {
         </g>
 
         {data.spaces.map((sp) => {
-          const st = stateAt(data, sp.id, date, min)
+          const st = plain ? { state: 'free' } : stateAt(data, sp.id, date, min)
           const on = selected === sp.id
-          const dim = mode !== 'browse' && !on && !hl.includes(zoneType(sp.zone_id))
+          const dim = filtering && !on && !hl.includes(zoneType(sp.zone_id))
           const until = st.state === 'free' ? null : nextFreeAt(data, sp.id, date, min)
           const big = sp.kind === 'big_room'
           const { map_x: x, map_y: y, map_w: w, map_h: h } = sp
@@ -114,7 +119,7 @@ export default function FloorPlan({ date, min, mode, selected, onSelect }) {
             st.state === 'free' ? t('map.free') : st.state === 'down' ? t('map.down') : until !== null ? t('map.until', { time: hm(until) }) : t('map.booked')
           return (
             <g key={sp.id} {...press(sp.id)} aria-label={label} opacity={dim ? 0.35 : 1}>
-              <rect x={x} y={y} width={w} height={h} fill={ROOM_FILL[st.state]} />
+              <rect x={x} y={y} width={w} height={h} fill={plain ? '#fff' : ROOM_FILL[st.state]} />
               {big ? <MeetingTable x={x} y={y} /> : <Desk x={x} y={y} seats={sp.capacity} />}
               {on && <rect x={x + 4} y={y + 4} width={w - 8} height={h - 8} rx="6" fill="none" stroke={SELECT} strokeWidth="2.5" />}
               <rect x={x} y={y} width={w} height={h} fill="none" stroke={WALL} strokeWidth="3" />
@@ -128,20 +133,20 @@ export default function FloorPlan({ date, min, mode, selected, onSelect }) {
                 textAnchor="middle"
                 fontSize="12.5"
                 fontWeight="500"
-                fill={st.state === 'down' ? '#B03A3A' : st.state === 'free' ? '#2F5656' : SUB}
+                fill={plain ? SUB : st.state === 'down' ? '#B03A3A' : st.state === 'free' ? '#2F5656' : SUB}
               >
-                {status}
+                {plain ? t('map.people', { n: sp.capacity }) : status}
               </text>
               {st.state === 'booked' && <Lock x={x + w - 12} y={y + 12} />}
             </g>
           )
         })}
 
-        <g {...press('cafeteria')} aria-label={L(lm.cafeteria.label)} opacity={mode !== 'browse' && selected !== 'cafeteria' ? 0.55 : 1}>
+        <g {...press('cafeteria')} aria-label={L(lm.cafeteria.label)} opacity={filtering && selected !== 'cafeteria' ? 0.55 : 1}>
           <Cafeteria {...lm.cafeteria} label={L(lm.cafeteria.label)} open={cafeOpen} />
           {selected === 'cafeteria' && <SelectRing {...lm.cafeteria} />}
         </g>
-        <g {...press('restrooms')} aria-label={L(lm.restrooms.label)} opacity={mode !== 'browse' && selected !== 'restrooms' ? 0.55 : 1}>
+        <g {...press('restrooms')} aria-label={L(lm.restrooms.label)} opacity={filtering && selected !== 'restrooms' ? 0.55 : 1}>
           <Restrooms {...lm.restrooms} label={L(lm.restrooms.label)} />
           {selected === 'restrooms' && <SelectRing {...lm.restrooms} />}
         </g>

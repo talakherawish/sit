@@ -1,7 +1,40 @@
-import { abs, split, weekday, addDays, ceil30 } from './time'
+import { abs, split, weekday, addDays, addMonths, ceil30 } from './time'
 
 export const ACTIVE = ['awaiting_confirmation', 'confirmed', 'checked_in', 'used']
-export const REASONS = ['study', 'group_project', 'client_call', 'meeting', 'interview', 'other']
+/** One list for "What are you here to do?" and a booking's (optional) reason. */
+export const REASONS = ['study', 'client_call', 'group_project', 'meeting', 'interview', 'other']
+/** Which rooms suit each activity (zone types). */
+export const REASON_FITS = {
+  study: ['small_room'],
+  client_call: ['small_room'],
+  interview: ['small_room'],
+  group_project: ['big_room'],
+  meeting: ['big_room'],
+  other: ['small_room', 'big_room'],
+}
+export const REPEATS = ['none', '2w', '1m', 'until']
+
+/** Last day a repeat runs to, counted from the first picked day (null = just the picked days). */
+export function repeatEnd(first, repeat, until) {
+  if (repeat === '2w') return addDays(first, 13)
+  if (repeat === '1m') return addDays(addMonths(first, 1), -1)
+  if (repeat === 'until') return until || null
+  return null
+}
+
+/**
+ * Picked days plus the same weekdays every week up to the repeat's end. Returns the open days to
+ * book and the days skipped because the building is closed.
+ */
+export function expandDates(data, picked, repeat, until) {
+  const sorted = [...new Set(picked)].sort()
+  if (!sorted.length) return { dates: [], closed: [] }
+  const end = repeatEnd(sorted[0], repeat, until)
+  const all = new Set(sorted)
+  if (end) for (const d of sorted) for (let x = addDays(d, 7); x <= end; x = addDays(x, 7)) all.add(x)
+  const list = [...all].sort()
+  return { dates: list.filter((d) => hoursFor(data, d)), closed: list.filter((d) => !hoursFor(data, d)) }
+}
 export const REMINDERS = ['2h', '3h', '1d', 'eve']
 export const ISSUE_TYPES = ['ac', 'wifi', 'noise', 'cleanliness', 'furniture', 'other']
 export const NOTICE_TAGS = ['ac', 'wifi', 'events', 'other']

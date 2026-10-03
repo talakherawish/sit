@@ -12,7 +12,7 @@ const ROW = 32 // px per half hour
  * side, each room is a column, bookings are blocks and a line marks now. Tapping free time opens that
  * room's booking sheet with the time already picked; tapping a booking opens the room's day.
  */
-export default function RoomsCalendar({ date, onPick }) {
+export default function RoomsCalendar({ date, onPick, onMine }) {
   const { t } = useTranslation()
   const L = useL()
   const data = useStore((s) => s.data)
@@ -36,7 +36,7 @@ export default function RoomsCalendar({ date, onPick }) {
   const pick = (sp, m) => onPick(sp.id, { start: m, end: isFree(data, sp.id, date, m, m + 60) ? m + 60 : m + 30 })
   const BLOCK = {
     booked: 'bg-[#E4E6EB] text-ink/70',
-    mine: 'bg-teal/25 text-[#2f5656]',
+    mine: 'bg-navy/15 text-navy',
     down: 'hatch text-[#a32f2f]',
   }
 
@@ -75,7 +75,7 @@ export default function RoomsCalendar({ date, onPick }) {
         <div className="relative flex flex-1" style={{ height }}>
           {/* hour lines across every column */}
           {hours.map((m) => (
-            <span key={m} className="pointer-events-none absolute inset-x-0 border-t border-black/[0.07]" style={{ top: y(m) }} aria-hidden="true" />
+            <span key={m} className="pointer-events-none absolute inset-x-0 z-[1] border-t border-black/[0.07]" style={{ top: y(m) }} aria-hidden="true" />
           ))}
           {/* time that has passed */}
           {today && firstBookable > from && (
@@ -97,7 +97,7 @@ export default function RoomsCalendar({ date, onPick }) {
                     <button
                       key={m}
                       onClick={() => pick(sp, m)}
-                      className="absolute inset-x-0 active:bg-navy/10"
+                      className="absolute inset-x-0.5 bg-free active:bg-navy/15"
                       style={{ top: y(m), height: ROW }}
                       aria-label={t('rooms_cal.free_at', { room: L(sp.label), time: hm(m) })}
                     />
@@ -119,7 +119,7 @@ export default function RoomsCalendar({ date, onPick }) {
                     return (
                       <button
                         key={b.id}
-                        onClick={() => onPick(sp.id, null)}
+                        onClick={() => (kind === 'mine' && onMine ? onMine(b.id) : onPick(sp.id, null))}
                         className={`absolute inset-x-0.5 flex flex-col overflow-hidden rounded-md px-1 pt-1 text-start text-[12px] leading-tight ${BLOCK[kind]}`}
                         style={{ top: top + 1, height: tall - 2 }}
                         aria-label={`${L(sp.label)} · ${t(kind === 'mine' ? 'timeline.mine' : 'timeline.booked')} · ${hm(b.start)}–${hm(b.end)}`}
@@ -148,6 +148,31 @@ export default function RoomsCalendar({ date, onPick }) {
           )}
         </div>
       </div>
+    </div>
+  )
+}
+
+/** Key for the grid: the same "Free" colour as the map. */
+export function RoomsLegend() {
+  const { t } = useTranslation()
+  return (
+    <div className="flex items-center justify-between gap-2 px-1 text-[13px] whitespace-nowrap text-grey-ink">
+      <span className="flex items-center gap-1.5">
+        <span className="size-3 rounded-[4px] bg-free ring-1 ring-teal/40" />
+        {t('legend.free')}
+      </span>
+      <span className="flex items-center gap-1.5">
+        <span className="size-3 rounded-[4px] bg-[#E4E6EB]" />
+        {t('legend.booked')}
+      </span>
+      <span className="flex items-center gap-1.5">
+        <span className="size-3 rounded-[4px] bg-navy/15" />
+        {t('rooms_cal.yours')}
+      </span>
+      <span className="flex items-center gap-1.5">
+        <span className="hatch size-3 rounded-[4px]" />
+        {t('legend.down')}
+      </span>
     </div>
   )
 }

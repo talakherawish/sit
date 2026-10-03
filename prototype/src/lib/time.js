@@ -8,6 +8,11 @@ export const abs = (date, min) => dateToDay(date) * DAY + min
 export const split = (a) => ({ date: dayToDate(Math.floor(a / DAY)), min: ((a % DAY) + DAY) % DAY })
 export const weekday = (date) => new Date(dateToDay(date) * 86400000).getUTCDay()
 export const addDays = (date, n) => dayToDate(dateToDay(date) + n)
+export function addMonths(date, n) {
+  const d = new Date(dateToDay(date) * 86400000)
+  d.setUTCMonth(d.getUTCMonth() + n)
+  return d.toISOString().slice(0, 10)
+}
 export const hm = (min) => `${String(Math.floor(min / 60)).padStart(2, '0')}:${String(min % 60).padStart(2, '0')}`
 export const parseHm = (s) => +s.slice(0, 2) * 60 + +s.slice(3, 5)
 export const ceil30 = (min) => Math.ceil(min / 30) * 30

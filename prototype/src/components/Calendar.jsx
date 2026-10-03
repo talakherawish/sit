@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
-import { dateOf, hoursFor, isFree } from '../lib/logic'
+import { dateOf, hoursFor, isFree, minOfDay } from '../lib/logic'
 import { addDays, dateToDay, fmtDate, weekday } from '../lib/time'
 import { Segmented } from './ui'
 import Icon from './Icon'
@@ -16,7 +16,7 @@ const sameMonth = (a, b) => a.slice(0, 7) === b.slice(0, 7)
  * Multi-day picker with Week / Month views. Each open day shows whether the room is free
  * at the chosen time, so people can pick several days at once.
  */
-export default function CalendarPicker({ spaceId, start, end, selected, focus, onToggle }) {
+export default function CalendarPicker({ spaceId, start, end, selected, focus, onToggle, monthOnly }) {
   const { t } = useTranslation()
   const lang = useStore((s) => s.lang)
   const data = useStore((s) => s.data)
@@ -25,6 +25,8 @@ export default function CalendarPicker({ spaceId, start, end, selected, focus, o
   const last = addDays(today, HORIZON)
   const [view, setView] = useState('month')
   const [cursor, setCursor] = useState(focus || today)
+  // A booking for today can't start before now.
+  const fits = (d) => isFree(data, spaceId, d, start, end) && !(d === today && start < minOfDay(now))
 
   const first = view === 'month' ? weekStart(monthStart(cursor)) : weekStart(cursor)
   const count = view === 'month' ? 42 : 7
@@ -45,20 +47,22 @@ export default function CalendarPicker({ spaceId, start, end, selected, focus, o
   return (
     <div className="rounded-2xl bg-surface p-3">
       <div className="mb-3 flex items-center gap-2">
-        <Segmented
-          className="w-40"
-          label={t('cal.view')}
-          value={view}
-          onChange={(v) => {
-            setView(v)
-            setCursor(focus || today)
-          }}
-          options={[
-            ['week', t('cal.week')],
-            ['month', t('cal.month')],
-          ]}
-        />
-        <span className="min-w-0 flex-1 truncate text-end text-[15px] font-semibold">{title}</span>
+        {!monthOnly && (
+          <Segmented
+            className="w-40"
+            label={t('cal.view')}
+            value={view}
+            onChange={(v) => {
+              setView(v)
+              setCursor(focus || today)
+            }}
+            options={[
+              ['week', t('cal.week')],
+              ['month', t('cal.month')],
+            ]}
+          />
+        )}
+        <span className={`min-w-0 flex-1 truncate text-[15px] font-semibold ${monthOnly ? 'px-1 text-start text-[17px]' : 'text-end'}`}>{title}</span>
         <button
           type="button"
           onClick={() => step(-1)}
@@ -91,9 +95,11 @@ export default function CalendarPicker({ spaceId, start, end, selected, focus, o
           const outside = view === 'month' && !sameMonth(d, cursor)
           const h = hoursFor(data, d)
           const disabled = d < today || d > last || !h
-          const free = !disabled && !!spaceId && start !== null && end !== null && isFree(data, spaceId, d, start, end)
+          const free = !disabled && !!spaceId && start !== null && end !== null && fits(d)
           const on = selected.includes(d)
           const isFocus = focus === d
+          // Free / Not free only means something once a room and a time are chosen.
+          const state = !h ? t('common.closed') : disabled ? t('cal.unavailable') : !spaceId || start === null ? '' : free ? t('cal.free') : t('cal.taken')
           return (
             <button
               type="button"
@@ -101,9 +107,7 @@ export default function CalendarPicker({ spaceId, start, end, selected, focus, o
               disabled={disabled}
               onClick={() => onToggle(d)}
               aria-pressed={on}
-              aria-label={`${fmtDate(d, lang, { weekday: 'long', day: 'numeric', month: 'long' })} — ${
-                !h ? t('common.closed') : disabled ? t('cal.unavailable') : free ? t('cal.free') : t('cal.taken')
-              }`}
+              aria-label={`${fmtDate(d, lang, { weekday: 'long', day: 'numeric', month: 'long' })}${state ? ` — ${state}` : ''}`}
               className={`flex flex-col items-center justify-center gap-0.5 rounded-xl ${view === 'week' ? 'min-h-16' : 'min-h-11'} ${outside ? 'opacity-40' : ''} disabled:opacity-30`}
             >
               <span

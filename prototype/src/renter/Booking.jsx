@@ -2,8 +2,8 @@ import { useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
-import { useL, usePersonName, useSpaceName } from '../lib/hooks'
-import { ACTIVE, REASONS, REMINDERS, freeStarts, hoursFor, isFree, reminderAt, startAbs, renter as findRenter } from '../lib/logic'
+import { useL, usePersonName, useReasonText, useReportBooking, useSpaceName } from '../lib/hooks'
+import { ACTIVE, REASONS, REMINDERS, endAbs, freeStarts, hoursFor, isFree, reminderAt, startAbs, renter as findRenter } from '../lib/logic'
 import { fmtDate, fmtAbs, hm } from '../lib/time'
 import BookingForm from '../components/BookingForm'
 import { Chip, Confirm, Group, GroupRow, Photo, ScreenTitle, SectionLabel, StatusChip } from '../components/ui'
@@ -16,7 +16,6 @@ export function Book() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const s = useStore()
-  const [full, setFull] = useState(false)
   const pn = usePersonName()
   const me = findRenter(s.data, s.renterId)
   if (!me) return <NeedLogin returnTo="/r/book" />
@@ -42,15 +41,15 @@ export function Book() {
   }
 
   const d = s.draft
-  const quick = !full && d?.spaceId && d.start != null && d.end != null
+  const quick = d?.spaceId && d.start != null && d.end != null
   return (
     <>
       <ScreenTitle id="R-06" title={quick ? t('review.title') : t('book.title')} back />
       <div className="px-4">
         {quick ? (
-          <QuickReview draft={d} onSubmit={submit} onEdit={() => setFull(true)} />
+          <QuickReview draft={d} onSubmit={submit} onEdit={() => navigate(-1)} />
         ) : (
-          <BookingForm key={JSON.stringify(d)} renterId={me.id} initial={d || {}} onSubmit={submit} />
+          <BookingForm key={JSON.stringify(d)} renterId={me.id} initial={d || {}} onSubmit={submit} reasonOptional />
         )}
       </div>
     </>
@@ -88,7 +87,10 @@ function QuickReview({ draft, onSubmit, onEdit }) {
   const sp = data.spaces.find((x) => x.id === head.spaceId)
   const uniform = freeItems.every((it) => it.spaceId === head.spaceId && it.start === head.start && it.end === head.end)
   const remOpts = freeItems.length ? REMINDERS.map((k) => ({ k, at: reminderAt(head.date, head.start, k) })).filter((o) => o.at > now) : []
-  const valid = freeItems.length > 0 && reason && (reason !== 'other' || other.trim())
+  // The reason is optional; "Other" only needs words if picked.
+  const valid = freeItems.length > 0 && (reason !== 'other' || other.trim())
+  const [showAll, setShowAll] = useState(false)
+  const FEW = 6
   const send = (e) => {
     e.preventDefault()
     if (!valid) return
@@ -141,13 +143,25 @@ function QuickReview({ draft, onSubmit, onEdit }) {
               <span className="text-[15px] text-grey-ink">{dur(head.end - head.start)}</span>
             </div>
             <div className="flex items-start gap-3 px-4 py-3">
-              <Icon name="calendar" size={18} className="mt-1 text-navy" />
-              <div className="flex flex-1 flex-wrap gap-1.5">
-                {free.map((x) => (
-                  <span key={x} className="rounded-full bg-white px-3 py-1 text-[15px] font-medium">
-                    {fmtDate(x, lang, { weekday: 'short', day: 'numeric', month: 'short' })}
-                  </span>
-                ))}
+              <Icon name={free.length > 1 ? 'repeat' : 'calendar'} size={18} className="mt-1 text-navy" />
+              <div className="min-w-0 flex-1">
+                {free.length > FEW && (
+                  <p className="mb-2 text-[15px] font-semibold">
+                    {t('review.n_dates_range', { count: free.length, from: short(free[0]), to: short(free[free.length - 1]) })}
+                  </p>
+                )}
+                <div className="flex flex-wrap gap-1.5">
+                  {(showAll || free.length <= FEW ? free : free.slice(0, 4)).map((x) => (
+                    <span key={x} className="rounded-full bg-white px-3 py-1 text-[15px] font-medium">
+                      {short(x)}
+                    </span>
+                  ))}
+                  {free.length > FEW && (
+                    <button type="button" className="min-h-8 rounded-full px-3 text-[15px] font-medium text-navy" onClick={() => setShowAll(!showAll)}>
+                      {showAll ? t('review.show_less') : t('bookings.more', { count: free.length - 4 })}
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
             {skippedNote}
@@ -156,10 +170,12 @@ function QuickReview({ draft, onSubmit, onEdit }) {
       )}
 
       <section>
-        <SectionLabel>{t('review.purpose')}</SectionLabel>
+        <SectionLabel>
+          {t('review.purpose')} <span className="font-normal text-grey-ink">· {t('review.optional')}</span>
+        </SectionLabel>
         <div className="flex flex-wrap gap-2">
           {REASONS.map((r) => (
-            <Chip key={r} active={reason === r} onClick={() => setReason(r)}>
+            <Chip key={r} active={reason === r} onClick={() => setReason(reason === r ? '' : r)}>
               {t(`reason.${r}`)}
             </Chip>
           ))}
@@ -190,14 +206,14 @@ function QuickReview({ draft, onSubmit, onEdit }) {
         ) : (
           <p className="rounded-2xl bg-surface px-4 py-3 text-[15px]">{t('book.no_reminder')}</p>
         )}
-        <p className="mt-1.5 px-1 text-[13px] text-grey-ink">{t('book.reminder_hint')}</p>
+        {/* Only when there's a reminder to confirm from; a booking starting soon is confirmed straight away */}
+        {remOpts.length > 0 && <p className="mt-1.5 px-1 text-[13px] text-grey-ink">{t('book.reminder_hint')}</p>}
       </section>
 
       <div className="space-y-2">
         <button type="submit" className="btn-primary w-full" disabled={!valid}>
           {free.length > 1 ? t('review.confirm_n', { count: free.length }) : t('review.confirm')}
         </button>
-        {!reason && <p className="text-center text-[13px] text-grey-ink">{t('book.reason_required')}</p>}
         <button type="button" className="btn-link mx-auto flex" onClick={onEdit}>
           {t('review.edit')}
         </button>
@@ -283,6 +299,8 @@ export function Confirmed() {
   const navigate = useNavigate()
   const s = useStore()
   const name = useSpaceName()
+  const reasonText = useReasonText()
+  const report = useReportBooking()
   const [cancelling, setCancelling] = useState(false)
   const b = s.data.bookings.find((x) => x.id === id)
   if (!b) return <ScreenTitle id="R-08" title={t('confirmed.title')} back />
@@ -322,13 +340,13 @@ export function Confirmed() {
             </span>
           </GroupRow>
           <GroupRow label={t('book.reason')}>
-            <span className="truncate text-[17px] text-grey-ink">{b.reason === 'other' ? b.reason_other : t(`reason.${b.reason}`)}</span>
+            <span className="truncate text-[17px] text-grey-ink">{reasonText(b)}</span>
           </GroupRow>
           <GroupRow label={t('book.reminder')}>
             <span className="text-[17px] text-grey-ink">{b.reminder_at ? fmtAbs(b.reminder_at, s.lang) : t('book.no_reminder_short')}</span>
           </GroupRow>
           <GroupRow label={t('bookings.status')}>
-            <StatusChip status={b.status} />
+            <StatusChip status={b.status === 'used' ? 'checked_in' : b.status} label={b.status === 'used' && s.now < endAbs(b) ? t('bookings.in_room', { time: hm(b.end) }) : undefined} />
           </GroupRow>
         </Group>
         {series > 1 && <p className="px-1 text-[15px] text-grey-ink">{t('confirmed.series', { count: series })}</p>}
@@ -357,7 +375,13 @@ export function Confirmed() {
               </button>
             </div>
           )}
-          {!fresh && active && started && <p className="px-1 text-center text-[15px] text-grey-ink">{t('bookings.started')}</p>}
+          {/* Once it has started, the thing to do is report a problem with it */}
+          {!fresh && started && ['used', 'checked_in', 'confirmed'].includes(b.status) && (
+            <button className="btn-danger !min-h-[50px]" onClick={() => report(b)}>
+              <Icon name="flag" size={18} />
+              {t('account.report')}
+            </button>
+          )}
           {fresh && (
             <Link to="/r/home" className="btn-link justify-center">
               {t('confirmed.done')}

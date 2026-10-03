@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
-import { useSpaceName, useTemplate } from '../lib/hooks'
+import { useReasonText, useReportBooking, useSpaceName, useTemplate } from '../lib/hooks'
 import { ACTIVE, endAbs, freeStarts, hoursFor, startAbs, dateOf, minOfDay, renter as findRenter } from '../lib/logic'
 import { addDays, fmtDate, hm } from '../lib/time'
 import { Chip, Confirm, Empty, ScreenTitle, Segmented, StatusChip } from '../components/ui'
@@ -20,6 +20,8 @@ export function MyBookings() {
   const [whole, setWhole] = useState(false)
   const [expanded, setExpanded] = useState({})
   const name = useSpaceName()
+  const reasonText = useReasonText()
+  const report = useReportBooking()
   const me = findRenter(s.data, s.renterId)
   if (!me) return <NeedLogin returnTo="/r/bookings" />
 
@@ -45,6 +47,8 @@ export function MyBookings() {
     rows.push(b)
   }
   const more = (sid) => upcoming.filter((b) => b.series_id === sid).length - 1
+  // A repeating booking counts once.
+  const count = tab === 'upcoming' ? upcoming.filter((b) => !b.series_id).length + new Set(upcoming.filter((b) => b.series_id).map((b) => b.series_id)).size : past.length
 
   const doCancel = () => {
     s.cancelWithUndo(cancel.id, whole)
@@ -71,7 +75,7 @@ export function MyBookings() {
           ]}
         />
         <div className="mb-3 flex items-center justify-between px-1">
-          <span className="text-[13px] text-grey-ink">{t('bookings.count', { count: (tab === 'upcoming' ? upcoming : past).length })}</span>
+          <span className="text-[13px] text-grey-ink">{t('bookings.count', { count })}</span>
           <label className="relative flex min-h-11 items-center gap-1 text-[15px] font-medium text-navy">
             <span className="sr-only">{t('bookings.sort')}</span>
             <Icon name="chevrons" size={16} />
@@ -89,7 +93,9 @@ export function MyBookings() {
           {rows.map((b) => {
             const started = s.now >= startAbs(b)
             const active = ACTIVE.includes(b.status)
-            const canEdit = active && !started && b.status !== 'used'
+            const inRoom = b.status === 'used' || b.status === 'checked_in'
+            const canEdit = active && !started && !inRoom
+            const waiting = b.status === 'awaiting_confirmation' && !started
             return (
               <article key={b.id} className="rounded-2xl bg-surface p-4">
                 <Link to={`/r/confirmed/${b.id}`} className="-m-1 flex items-start justify-between gap-2 rounded-xl p-1 active:bg-black/[0.04]">
@@ -97,13 +103,13 @@ export function MyBookings() {
                     <h2 className="text-[17px] font-semibold">{name(b.space_id)}</h2>
                     <p className="text-sm">
                       {fmtDate(b.date, s.lang)} ·{' '}
-                      <span dir="ltr">
+                      <span dir="ltr" className="whitespace-nowrap">
                         {hm(b.start)}–{hm(b.end)}
                       </span>
                     </p>
-                    <p className="text-sm text-grey-ink">{b.reason === 'other' ? b.reason_other : t(`reason.${b.reason}`)}</p>
+                    {b.reason && <p className="text-sm text-grey-ink">{reasonText(b)}</p>}
                   </div>
-                  <StatusChip status={b.status} />
+                  <StatusChip status={inRoom && tab === 'upcoming' ? 'checked_in' : b.status} label={inRoom && tab === 'upcoming' ? t('bookings.in_room', { time: hm(b.end) }) : undefined} />
                 </Link>
                 {b.series_id && tab === 'upcoming' && (
                   <p className="mt-1 text-sm">
@@ -115,11 +121,11 @@ export function MyBookings() {
                     )}
                   </p>
                 )}
-                {tab === 'upcoming' && active && (
+                {tab === 'upcoming' && active && canEdit && (
                   <>
-                    {b.status === 'awaiting_confirmation' && !started && <p className="mt-2 text-[13px] text-grey-ink">{t('bookings.confirm_hint')}</p>}
+                    {waiting && <p className="mt-2 text-[13px] text-grey-ink">{t('bookings.confirm_hint')}</p>}
                     <div className="mt-3 flex gap-2">
-                      {b.status === 'awaiting_confirmation' && !started && (
+                      {waiting && (
                         <button
                           className="btn-secondary flex-1 !bg-navy !text-white"
                           onClick={() => {
@@ -130,15 +136,21 @@ export function MyBookings() {
                           {t('bookings.confirm')}
                         </button>
                       )}
-                      <button className="btn-secondary flex-1" disabled={!canEdit} onClick={() => navigate(`/r/bookings/${b.id}/move`)}>
+                      <button className="btn-secondary flex-1" onClick={() => navigate(`/r/bookings/${b.id}/move`)}>
                         {t('bookings.change')}
                       </button>
-                      <button className="btn-danger flex-1" disabled={!canEdit} onClick={() => setCancel(b)}>
+                      <button className="btn-danger flex-1" onClick={() => setCancel(b)}>
                         {t('bookings.cancel')}
                       </button>
                     </div>
-                    {started && <p className="mt-1 text-sm text-grey-ink">{t('bookings.started')}</p>}
                   </>
+                )}
+                {/* Once it has started (or you're in the room), Change / Cancel give way to Report a problem */}
+                {((tab === 'upcoming' && active && !canEdit) || (tab === 'past' && b.status === 'used')) && (
+                  <button className="btn-danger mt-3 w-full" onClick={() => report(b)}>
+                    <Icon name="flag" size={18} />
+                    {t('account.report')}
+                  </button>
                 )}
                 {b.status === 'cancelled_by_staff' && tab === 'upcoming' && (
                   <Link to="/r/list" className="btn-link">

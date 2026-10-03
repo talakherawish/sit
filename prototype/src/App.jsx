@@ -2,7 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { useLangSync } from './lib/hooks'
 import RenterLayout from './renter/RenterLayout'
 import Home from './renter/Home'
-import { SpacesList, RoomDetails, Hours } from './renter/Browse'
+import { BookAhead, RoomDetails, Hours } from './renter/Browse'
 import { Book, SlotTaken, Confirmed } from './renter/Booking'
 import { SignUp, Code, Login } from './renter/Auth'
 import { MyBookings, MoveBooking, Reminder } from './renter/Manage'
@@ -27,7 +27,7 @@ export default function App() {
         <Route path="/r" element={<RenterLayout />}>
           <Route index element={<Navigate to="home" replace />} />
           <Route path="home" element={<Home />} />
-          <Route path="list" element={<SpacesList />} />
+          <Route path="list" element={<BookAhead />} />
           <Route path="room/:id" element={<RoomDetails />} />
           <Route path="hours" element={<Hours />} />
           <Route path="book" element={<Book />} />

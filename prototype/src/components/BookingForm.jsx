@@ -8,7 +8,7 @@ import CalendarPicker from './Calendar'
 import { Chip, Group, GroupRow, RowSelect, SectionLabel } from './ui'
 
 /** The single booking form behind every way to book (R-06, S-07). */
-export default function BookingForm({ initial = {}, onSubmit, submitLabel, renterId }) {
+export default function BookingForm({ initial = {}, onSubmit, submitLabel, renterId, reasonOptional }) {
   const { t } = useTranslation()
   const L = useL()
   const lang = useStore((s) => s.lang)
@@ -75,7 +75,7 @@ export default function BookingForm({ initial = {}, onSubmit, submitLabel, rente
     if (!remOpts.some((o) => o.k === reminder)) setReminder(remOpts[0]?.k ?? null)
   }, [firstDate, start, now]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const valid = start !== null && end > start && freeDays.length > 0 && reason && (reason !== 'other' || reasonOther.trim())
+  const valid = start !== null && end > start && freeDays.length > 0 && (reason || reasonOptional) && (reason !== 'other' || reasonOther.trim())
 
   const submit = (e) => {
     e.preventDefault()
@@ -141,7 +141,7 @@ export default function BookingForm({ initial = {}, onSubmit, submitLabel, rente
         </p>
       )}
 
-      <Group label={t('book.reason')} footer={!reason ? t('book.reason_required') : null}>
+      <Group label={t('book.reason')} footer={!reason && !reasonOptional ? t('book.reason_required') : null}>
         <GroupRow label={t('book.purpose')} htmlFor="bf-reason">
           <RowSelect id="bf-reason" value={reason} onChange={(e) => setReason(e.target.value)}>
             <option value="">{t('book.choose')}</option>

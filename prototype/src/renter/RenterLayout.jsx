@@ -7,6 +7,7 @@ import { NOTIF_ICON, dateOf, minOfDay } from '../lib/logic'
 import { hm } from '../lib/time'
 import Icon, { TechnoparkLogo } from '../components/Icon'
 import { OverlayHost, ScreenId, Sheet, Toast } from '../components/ui'
+import AccountSheet from './Account'
 
 export default function RenterLayout() {
   const loc = useLocation()
@@ -60,6 +61,7 @@ function TopBar() {
   const data = useStore((s) => s.data)
   const me = data.renters.find((r) => r.id === renterId)
   const pn = usePersonName()
+  const [account, setAccount] = useState(false)
   const unread = data.notifications.some((n) => n.renter_id === renterId && !n.read)
   return (
     <header className="absolute inset-x-0 top-0 z-30 border-b border-black/[0.06] bg-white/80 pt-[var(--app-top)] backdrop-blur-xl backdrop-saturate-150 sm:pt-0">
@@ -72,14 +74,16 @@ function TopBar() {
           <TechnoparkLogo />
         </Link>
         <div className="flex-1" />
-        {/* Signed-in renters change language in their profile; guests get a quick switch here */}
-        <button
-          onClick={() => setLang(lang === 'en' ? 'ar' : 'en')}
-          className="min-h-11 px-2.5 text-[15px] font-medium text-navy"
-          aria-label={t('common.switch_lang')}
-        >
-          {lang === 'en' ? 'عربي' : 'EN'}
-        </button>
+        {/* Signed-in renters change language in Account; guests get a quick switch here */}
+        {!me && (
+          <button
+            onClick={() => setLang(lang === 'en' ? 'ar' : 'en')}
+            className="min-h-11 px-2.5 text-[15px] font-medium text-navy"
+            aria-label={t('common.switch_lang')}
+          >
+            {lang === 'en' ? 'عربي' : 'EN'}
+          </button>
+        )}
         {me && (
           <Link to="/r/notifications" className="relative grid size-11 place-items-center text-navy" aria-label={t('nav.notifications')}>
             <Icon name="bell" />
@@ -87,15 +91,16 @@ function TopBar() {
           </Link>
         )}
         {me ? (
-          <span className="grid size-11 place-items-center" title={pn(me)}>
+          <button onClick={() => setAccount(true)} className="grid size-11 place-items-center rounded-full active:bg-black/[0.06]" aria-label={t('nav.account')}>
             <span className="grid size-8 place-items-center rounded-full bg-navy text-[14px] font-semibold text-white">{pn(me)[0]}</span>
-          </span>
+          </button>
         ) : (
           <Link to="/r/login" className="ms-1 min-h-9 content-center rounded-full bg-navy px-4 text-[15px] font-semibold text-white">
             {t('nav.login')}
           </Link>
         )}
       </div>
+      {me && <AccountSheet open={account} onClose={() => setAccount(false)} />}
     </header>
   )
 }
@@ -175,15 +180,15 @@ function TabBar() {
   const { pathname } = useLocation()
   const navigate = useNavigate()
   const requireLogin = useRequireLogin()
+  // Today = know before you go (and book today); Book ahead = later days and repeats; My bookings = sit where you booked.
   const tabs = [
-    { key: 'map', icon: 'map', match: ['/r/home'], open: () => navigate('/r/home') },
-    { key: 'list', icon: 'list', match: ['/r/list'], open: () => navigate('/r/list') },
-    { key: 'bookings', icon: 'calendar', match: ['/r/bookings'], open: () => requireLogin('/r/bookings') },
-    { key: 'report', icon: 'flag', match: ['/r/report'], open: () => requireLogin('/r/report') },
+    { key: 'today', icon: 'sun', match: ['/r/home'], open: () => navigate('/r/home') },
+    { key: 'ahead', icon: 'calendar', match: ['/r/list'], open: () => navigate('/r/list') },
+    { key: 'bookings', icon: 'ticket', match: ['/r/bookings'], open: () => requireLogin('/r/bookings') },
   ]
   return (
     <nav
-      className="absolute inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-black/[0.06] bg-white/75 pb-1 backdrop-blur-xl backdrop-saturate-150 sm:pb-6"
+      className="absolute inset-x-0 bottom-0 z-30 grid grid-cols-3 border-t border-black/[0.06] bg-white/75 pb-1 backdrop-blur-xl backdrop-saturate-150 sm:pb-6"
       aria-label={t('nav.tabs')}
     >
       {tabs.map((tab) => {

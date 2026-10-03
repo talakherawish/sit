@@ -40,6 +40,22 @@ export function useTemplate() {
     })
 }
 
+/** A booking's reason in words ("—" when none was given: the reason is optional). */
+export function useReasonText() {
+  const { t } = useTranslation()
+  return (b) => (!b.reason ? '—' : b.reason === 'other' ? b.reason_other : t(`reason.${b.reason}`))
+}
+
+/** Opens Report with the booking's room and time already filled in. */
+export function useReportBooking() {
+  const navigate = useNavigate()
+  const set = useStore((s) => s.set)
+  return (b) => {
+    set({ reportSpace: b.space_id, reportBooking: b.id })
+    navigate('/r/report')
+  }
+}
+
 /** Navigate to a renter-only screen, opening the login sheet (R-09) for guests. */
 export function useRequireLogin() {
   const navigate = useNavigate()

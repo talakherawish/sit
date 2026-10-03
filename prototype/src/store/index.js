@@ -128,6 +128,8 @@ const initial = () => ({
   pendingAuth: null,
   pendingRating: {}, // renterId -> visitId
   reportSpace: null,
+  reportBooking: null, // booking a report is about, when sent from that booking
+  plan: null, // Book ahead choices (days, repeat, time, activity), kept while going to Review and back
   toast: null,
   drawerOpen: false,
   drawerTab: 'p1',
@@ -277,7 +279,7 @@ export const useStore = create(
             date,
             start: it.start,
             end: it.end,
-            reason: f.reason,
+            reason: f.reason || null,
             reason_other: f.reason === 'other' ? f.reasonOther : undefined,
             reminder: remind ? f.reminder : null,
             reminder_at: remind ? rAt : null,
