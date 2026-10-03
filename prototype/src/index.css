@@ -13,8 +13,8 @@
   --color-amber: #e8a33d;
   /* Map rooms that are free now */
   --color-free: #e4efee;
-  /* Time that has already gone, in the rooms grid and timelines: one solid block */
-  --color-past: #e3e3e8;
+  /* Time that has already gone, in the rooms grid and timelines: one see-through grey cover, edge to edge */
+  --color-past: rgb(60 60 67 / 0.16);
   /* SF Pro on Apple devices, Inter elsewhere; Arabic falls through to IBM Plex Sans Arabic */
   --font-head: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'IBM Plex Sans Arabic', system-ui, sans-serif;
   --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Inter', 'IBM Plex Sans Arabic', system-ui, sans-serif;

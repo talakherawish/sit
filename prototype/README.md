@@ -27,7 +27,7 @@ Every push to `main` builds and publishes the prototype to **GitHub Pages** via 
 | `/demo`      | Side-by-side demo             | Tala's phone and Rana's reception dashboard, sharing live data                            |
 | Hidden panel | Prototype panel (P-01 – P-04) | Reviewer-only: personas, switches, time simulator, outbox, analytics. Kept in English.    |
 
-Features planned for later sprints (rating, the rest of the profile — birthday, contact preference, booking history — staff insights, book-for-someone and room-down) are not in this build. **Repeat bookings** and a first slice of the profile (the **Account** sheet) were brought forward after review feedback.
+Features planned for later sprints (rating, the rest of the profile — birthday, contact preference, booking history — staff insights and room-down) are not in this build. **Repeat bookings**, a first slice of the profile (the **Account** sheet) and reception's **Book for someone** were brought forward after review feedback.
 
 Open the prototype panel by **tapping the Technopark logo three times**, pressing **Ctrl + .** (⌘ + . on a Mac), or adding `?panel` to the URL. It has no visible tab so the app looks like the real thing.
 
@@ -39,7 +39,7 @@ Why each design choice was made, and which UX principle it follows: [AI-USAGE-LO
 
 Built around the product vision, _"Know before you go and sit where you booked, every single time"_: **Today** is know before you go, **My bookings** is sit where you booked, and **Book ahead** covers later days and repeats.
 
-- **Today (R-01):** only about today. First the live **free seats** (big number, "18 of 40 taken" beside it), opening hours, cafeteria, Wi-Fi speed and staff notices. Then **Your next booking**: the closest booking today that hasn't started, with **Confirm** (when it's waiting) and **Cancel**. Then **Rooms today**: one column per room, starting at the current hour. Tap a free time and you're on Review: **2 taps to book**. Booking from Today is for today only; **Book another day** goes to Book ahead.
+- **Today (R-01):** only about today. First the live **free seats** (big number, "18 of 40 taken" beside it), opening hours, cafeteria, Wi-Fi speed and staff notices. Then **Your next booking**: the closest booking today that hasn't started, with **Confirm** (when it's waiting) and **Cancel**. Then **Rooms today**: one column per room, starting at the current hour. **Book without leaving the page:** tap a free time to pick it (deep blue; tap another free time in that room to stretch it, inside to shorten it), and a panel rises above the tab bar with the room and time, the reminder (or "Starts within 2 hours, so it's confirmed now") and **Confirm** — no "What's it for?", no new page. **2 taps to book**, then the receipt. Booking from Today is for today only; **Book another day** goes to Book ahead.
 - **Book ahead (R-02):** later days and repeating bookings, as **one form filled in from top to bottom**:
   1. **Days** on a month calendar (tap as many as you need).
   2. **Repeat** in one row: **Weekly · Monthly · Until <date>**. Tap to pick, tap again to unpick; nothing picked = no repeat. Picking one fills in Until (a month ahead for weekly, six for monthly); tap Until to change it (up to 12 months).
@@ -48,7 +48,7 @@ Built around the product vision, _"Know before you go and sit where you booked, 
   5. **What are you here to do?** (optional; becomes the booking's reason).
   6. **Confirm** books it, with a reminder the day before each booking. No Review screen: a **receipt** rises from the bottom, holds, then leaves off the top, and "Booked · Undo" appears.
 - **Room details (R-03):** photos, size, capacity and features, then this room's **availability**: a month calendar with a dot per day (teal = free time, amber = under an hour left, grey = fully booked) and the picked day's bookings as a timeline. Book this room goes to Review for today, or into the Book ahead form (room, day and time filled in) for later days.
-- **Review (R-06)**, used when booking from Today: a one-screen summary. The reason is **optional**. Reminder options, or "Starts within 2 hours, so it's confirmed now". Days where the room is taken or you're already booked are skipped, with a note.
+- **Review (R-06)**, used from Room details (today) and Book again: a one-screen summary. The reason is **optional**. Reminder options, or "Starts within 2 hours, so it's confirmed now". Days where the room is taken or you're already booked are skipped, with a note.
 - **My bookings (R-13):** a switch beside the title flips between **Cards** and **Calendar**. Cards: Upcoming / Past, sort, a repeating booking counts once ("+19 more" to expand), Confirm / Change / Cancel before it starts, **Report a problem** once it has started and on past visits, Book again. Calendar: a month view with a dot per booking (amber = waiting for you, navy = confirmed or used, grey = cancelled or released); tap a day to see its bookings as cards.
 - **Account (avatar):** name and contact, language, My reports (R-17), **Report a problem** (R-16, soft red with a flag) and Log out. Guests get a language switch and **Log in** in the header instead.
 - **Report a problem (R-16):** from Account (pick where), or from a booking, which fills in the room and time; reception then sees which booking it's about.
@@ -58,6 +58,7 @@ Built around the product vision, _"Know before you go and sit where you booked, 
 - **Seat card (S-01):** + / − count the people in the open area; under it, **"22 seats free"**, which is what renters see on Today. The top bar shows the same: "22 seats free · 18 / 40".
 - **Rooms today:** one row per room, bookings coloured by state (awaiting amber, confirmed light navy, checked in solid navy). Labels fit the space: name and times, name and start, or just the name (the rest is in the tooltip). Click a booking to check its renter in.
 - **Today's bookings:** status shows Awaiting confirmation / Confirmed / Checked in / No-show…, so a renter confirming from their phone shows up straight away; repeating bookings get a repeat mark; a booking without a reason shows "—".
+- **Book for someone (S-07):** the renter's Book ahead form at the desk, in two columns. Pick who it's for (search by name or phone, or add a new renter), then days → repeat → from / to on the left, and the map, what they're here to do and **Book for <name>** on the right. Each room's card has **See availability** (its month calendar and a day's bookings, without leaving the form). The renter gets an SMS and an alert; reception sees the same receipt. Opened from the sidebar, **Book for someone** on Rooms today, or **Book** next to a person on Check-in (already picked).
 - **Reports inbox (S-05):** a report sent from a booking shows which booking ("Booking · Thu 1 Oct · 09:00–10:00").
 - **People (S-06):** every renter account (contact details, how they like to be contacted, upcoming bookings — a repeating booking counts once — visits, whether they are inside now) and every visit, newest first, with the people inside now at the top. Search filters both lists; click a row to check that person in. People counted only with + / − on the seat counter are not named, so they are not listed.
 
@@ -70,11 +71,11 @@ Built around the product vision, _"Know before you go and sit where you booked, 
 The clock starts at **Thu 1 Oct 2026, 09:30**, and the app opens logged in as **Tala** with a lived-in account (bookings, reports). Pick **Guest** in P-01 for the browse-without-an-account story (US-1). Seeded data lives in `src/data/mock-data.json`; "Reset all data" in P-01 (or **Reset demo** on `/demo`) reloads it.
 
 - **Tala Kherawish** — recurring Focus Room 1, Sun–Thu 09:00–10:00 (checked in today), plus a client call in Focus Room 3 at 13:30 awaiting confirmation: it's **Your next booking** on her Today screen.
-- **Leen Anabtawi** (Arabic) — Big Room 2 today 15:00–17:00, awaiting confirmation, reminder 2 h before; one AC report in progress.
-- **Fatima Alkilani** — Focus Room 2 at 10:00 and Big Room 1 at 12:00 today.
+- **Leen Anabtawi** (Arabic) — Room 2 today 15:00–17:00, awaiting confirmation, reminder 2 h before; one AC report in progress.
+- **Fatima Alkilani** — Focus Room 2 at 10:00 and Room 1 at 12:00 today.
 - **Shahd Mallah** — checked in to Focus Room 3 (09:30–11:00), plus Focus Room 1 at 14:00.
 - **Ahmed Salamh** — no bookings yet; use him for the last-minute and "slot just taken" demos.
-- **For the Book ahead demo:** a few later bookings by Leen, Fatima and Shahd. Pick **Mon 5 + Wed 7 Oct, Weekly, 10:00–12:00** to see partly free rooms (Big Room 1, Focus Room 2), or **Sun 11 + Sun 18 Oct, 14:00–16:00** to see a combination (no single room is free on both days).
+- **For the Book ahead demo:** a few later bookings by Leen, Fatima and Shahd. Pick **Mon 5 + Wed 7 Oct, Weekly, 10:00–12:00** to see partly free rooms (Room 1, Focus Room 2), or **Sun 11 + Sun 18 Oct, 14:00–16:00** to see a combination (no single room is free on both days).
 
 **The side-by-side story** (also in the demo's header):
 
@@ -107,7 +108,7 @@ src/
 
 iOS idiom on a white page: a bezel-and-Dynamic-Island phone frame on desktop, frosted nav and tab bars, large titles, inset grouped lists and forms, segmented controls, switches, bottom sheets and alerts. The floor plan is drawn as an architectural plan (walls, door swings, windows, furniture; one circle per public seat).
 
-**Time reads like a clock** in every timeline (Rooms today, a room's day, reception's Rooms today): free time is white, time that has already gone is one solid grey block edge to edge, and a booking running now is drawn from the "now" line so its name stays visible.
+**Time reads like a clock** in every timeline (Rooms today, a room's day, reception's Rooms today): free time is white and time that has already gone sits under a see-through grey cover, edge to edge, so the grid and earlier bookings still show through.
 
 Two deliberate departures from the spec's _Visual design_ section, made on request:
 

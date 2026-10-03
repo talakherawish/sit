@@ -21,8 +21,9 @@ export function useDuration() {
  * The room's whole opening day as a calendar column: booked, past and out-of-order stretches are
  * labelled blocks, free half-hours are tappable. Tap a free time to start; tap another free time
  * (earlier or later) to stretch the booking to it; tap inside the selection to end it there.
+ * `readOnly` just shows the day (reception's "See availability").
  */
-export default function DayTimeline({ spaceId, date, range, onChange }) {
+export default function DayTimeline({ spaceId, date, range, onChange, readOnly }) {
   const { t } = useTranslation()
   const data = useStore((s) => s.data)
   const now = useStore((s) => s.now)
@@ -89,25 +90,27 @@ export default function DayTimeline({ spaceId, date, range, onChange }) {
 
   return (
     <div>
-      <div className="mb-3 flex min-h-[68px] items-center gap-3 rounded-2xl bg-navy/[0.06] px-4 py-2" aria-live="polite">
-        <span className="min-w-0 flex-1">
-          <span className="block text-[17px] font-semibold text-navy">
-            {range ? (
-              <>
-                {span(range.start, range.end)} · {dur(range.end - range.start)}
-              </>
-            ) : (
-              t('timeline.no_time')
-            )}
+      {!readOnly && (
+        <div className="mb-3 flex min-h-[68px] items-center gap-3 rounded-2xl bg-navy/[0.06] px-4 py-2" aria-live="polite">
+          <span className="min-w-0 flex-1">
+            <span className="block text-[17px] font-semibold text-navy">
+              {range ? (
+                <>
+                  {span(range.start, range.end)} · {dur(range.end - range.start)}
+                </>
+              ) : (
+                t('timeline.no_time')
+              )}
+            </span>
+            <span className={`block text-[13px] ${note ? 'font-medium text-[#a32f2f]' : 'text-grey-ink'}`}>{help}</span>
           </span>
-          <span className={`block text-[13px] ${note ? 'font-medium text-[#a32f2f]' : 'text-grey-ink'}`}>{help}</span>
-        </span>
-        {range && (
-          <button type="button" className="min-h-11 shrink-0 px-1 text-[15px] font-medium text-navy" onClick={() => onChange(null)}>
-            {t('timeline.clear')}
-          </button>
-        )}
-      </div>
+          {range && (
+            <button type="button" className="min-h-11 shrink-0 px-1 text-[15px] font-medium text-navy" onClick={() => onChange(null)}>
+              {t('timeline.clear')}
+            </button>
+          )}
+        </div>
+      )}
 
       <div className="flex gap-2">
         {/* hour labels */}
@@ -125,19 +128,20 @@ export default function DayTimeline({ spaceId, date, range, onChange }) {
           ))}
 
           {/* free half-hours */}
-          {slots
-            .filter((s) => s.kind === 'free')
-            .map((s) => (
-              <button
-                type="button"
-                key={s.m}
-                onClick={() => tap(s.m)}
-                className="absolute inset-x-0 active:bg-navy/10"
-                style={{ top: top(s.m), height: ROW }}
-                aria-pressed={!!range && s.m >= range.start && s.m < range.end}
-                aria-label={t('timeline.free_slot', { from: hm(s.m), to: hm(s.m + 30) })}
-              />
-            ))}
+          {!readOnly &&
+            slots
+              .filter((s) => s.kind === 'free')
+              .map((s) => (
+                <button
+                  type="button"
+                  key={s.m}
+                  onClick={() => tap(s.m)}
+                  className="absolute inset-x-0 active:bg-navy/10"
+                  style={{ top: top(s.m), height: ROW }}
+                  aria-pressed={!!range && s.m >= range.start && s.m < range.end}
+                  aria-label={t('timeline.free_slot', { from: hm(s.m), to: hm(s.m + 30) })}
+                />
+              ))}
 
           {/* labelled stretches */}
           {blocks.map((b) =>

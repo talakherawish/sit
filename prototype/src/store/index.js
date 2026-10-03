@@ -130,6 +130,8 @@ const initial = () => ({
   reportSpace: null,
   reportBooking: null, // booking a report is about, when sent from that booking
   bookingsView: 'cards', // My bookings: 'cards' | 'calendar'
+  staffPlan: null, // reception's Book for someone choices (S-07)
+  todayPick: null, // a time picked in Today's rooms grid: { spaceId, date, start, end, reminder }
   plan: null, // Book ahead choices (days, repeat, time, activity), kept while going to Review and back
   toast: null,
   drawerOpen: false,

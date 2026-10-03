@@ -9,10 +9,14 @@ const ROW = 32 // px per half hour
 
 /**
  * Every room's day at once, phone-first, in the style of Apple Calendar's day view: hours run down the
- * side, each room is a column, bookings are blocks and a line marks now. Tapping free time opens that
- * room's booking sheet with the time already picked; tapping a booking opens the room's day.
+ * side, each room is a column, bookings are blocks and a line marks now. Tapping a room's name or a
+ * booking opens the room's day (`onPick`); tapping your own booking opens it (`onMine`).
+ *
+ * Free time is picked right in the grid (`selection` / `onSelect`), like a room's day timeline: tap a
+ * free time to pick it (an hour if free, else half an hour), tap another free time in the same room to
+ * stretch it, tap inside to shorten it. The pick shows as a deep blue block.
  */
-export default function RoomsCalendar({ date, onPick, onMine }) {
+export default function RoomsCalendar({ date, onPick, onMine, selection, onSelect }) {
   const { t } = useTranslation()
   const L = useL()
   const data = useStore((s) => s.data)
@@ -33,9 +37,19 @@ export default function RoomsCalendar({ date, onPick, onMine }) {
   const slots = []
   for (let m = from; m < h.close; m += 30) slots.push(m)
 
-  // Bookings that started before now are drawn from now, so their label isn't hidden under the past block.
-  const shownFrom = today ? Math.max(from, Math.min(nowMin, h.close)) : from
-  const pick = (sp, m) => onPick(sp.id, { start: m, end: isFree(data, sp.id, date, m, m + 60) ? m + 60 : m + 30 })
+  const freeAt = (id, m) => m >= firstBookable && isFree(data, id, date, m, m + 30)
+  const allFree = (id, a, b) => {
+    for (let m = a; m < b; m += 30) if (!freeAt(id, m)) return false
+    return true
+  }
+  const pick = (sp, m) => {
+    const sel = selection
+    if (!sel || sel.spaceId !== sp.id) return onSelect({ spaceId: sp.id, start: m, end: allFree(sp.id, m, m + 60) ? m + 60 : m + 30 })
+    if (m >= sel.start && m < sel.end) return onSelect(sel.end - sel.start === 30 ? null : { ...sel, end: m + 30 })
+    const start = Math.min(sel.start, m)
+    const end = Math.max(sel.end, m + 30)
+    onSelect(allFree(sp.id, start, end) ? { spaceId: sp.id, start, end } : { spaceId: sp.id, start: m, end: m + 30 })
+  }
   const BLOCK = {
     booked: 'bg-[#F1F2F5] text-ink/70 ring-1 ring-black/[0.08] ring-inset',
     mine: 'bg-navy/15 text-navy',
@@ -56,7 +70,8 @@ export default function RoomsCalendar({ date, onPick, onMine }) {
       </div>
 
       <div className="relative flex px-4 pt-3">
-        {/* Time that has passed: one solid block, edge to edge, over everything before now. Free time stays white. */}
+        {/* Time that has passed: a see-through grey cover, edge to edge, over everything before now (the grid and
+            bookings still show through). Free time stays white. */}
         {today && nowMin > from && (
           <span
             className="pointer-events-none absolute inset-x-0 top-0 z-[5] bg-past"
@@ -102,8 +117,25 @@ export default function RoomsCalendar({ date, onPick, onMine }) {
                       className="absolute inset-x-0 active:bg-navy/10"
                       style={{ top: y(m), height: ROW }}
                       aria-label={t('rooms_cal.free_at', { room: L(sp.label), time: hm(m) })}
+                      aria-pressed={selection?.spaceId === sp.id && m >= selection.start && m < selection.end}
                     />
                   ))}
+                {/* the picked time, in deep blue; taps go through to the free half hours underneath */}
+                {selection?.spaceId === sp.id && (
+                  <div
+                    className="pointer-events-none absolute inset-x-0.5 z-[4] flex flex-col overflow-hidden rounded-md bg-navy px-1 pt-1 text-[12px] leading-tight font-semibold text-white shadow-[0_2px_8px_rgba(36,80,143,0.35)]"
+                    style={{ top: y(selection.start) + 1, height: y(selection.end) - y(selection.start) - 2 }}
+                  >
+                    <span className="tabular-nums" dir="ltr">
+                      {hm(selection.start)}
+                    </span>
+                    {selection.end - selection.start >= 60 && (
+                      <span className="tabular-nums opacity-80" dir="ltr">
+                        –{hm(selection.end)}
+                      </span>
+                    )}
+                  </div>
+                )}
                 {down && (
                   <div
                     className={`absolute inset-x-0.5 overflow-hidden rounded-md px-1 pt-1 text-[12px] leading-tight font-medium ${BLOCK.down}`}
@@ -113,10 +145,10 @@ export default function RoomsCalendar({ date, onPick, onMine }) {
                   </div>
                 )}
                 {bookings
-                  .filter((b) => b.end > shownFrom)
+                  .filter((b) => b.end > from)
                   .map((b) => {
                     const kind = b.renter_id === renterId ? 'mine' : 'booked'
-                    const top = y(Math.max(b.start, shownFrom))
+                    const top = y(Math.max(b.start, from))
                     const tall = y(b.end) - top
                     return (
                       <button

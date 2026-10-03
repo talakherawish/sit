@@ -8,9 +8,10 @@ import Icon from './Icon'
 /**
  * The booking receipt that replaces Review in Book ahead: it rises from the bottom of the screen,
  * holds for a moment so it can be read, then leaves off the top. Tap to send it on its way sooner.
- * `bookings` are the ones just made; `email` is where the receipt was sent.
+ * `bookings` are the ones just made; `email` is where the receipt was sent; `forName` is set when
+ * reception booked for someone.
  */
-export default function Receipt({ bookings, email, reminder, onDone }) {
+export default function Receipt({ bookings, email, reminder, forName, onDone }) {
   const { t } = useTranslation()
   const lang = useStore((s) => s.lang)
   const name = useSpaceName()
@@ -40,6 +41,7 @@ export default function Receipt({ bookings, email, reminder, onDone }) {
                 <p className="text-[13px] text-grey-ink">{t('receipt.count', { count: bookings.length })}</p>
               </div>
               <div className="mt-4 divide-y divide-dashed divide-black/15 border-t border-dashed border-black/15">
+                {forName && <Row label={t('receipt.for')}>{forName}</Row>}
                 <Row label={t('receipt.room')}>{rooms.map((id) => name(id)).join(' + ')}</Row>
                 <Row label={t('receipt.dates')}>{bookings.length > 1 ? `${short(first.date)} – ${short(last.date)}` : short(first.date)}</Row>
                 <Row label={t('book.time')}>

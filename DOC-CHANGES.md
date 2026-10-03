@@ -46,6 +46,10 @@ The markdown sources were folded into the PDF in commit `e204140`. To edit, rest
 > i am thinking of changing the book ahead to feel mre like a form filling, so no by time or by room just one continuous form, starting with days in the calendar then time from to without the min options. lets prompt this first
 > so first is remov ethe pick days and a time, then a room thats free subtitle. first below book ahead is the calendar then repeat section with option weekly monthly and util all in the same row. if none chosen it means no repeat. u can click and unclick. then time picker with options all in the same row too then the floor map with highligted rooms that align with previous booking specifications the rest is faded. u pick a room and lastly the what are u here to do today and a confirm booking button. there are options to see a specific rooms availablity by clicking on the room a page with the rooms images name and calendar availability show all for thet room only. then if i choose a date i can see that specific days bookings. is that clear?
 
+> sync the book ahead form to the staff dashboard
+
+> Also, in the today section, uh, when we go down to rooms today, I want to be able to tap the calendar like not the calendar the free time slot and select it it should highlight in deep blue the way it did before because for now it says review booking when you tap So I want to choose the time, once the time is chosen, the what's it for and reminder should appear like they shouldn't be there already. If you choose a time frame in today's room schedule, then confirm booking and the fact that it says starts within two hours, so it's confirmed now. In case that's the case, and just remove what's it for. Because it's like a quick um, booking. For today. They should appear. What I don't like. Is just having. Um, a lot of. Pages opening and closing. So. Let's keep it that way. And. The grade area above. Uh, the time that has passed. Should be more opaque. So it shouldn't just be gray. Fully. You can still see the grid and everything. But there's. An opaque gray cover. Transparent. Ish. And rename big room one and big room two. To room one and room two. Without the big.
+
 Answers to the follow-up questions: repeat = "Weekly/Monthly + Until date"; room page = "room details"; Review = "skip it and show a receipt of the booking make it from the bottom make the motion of the receipt upwards and leave out of the top of the screen."; partly free rooms = "rooms available on some days shuldshow differently like partially available. or a combination of rooms that make thebooking work highliht in the same color".
 
 **Why I asked for this / Principle I was following:** for you to fill in.
@@ -60,7 +64,7 @@ Answers to the follow-up questions: repeat = "Weekly/Monthly + Until date"; room
 | **Your next booking** (only one: the closest today that hasn't started) sits below the seats and Wi-Fi and above Rooms today, with **Confirm** (when it's waiting) and **Cancel** | Confirming is what keeps your room; it used to be two tabs away. One card, not a list, keeps Today short; the rest are on My bookings | Make important actions obvious; Miller's Law |
 | Removed the **Book a room** button, its "No map needed" note and the blank gap from Home | The rooms grid on Today *is* the booking surface now | Minimalist design |
 | Today's rooms show as the **full grid** (one column per room), starting at the current hour | You tap the exact free time you want: one step fewer than picking a room, then a time | Fitts's Law; clicks to treasure |
-| From Today you book **today only**: tap a free time → Review → Confirm | The quick, common case gets the shortest path | Clicks to treasure |
+| From Today you book **today only, without leaving the page**: tap a free time (it turns deep blue; tap again to stretch or shorten), a panel rises with the reminder (or "Starts within 2 hours, so it's confirmed now") and Confirm; no "What's it for?" | Too many pages opening and closing for a quick booking | Clicks to treasure; minimalist design |
 | In the grid and timelines, **your own bookings are navy** | "Yours" was teal, the same as the map's "free" | Clear signals |
 | **Book ahead is one form**, top to bottom: days → repeat → from / to → room on the map → what you're here to do → Confirm (no "By time / By room" switch, no subtitle) | Feels like filling in a form: one path, every choice in sight, nothing to choose between first | Hick's Law; recognition over recall |
 | Days on a **month calendar**; tap several days at once | A course on Mon and Wed is two taps, not two bookings | Fewer clicks |
@@ -73,7 +77,9 @@ Answers to the follow-up questions: repeat = "Weekly/Monthly + Until date"; room
 | **One list of activities** ("What are you here to do?") used to filter rooms and as the booking's reason; labels shortened to Focused work · Call · Group work · Meeting · Interview · Other | Home and the booking form used to ask the same thing with two different lists | Consistency |
 | **Asked once:** if you picked an activity in Book ahead, Review shows it ("What's it for? Group work · Edit") instead of asking again | It was asked twice in one booking | Don't make people repeat themselves |
 | The booking reason is **optional** | It helps Technopark, not the renter, and blocked the Confirm button | Remove friction; user control |
-| **Time reads like a clock:** free time is white; time that has already gone is **one solid grey block, edge to edge**; a booking running now is drawn from the now line so its name stays visible (Rooms today, the room sheet's timeline and reception's timeline) | The green tint on free time made the whole grid look busy, and the faint past shading let old bookings show through | Visibility of system status; clarity |
+| **Time reads like a clock:** free time is white; time that has already gone sits under a **see-through grey cover, edge to edge**, so the grid and earlier bookings still show (Rooms today, a room's day and reception's timeline) | The green tint on free time made the grid look busy; a solid grey hid what had happened | Visibility of system status; clarity |
+| **Big Room 1 / 2 → Room 1 / 2** (the zone is "Rooms") | Shorter names that fit the grid columns | Clarity |
+| **Reception: Book for someone (S-07)** is the renter's Book ahead form at the desk: pick the renter (search or add new), then the same steps in two columns, "See availability" for any room, **Book for <name>**; the renter gets an SMS and an alert | Reception books for walk-ins and phone calls with the same rules renters see | Consistency; one booking logic |
 | Reminder text for bookings that start within 2 hours: "Starts within 2 hours, so it's confirmed now", and the "released 1 hour before" line is hidden | The two lines contradicted each other | Clear, honest feedback |
 | Tapping the **avatar opens Account**: name, language, My reports, **Report a problem** (soft red, flag), Log out | The avatar looked tappable but did nothing | Affordance; Jakob's Law |
 | **Report a problem on a booking** appears once the booking has started (in place of Change / Cancel) and on past visits; it fills in the room and time | Problems happen while you're in the room; reception should know exactly which booking | Context; error prevention |
@@ -107,7 +113,7 @@ Counted on the built prototype (3 Oct):
 
 | Task | Before | Now |
 |---|---|---|
-| Book a room today | Book a room → tap free time → sheet: Book → reason (required) → Confirm (5 taps) | Tap a free time on Today → Confirm (2 taps) |
+| Book a room today | Book a room → tap free time → sheet: Book → reason (required) → Confirm (5 taps) | Tap a free time on Today → Confirm (2 taps, same page) |
 | A course twice a week until a date | Not possible in one go | Book ahead → tap Mon → tap Wed → Weekly (Until filled in; change it if needed) → From → To → tap room → Confirm (about 8, no Review screen) |
 
 ---
@@ -130,6 +136,7 @@ Counted on the built prototype (3 Oct):
 - **Repeat bookings** move from a later sprint into this one. Reason: a real persona need (a course twice a week for months).
 - **Account sheet** (name, language, My reports, Report a problem, Log out) pulls a small part of Profile forward. Birthday, contact preference and booking history stay in the later sprint.
 - **Booking reason** becomes optional.
+- **Book for someone** (reception) moves from a later sprint into this one: it reuses the Book ahead form, so the extra work is the renter picker.
 - Capacity: if repeat bookings join this sprint, say what moves out or how the estimate changes.
 
 ## 4. User stories (not in this repo: 05-user-stories)

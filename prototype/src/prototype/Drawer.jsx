@@ -183,6 +183,7 @@ function ScreenIndex() {
     ['S-04', '/s/notices'],
     ['S-05', '/s/reports'],
     ['S-06', '/s/people'],
+    ['S-07', '/s/book'],
     ['S-10', '/s/settings/rooms'],
   ]
   return (
@@ -192,7 +193,9 @@ function ScreenIndex() {
           {id}
         </button>
       ))}
-      <span className="w-full pt-1 text-xs text-grey-ink">R-08, R-09 and R-14 open from their flows; Account from the avatar; S-00 via the reception switch.</span>
+      <span className="w-full pt-1 text-xs text-grey-ink">
+        R-08, R-09 and R-14 open from their flows; Account from the avatar; S-00 via the reception switch.
+      </span>
     </div>
   )
 }

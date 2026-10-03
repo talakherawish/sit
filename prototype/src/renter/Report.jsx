@@ -48,16 +48,16 @@ export function Report() {
             </p>
           </div>
         ) : (
-        <Field label={t('report.where')}>
-          <select className="input" value={where} onChange={(e) => setWhere(e.target.value)}>
-            <option value="public">{L(s.data.zones[0].name)}</option>
-            {s.data.spaces.map((sp) => (
-              <option key={sp.id} value={sp.id}>
-                {L(sp.label)}
-              </option>
-            ))}
-          </select>
-        </Field>
+          <Field label={t('report.where')}>
+            <select className="input" value={where} onChange={(e) => setWhere(e.target.value)}>
+              <option value="public">{L(s.data.zones[0].name)}</option>
+              {s.data.spaces.map((sp) => (
+                <option key={sp.id} value={sp.id}>
+                  {L(sp.label)}
+                </option>
+              ))}
+            </select>
+          </Field>
         )}
         <fieldset>
           <legend className="mb-1 text-sm font-medium">{t('report.type')}</legend>

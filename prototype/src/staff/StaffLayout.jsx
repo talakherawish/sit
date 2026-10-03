@@ -9,6 +9,7 @@ import { PhaseBadge, ScreenId, Toast } from '../components/ui'
 const NAV = [
   { to: '/s/today', key: 'today', icon: 'home' },
   { to: '/s/checkin', key: 'checkin', icon: 'door' },
+  { to: '/s/book', key: 'book', icon: 'calendar' },
   { to: '/s/people', key: 'people', icon: 'people' },
   { to: '/s/notices', key: 'notices', icon: 'megaphone' },
   { to: '/s/reports', key: 'reports', icon: 'inbox' },

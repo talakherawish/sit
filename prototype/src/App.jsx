@@ -13,6 +13,7 @@ import { Today, CheckIn, SeatLog } from './staff/Desk'
 import { Notices, ReportsInbox } from './staff/Ops'
 import { RoomSettings } from './staff/Admin'
 import { People } from './staff/People'
+import { BookFor } from './staff/BookFor'
 import Drawer from './prototype/Drawer'
 import Demo from './prototype/Demo'
 
@@ -46,6 +47,7 @@ export default function App() {
         <Route path="/s" element={<StaffLayout />}>
           <Route index element={<Navigate to="today" replace />} />
           <Route path="today" element={<Today />} />
+          <Route path="book" element={<BookFor />} />
           <Route path="checkin" element={<CheckIn />} />
           <Route path="seat-log" element={<SeatLog />} />
           <Route path="people" element={<People />} />

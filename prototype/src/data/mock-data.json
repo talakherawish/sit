@@ -61,8 +61,8 @@
       "id": "z-big",
       "type": "big_room",
       "name": {
-        "en": "Big Rooms",
-        "ar": "القاعات الكبيرة"
+        "en": "Rooms",
+        "ar": "القاعات"
       },
       "rules": [
         {
@@ -164,11 +164,11 @@
       "zone_id": "z-big",
       "kind": "big_room",
       "label": {
-        "en": "Big Room 1",
-        "ar": "القاعة الكبيرة 1"
+        "en": "Room 1",
+        "ar": "القاعة 1"
       },
       "short": {
-        "en": "Big Room 1",
+        "en": "Room 1",
         "ar": "القاعة 1"
       },
       "capacity": 10,
@@ -186,11 +186,11 @@
       "zone_id": "z-big",
       "kind": "big_room",
       "label": {
-        "en": "Big Room 2",
-        "ar": "القاعة الكبيرة 2"
+        "en": "Room 2",
+        "ar": "القاعة 2"
       },
       "short": {
-        "en": "Big Room 2",
+        "en": "Room 2",
         "ar": "القاعة 2"
       },
       "capacity": 12,
@@ -819,8 +819,8 @@
       "id": "n-old",
       "tag": "ac",
       "text": {
-        "en": "AC being serviced in Big Room 2",
-        "ar": "صيانة التكييف في القاعة الكبيرة 2"
+        "en": "AC being serviced in Room 2",
+        "ar": "صيانة التكييف في القاعة 2"
       },
       "space_id": "big-2",
       "posted_at": "2026-09-30T08:10",
@@ -834,7 +834,7 @@
       "renter_id": "leen",
       "space_id": "big-2",
       "type": "ac",
-      "note": "AC not cooling in Big Room 2",
+      "note": "AC not cooling in Room 2",
       "status": "in_progress",
       "history": [
         {

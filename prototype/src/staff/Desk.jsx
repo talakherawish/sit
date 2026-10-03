@@ -324,6 +324,10 @@ export function CheckIn() {
                     </ul>
                   </div>
                   <div className="flex flex-wrap items-center gap-2">
+                    <Link to={`/s/book?renter=${r.id}`} className="btn-secondary !min-h-11 !px-4 !text-[15px]">
+                      <Icon name="calendar" size={18} />
+                      {t('staff_book.book')}
+                    </Link>
                     {visit ? (
                       <button className="btn-secondary min-w-36" onClick={() => doOut(r)}>
                         {t('staff.check_out')}

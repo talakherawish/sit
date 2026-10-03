@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL, usePersonName } from '../lib/hooks'
@@ -7,7 +7,7 @@ import { ACTIVE, dateOf, hoursFor, minOfDay, renter as findRenter } from '../lib
 import { hm } from '../lib/time'
 import Icon from '../components/Icon'
 
-// Same rules as the renter app: free time is white and time already gone is solid grey. Bookings are
+// Same rules as the renter app: free time is white and time already gone has a see-through grey cover. Bookings are
 // amber while awaiting, navy tint once confirmed, solid navy when the renter is in the room.
 const BLOCK = {
   awaiting_confirmation: 'bg-amber/20 text-[#7a4f00] ring-amber/40',
@@ -18,7 +18,7 @@ const BLOCK = {
 
 /**
  * Staff view of every room's opening day at once: one row per room, bookings as labelled blocks,
- * a "now" line, past time covered in solid grey. Click a booking to check its renter in.
+ * a "now" line, past time under a see-through grey cover. Click a booking to check its renter in.
  */
 export default function RoomsDay() {
   const { t } = useTranslation()
@@ -52,7 +52,13 @@ export default function RoomsDay() {
   return (
     <div className="rounded-[22px] bg-surface p-5">
       <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
-        <h2 className="font-head text-[22px] font-bold tracking-tight">{t('staff.rooms_today')}</h2>
+        <h2 className="flex items-center gap-3 font-head text-[22px] font-bold tracking-tight">
+          {t('staff.rooms_today')}
+          <Link to="/s/book" className="btn-secondary !min-h-9 !px-3 font-body !text-[14px] tracking-normal">
+            <Icon name="plus" size={16} />
+            {t('staff_book.title')}
+          </Link>
+        </h2>
         <div className="flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-grey-ink">
           <span className="flex items-center gap-1.5">
             <span className="size-3 rounded-[4px] bg-white ring-1 ring-black/20" />
@@ -102,7 +108,7 @@ export default function RoomsDay() {
                 {hours.map((m) => (
                   <span key={m} className="absolute inset-y-0 border-s border-black/[0.05]" style={{ left: pct(m) }} aria-hidden="true" />
                 ))}
-                {/* time already gone: one solid block over everything before now */}
+                {/* time already gone: a see-through grey cover over everything before now */}
                 {nowMin > h.open && (
                   <span
                     className="pointer-events-none absolute inset-y-0 left-0 z-[5] bg-past"
@@ -119,33 +125,29 @@ export default function RoomsDay() {
                     <span className="truncate">{down.reason}</span>
                   </div>
                 )}
-                {/* Bookings that already ended sit under the past block; ones running now are drawn from now so the name shows */}
-                {bookings
-                  .filter((b) => b.end > nowMin)
-                  .map((b) => {
-                    const r = findRenter(s.data, b.renter_id)
-                    const from = Math.max(b.start, Math.min(nowMin, h.close))
-                    // Fit the label to the block: name + times, name + start, or just the name (all of it is in the tooltip).
-                    const px = ((b.end - from) / 60) * perHour
-                    const narrow = px < 96
-                    const tiny = px < 46
-                    return (
-                      <button
-                        key={b.id}
-                        onClick={() => navigate(`/s/checkin?renter=${r.id}`)}
-                        className={`absolute inset-y-2 flex flex-col justify-center overflow-hidden rounded-lg text-start ring-1 hover:brightness-95 ${tiny ? 'px-0.5' : narrow ? 'px-1' : 'px-2'} ${BLOCK[b.status] || BLOCK.confirmed}`}
-                        style={{ left: `calc(${pct(from)} + 1px)`, width: `calc(${pct(b.end)} - ${pct(from)} - 2px)` }}
-                        title={`${pn(r)} · ${hm(b.start)}–${hm(b.end)} · ${t(`status.${b.status}`)}`}
+                {bookings.map((b) => {
+                  const r = findRenter(s.data, b.renter_id)
+                  // Fit the label to the block: name + times, name + start, or just the name (all of it is in the tooltip).
+                  const px = ((b.end - b.start) / 60) * perHour
+                  const narrow = px < 96
+                  const tiny = px < 46
+                  return (
+                    <button
+                      key={b.id}
+                      onClick={() => navigate(`/s/checkin?renter=${r.id}`)}
+                      className={`absolute inset-y-2 flex flex-col justify-center overflow-hidden rounded-lg text-start ring-1 hover:brightness-95 ${tiny ? 'px-0.5' : narrow ? 'px-1' : 'px-2'} ${BLOCK[b.status] || BLOCK.confirmed}`}
+                      style={{ left: `calc(${pct(b.start)} + 1px)`, width: `calc(${pct(b.end)} - ${pct(b.start)} - 2px)` }}
+                      title={`${pn(r)} · ${hm(b.start)}–${hm(b.end)} · ${t(`status.${b.status}`)}`}
+                    >
+                      <span
+                        className={`truncate leading-tight font-semibold ${tiny ? 'text-[11px] tracking-tight' : narrow ? 'text-[12px] tracking-tight' : 'text-[13px]'}`}
                       >
-                        <span
-                          className={`truncate leading-tight font-semibold ${tiny ? 'text-[11px] tracking-tight' : narrow ? 'text-[12px] tracking-tight' : 'text-[13px]'}`}
-                        >
-                          {pn(r, true)}
-                        </span>
-                        {!tiny && <span className="truncate text-[12px] leading-tight opacity-80">{narrow ? hm(b.start) : `${hm(b.start)}–${hm(b.end)}`}</span>}
-                      </button>
-                    )
-                  })}
+                        {pn(r, true)}
+                      </span>
+                      {!tiny && <span className="truncate text-[12px] leading-tight opacity-80">{narrow ? hm(b.start) : `${hm(b.start)}–${hm(b.end)}`}</span>}
+                    </button>
+                  )
+                })}
                 {/* now line */}
                 {nowMin >= h.open && nowMin <= h.close && (
                   <span

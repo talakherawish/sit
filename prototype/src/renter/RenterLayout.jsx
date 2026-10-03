@@ -91,7 +91,11 @@ function TopBar() {
           </Link>
         )}
         {me ? (
-          <button onClick={() => setAccount(true)} className="grid size-11 place-items-center rounded-full active:bg-black/[0.06]" aria-label={t('nav.account')}>
+          <button
+            onClick={() => setAccount(true)}
+            className="grid size-11 place-items-center rounded-full active:bg-black/[0.06]"
+            aria-label={t('nav.account')}
+          >
             <span className="grid size-8 place-items-center rounded-full bg-navy text-[14px] font-semibold text-white">{pn(me)[0]}</span>
           </button>
         ) : (

@@ -132,7 +132,7 @@
   },
   "kind": {
     "focus_room": "Focus room",
-    "big_room": "Big room"
+    "big_room": "Room"
   },
   "tag": {
     "ac": "AC",
@@ -143,7 +143,7 @@
   "list": {
     "title": "Rooms",
     "focus_rooms": "Focus Rooms",
-    "big_rooms": "Big Rooms",
+    "big_rooms": "Rooms",
     "free_now": "Free now",
     "free_from": "Free from {{time}}",
     "intro": "The same rooms as the map, as a list. Tap one to see its day and book it.",
@@ -537,7 +537,8 @@
     "reset_title": "Reset the seat count to 0?",
     "reset_body": "{{count}} people are counted in the open area now. Reset when the area is empty, for example at closing. It is saved in the seat log.",
     "reset_ok": "Reset",
-    "people_in": "people in the open area"
+    "people_in": "people in the open area",
+    "nav_book": "Book for someone"
   },
   "notices": {
     "title": "Notices",
@@ -842,6 +843,24 @@
     "count_one": "{{count}} booking",
     "count_other": "{{count}} bookings",
     "room": "Room",
-    "dates": "Dates"
+    "dates": "Dates",
+    "for": "For"
+  },
+  "staff_book": {
+    "title": "Book for someone",
+    "book": "Book",
+    "who": "Who is it for?",
+    "search": "Search by name or phone",
+    "change": "Change",
+    "none": "No one found. Add them as a new renter.",
+    "new_renter": "New renter",
+    "upcoming_one": "{{count}} upcoming",
+    "upcoming_other": "{{count}} upcoming",
+    "how": "What are they here to do?",
+    "pick_renter_first": "Pick who it’s for first.",
+    "confirm_for_one": "Book for {{name}}",
+    "confirm_for_other": "Book {{count}} for {{name}}",
+    "reminder_note": "They get an SMS now and a reminder the day before each booking.",
+    "see_availability": "See availability"
   }
 }

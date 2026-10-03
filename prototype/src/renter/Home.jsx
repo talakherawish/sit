@@ -2,13 +2,15 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
-import { useL, usePersonName, useRequireLogin, useSpaceName } from '../lib/hooks'
-import { activeNotices, amenityStatus, hoursFor, startAbs, dateOf, minOfDay, speedTests } from '../lib/logic'
-import { hm } from '../lib/time'
+import { useL, usePersonName, useSpaceName } from '../lib/hooks'
+import { REMINDERS, activeNotices, amenityStatus, hoursFor, isFree, reminderAt, startAbs, dateOf, minOfDay, speedTests } from '../lib/logic'
+import { ceil30, hm } from '../lib/time'
+import { useDuration } from '../components/DayTimeline'
+import Receipt from '../components/Receipt'
 import RoomSheet, { RulesList } from '../components/RoomSheet'
 import RoomsCalendar, { RoomsLegend } from '../components/RoomsCalendar'
 import { AmenitySheet } from '../components/Amenities'
-import { Confirm, ScreenId, Sheet, StatusChip } from '../components/ui'
+import { Chip, Confirm, ScreenId, Sheet, StatusChip } from '../components/ui'
 import Icon, { TechnoparkLogo } from '../components/Icon'
 
 const NOTICE_ICON = { wifi: 'wifi', events: 'megaphone', ac: 'drop', cleaning: 'drop' }
@@ -21,7 +23,6 @@ export default function Home() {
   const { t } = useTranslation()
   const L = useL()
   const navigate = useNavigate()
-  const requireLogin = useRequireLogin()
   const data = useStore((s) => s.data)
   const now = useStore((s) => s.now)
   const selected = useStore((s) => s.selected)
@@ -55,12 +56,12 @@ export default function Home() {
   const min = minOfDay(now)
   const part = min < 12 * 60 ? 'morning' : min < 17 * 60 ? 'afternoon' : 'evening'
 
-  // Free time in the grid goes straight to Review: the room, day and time are already chosen.
-  const bookSlot = (spaceId, range) => {
-    if (!range) return onSelect(spaceId)
-    set({ draft: { spaceId, date: today, dates: [today], start: range.start, end: range.end, source: 'today' } })
-    requireLogin('/r/book')
-  }
+  // A time picked in the grid, kept in the store so logging in on the way doesn't lose it. It's dropped
+  // once it's no longer bookable (time moved on, or someone else took it).
+  const rawPick = useStore((s) => s.todayPick)
+  const pick =
+    rawPick && rawPick.date === today && rawPick.start >= ceil30(min) && isFree(data, rawPick.spaceId, today, rawPick.start, rawPick.end) ? rawPick : null
+  const setPick = (sel) => set({ todayPick: sel ? { reminder: null, ...sel, date: today } : null })
 
   return (
     <div className="space-y-7 pt-6 pb-4">
@@ -155,7 +156,8 @@ export default function Home() {
             <RoomsLegend />
           </div>
         )}
-        <RoomsCalendar date={today} onPick={bookSlot} onMine={(id) => navigate(`/r/confirmed/${id}`)} />
+        <RoomsCalendar date={today} onPick={(id) => onSelect(id)} onMine={(id) => navigate(`/r/confirmed/${id}`)} selection={pick} onSelect={setPick} />
+        <QuickBook pick={pick} onChange={setPick} />
         <div className="mt-4 px-4">
           <Link to="/r/list" className="flex min-h-14 w-full items-center gap-3 rounded-2xl bg-surface px-4 active:bg-black/[0.06]">
             <Icon name="calendar" size={20} className="shrink-0 text-navy" />
@@ -278,6 +280,86 @@ function NextBooking({ renterId }) {
         }}
       />
     </section>
+  )
+}
+
+/**
+ * Booking for today without leaving Today: once a time is picked in the grid, this panel rises at the
+ * bottom with the room and time, the reminder (or "Starts within 2 hours, so it's confirmed now") and
+ * Confirm. No "What's it for?": it's a quick booking. Confirming shows the receipt, then "Booked · Undo".
+ */
+function QuickBook({ pick, onChange }) {
+  const { t } = useTranslation()
+  const name = useSpaceName()
+  const dur = useDuration()
+  const pn = usePersonName()
+  const s = useStore()
+  const [receipt, setReceipt] = useState(null)
+  const today = dateOf(s.now)
+  const remOpts = pick ? REMINDERS.map((k) => ({ k, at: reminderAt(today, pick.start, k) })).filter((o) => o.at > s.now) : []
+  const reminder = remOpts.some((o) => o.k === pick?.reminder) ? pick.reminder : null
+
+  const confirm = () => {
+    if (!s.renterId) return s.set({ gate: { returnTo: '/r/home' } })
+    const me = s.data.renters.find((r) => r.id === s.renterId)
+    const { ids } = s.createBooking(
+      { renterId: me.id, spaceId: pick.spaceId, date: today, dates: [today], start: pick.start, end: pick.end, reason: null, reminder },
+      { source: 'today' },
+    )
+    if (!ids.length) return s.showToast('toast.err_nothing_booked', { name: pn(me, true) })
+    onChange(null)
+    setReceipt({ ids, bookings: useStore.getState().data.bookings.filter((b) => ids.includes(b.id)), email: me.email || me.phone, reminder })
+  }
+  const done = () => {
+    if (!receipt) return
+    const { ids } = receipt
+    setReceipt(null)
+    s.showToast('toast.booked', {}, () => useStore.getState().removeBookings(ids))
+  }
+
+  return (
+    <>
+      {pick && (
+        // Sits just above the tab bar while you scroll the grid
+        <div className="animate-drop sticky bottom-[66px] z-20 mx-3 mt-3 rounded-[22px] bg-white p-4 shadow-[0_10px_40px_rgba(16,24,40,0.22)] ring-1 ring-black/[0.06] sm:bottom-[86px]">
+          <div className="flex items-start gap-3">
+            <span className="min-w-0 flex-1">
+              <span className="block text-[17px] font-semibold">{name(pick.spaceId)}</span>
+              <span className="block text-[15px] text-grey-ink">
+                <span dir="ltr" className="tabular-nums">
+                  {hm(pick.start)}–{hm(pick.end)}
+                </span>{' '}
+                · {dur(pick.end - pick.start)}
+              </span>
+            </span>
+            <button
+              onClick={() => onChange(null)}
+              className="-me-1 grid size-9 shrink-0 place-items-center rounded-full bg-black/[0.06] text-grey-ink"
+              aria-label={t('timeline.clear')}
+            >
+              <Icon name="close" size={16} />
+            </button>
+          </div>
+          <p className="mt-3 mb-1.5 text-[13px] font-semibold">{t('book.reminder')}</p>
+          {remOpts.length ? (
+            <div className="flex flex-wrap gap-2">
+              {remOpts.map((o) => (
+                <Chip key={o.k} active={reminder === o.k} onClick={() => onChange({ ...pick, reminder: reminder === o.k ? null : o.k })}>
+                  {t(`reminder.${o.k}`)}
+                </Chip>
+              ))}
+            </div>
+          ) : (
+            <p className="rounded-xl bg-surface px-3 py-2 text-[13px]">{t('book.no_reminder')}</p>
+          )}
+          {reminder && <p className="mt-1.5 text-[12px] text-grey-ink">{t('book.reminder_hint')}</p>}
+          <button className="btn-primary mt-3 w-full" onClick={confirm}>
+            {t('review.confirm')}
+          </button>
+        </div>
+      )}
+      {receipt && <Receipt bookings={receipt.bookings} email={receipt.email} reminder={receipt.reminder} onDone={done} />}
+    </>
   )
 }
 
