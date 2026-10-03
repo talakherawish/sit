@@ -33,9 +33,12 @@ export function SeatCounter() {
         >
           <Icon name="minus" size={26} />
         </button>
-        <p className="flex items-baseline gap-1.5" aria-live="polite" dir="ltr">
-          <span className="font-head text-[64px] leading-none font-bold tracking-tight">{taken}</span>
-          <span className="font-head text-[26px] font-semibold text-grey-ink">/ {total}</span>
+        <p className="text-center" aria-live="polite">
+          <span className="flex items-baseline justify-center gap-1.5" dir="ltr">
+            <span className="font-head text-[64px] leading-none font-bold tracking-tight">{taken}</span>
+            <span className="font-head text-[26px] font-semibold text-grey-ink">/ {total}</span>
+          </span>
+          <span className="block text-[13px] text-grey-ink">{t('staff.people_in')}</span>
         </p>
         <button
           className="grid size-14 place-items-center rounded-2xl bg-navy text-white active:scale-95 disabled:bg-grey/30"
@@ -46,12 +49,14 @@ export function SeatCounter() {
           <Icon name="plus" size={26} />
         </button>
       </div>
+      {/* one tick per seat, as on the renter's Today: tall teal = free */}
       <span className="mt-4 flex h-6 items-end gap-[3px]" dir="ltr" aria-hidden="true">
         {Array.from({ length: total }, (_, k) => (
-          <span key={k} className={`flex-1 rounded-full transition-all ${k < taken ? 'h-full bg-navy' : 'h-2.5 bg-black/[0.09]'}`} />
+          <span key={k} className={`flex-1 rounded-full transition-all ${k < taken ? 'h-2.5 bg-black/[0.12]' : 'h-full bg-teal'}`} />
         ))}
       </span>
-      <div className="mt-3 flex items-center justify-between gap-2">
+      <p className="mt-3 text-[17px] font-semibold text-[#2f5656]">{t('home.seats_free', { count: total - taken })}</p>
+      <div className="mt-1 flex items-center justify-between gap-2">
         <p className="text-[13px] text-grey-ink">{t('staff.counter_hint')}</p>
         <span className="flex shrink-0 items-center gap-4">
           <button className="btn-link !text-[15px] !text-[#a32f2f] disabled:opacity-40" disabled={taken === 0} onClick={() => setResetting(true)}>
@@ -196,11 +201,19 @@ export function Today() {
                         <td className="px-4 py-3 font-medium">{pn(r)}</td>
                         <td>{name(b.space_id)}</td>
                         <td dir="ltr" className="text-start tabular-nums">
-                          {hm(b.start)}–{hm(b.end)}
+                          <span className="inline-flex items-center gap-1.5">
+                            {hm(b.start)}–{hm(b.end)}
+                            {b.series_id && (
+                              <span title={t('bookings.series')} className="text-grey-ink">
+                                <Icon name="repeat" size={14} />
+                              </span>
+                            )}
+                          </span>
                         </td>
                         <td className="text-grey-ink">{!b.reason ? '—' : b.reason === 'other' ? b.reason_other : t(`reason.${b.reason}`)}</td>
                         <td className="pe-4">
-                          <StatusChip status={st} label={t(`staff_status.${st}`)} />
+                          {/* Awaiting vs confirmed, as on the timeline, so a renter confirming from their phone shows up here too */}
+                          {st === 'upcoming' ? <StatusChip status={b.status} /> : <StatusChip status={st} label={t(`staff_status.${st}`)} />}
                         </td>
                       </tr>
                     )

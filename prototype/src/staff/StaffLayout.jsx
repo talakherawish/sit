@@ -85,10 +85,10 @@ export default function StaffLayout() {
             aria-label={t('home.seats_aria', { taken: seats.taken, total: seats.total })}
           >
             <span className="live-dot size-2 rounded-full bg-teal" aria-hidden="true" />
-            <span className="text-[15px] font-semibold tabular-nums" dir="ltr">
-              {seats.taken} / {seats.total}
+            <span className="text-[15px] font-semibold text-[#2f5656] tabular-nums">{t('home.seats_free', { count: seats.total - seats.taken })}</span>
+            <span className="text-[13px] text-grey-ink" dir="ltr">
+              · {seats.taken} / {seats.total}
             </span>
-            <span className="text-[13px] text-grey-ink">{t('staff.open_area')}</span>
           </NavLink>
           <button
             onClick={() => setLang(lang === 'en' ? 'ar' : 'en')}

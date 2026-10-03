@@ -65,6 +65,8 @@ function QuickReview({ draft, onSubmit, onEdit }) {
   const now = useStore((s) => s.now)
   const lang = useStore((s) => s.lang)
   const [reason, setReason] = useState(draft.reason || '')
+  // Asked once: if "What are you here to do?" was already answered (Book ahead), just show the answer.
+  const [editReason, setEditReason] = useState(!draft.reason || draft.reason === 'other')
   const [other, setOther] = useState('')
   const [reminder, setReminder] = useState(null)
   const renterId = useStore((s) => s.renterId)
@@ -169,29 +171,39 @@ function QuickReview({ draft, onSubmit, onEdit }) {
         </section>
       )}
 
-      <section>
-        <SectionLabel>
-          {t('review.purpose')} <span className="font-normal text-grey-ink">· {t('review.optional')}</span>
-        </SectionLabel>
-        <div className="flex flex-wrap gap-2">
-          {REASONS.map((r) => (
-            <Chip key={r} active={reason === r} onClick={() => setReason(reason === r ? '' : r)}>
-              {t(`reason.${r}`)}
-            </Chip>
-          ))}
+      {!editReason ? (
+        <div className="flex min-h-12 items-center gap-3 rounded-2xl bg-surface px-4">
+          <span className="text-[15px] text-grey-ink">{t('review.purpose')}</span>
+          <span className="min-w-0 flex-1 truncate text-end text-[17px] font-medium">{t(`reason.${reason}`)}</span>
+          <button type="button" className="min-h-11 shrink-0 px-1 text-[15px] font-medium text-navy" onClick={() => setEditReason(true)}>
+            {t('common.edit')}
+          </button>
         </div>
-        {reason === 'other' && (
-          <input
-            className="input mt-2"
-            aria-label={t('book.reason_other')}
-            placeholder={t('book.reason_other')}
-            value={other}
-            maxLength={80}
-            onChange={(e) => setOther(e.target.value)}
-            autoFocus
-          />
-        )}
-      </section>
+      ) : (
+        <section>
+          <SectionLabel>
+            {t('review.purpose')} <span className="font-normal text-grey-ink">· {t('review.optional')}</span>
+          </SectionLabel>
+          <div className="flex flex-wrap gap-2">
+            {REASONS.map((r) => (
+              <Chip key={r} active={reason === r} onClick={() => setReason(reason === r ? '' : r)}>
+                {t(`reason.${r}`)}
+              </Chip>
+            ))}
+          </div>
+          {reason === 'other' && (
+            <input
+              className="input mt-2"
+              aria-label={t('book.reason_other')}
+              placeholder={t('book.reason_other')}
+              value={other}
+              maxLength={80}
+              onChange={(e) => setOther(e.target.value)}
+              autoFocus
+            />
+          )}
+        </section>
+      )}
 
       <section>
         <SectionLabel>{t('book.reminder')}</SectionLabel>
@@ -346,7 +358,10 @@ export function Confirmed() {
             <span className="text-[17px] text-grey-ink">{b.reminder_at ? fmtAbs(b.reminder_at, s.lang) : t('book.no_reminder_short')}</span>
           </GroupRow>
           <GroupRow label={t('bookings.status')}>
-            <StatusChip status={b.status === 'used' ? 'checked_in' : b.status} label={b.status === 'used' && s.now < endAbs(b) ? t('bookings.in_room', { time: hm(b.end) }) : undefined} />
+            <StatusChip
+              status={b.status === 'used' ? 'checked_in' : b.status}
+              label={b.status === 'used' && s.now < endAbs(b) ? t('bookings.in_room', { time: hm(b.end) }) : undefined}
+            />
           </GroupRow>
         </Group>
         {series > 1 && <p className="px-1 text-[15px] text-grey-ink">{t('confirmed.series', { count: series })}</p>}

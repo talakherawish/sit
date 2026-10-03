@@ -33,9 +33,11 @@ export default function RoomsCalendar({ date, onPick, onMine }) {
   const slots = []
   for (let m = from; m < h.close; m += 30) slots.push(m)
 
+  // Bookings that started before now are drawn from now, so their label isn't hidden under the past block.
+  const shownFrom = today ? Math.max(from, Math.min(nowMin, h.close)) : from
   const pick = (sp, m) => onPick(sp.id, { start: m, end: isFree(data, sp.id, date, m, m + 60) ? m + 60 : m + 30 })
   const BLOCK = {
-    booked: 'bg-[#E4E6EB] text-ink/70',
+    booked: 'bg-[#F1F2F5] text-ink/70 ring-1 ring-black/[0.08] ring-inset',
     mine: 'bg-navy/15 text-navy',
     down: 'hatch text-[#a32f2f]',
   }
@@ -53,9 +55,17 @@ export default function RoomsCalendar({ date, onPick, onMine }) {
         ))}
       </div>
 
-      <div className="flex px-4 pt-3">
+      <div className="relative flex px-4 pt-3">
+        {/* Time that has passed: one solid block, edge to edge, over everything before now. Free time stays white. */}
+        {today && nowMin > from && (
+          <span
+            className="pointer-events-none absolute inset-x-0 top-0 z-[5] bg-past"
+            style={{ height: 12 + y(Math.min(nowMin, h.close)) }}
+            aria-hidden="true"
+          />
+        )}
         {/* hour gutter */}
-        <div className="relative w-11 shrink-0" style={{ height }} aria-hidden="true">
+        <div className="relative z-[6] w-11 shrink-0" style={{ height }} aria-hidden="true">
           {hours.map((m) => (
             <span key={m} className="absolute end-1.5 -translate-y-1/2 text-[12px] text-grey-ink tabular-nums" style={{ top: y(m) }} dir="ltr">
               {hm(m)}
@@ -77,14 +87,6 @@ export default function RoomsCalendar({ date, onPick, onMine }) {
           {hours.map((m) => (
             <span key={m} className="pointer-events-none absolute inset-x-0 z-[1] border-t border-black/[0.07]" style={{ top: y(m) }} aria-hidden="true" />
           ))}
-          {/* time that has passed */}
-          {today && firstBookable > from && (
-            <span
-              className="pointer-events-none absolute inset-x-0 top-0 bg-black/[0.035]"
-              style={{ height: y(Math.min(firstBookable, h.close)) }}
-              aria-hidden="true"
-            />
-          )}
 
           {data.spaces.map((sp) => {
             const down = sp.down && sp.down.date === date ? sp.down : null
@@ -97,7 +99,7 @@ export default function RoomsCalendar({ date, onPick, onMine }) {
                     <button
                       key={m}
                       onClick={() => pick(sp, m)}
-                      className="absolute inset-x-0.5 bg-free active:bg-navy/15"
+                      className="absolute inset-x-0 active:bg-navy/10"
                       style={{ top: y(m), height: ROW }}
                       aria-label={t('rooms_cal.free_at', { room: L(sp.label), time: hm(m) })}
                     />
@@ -111,10 +113,10 @@ export default function RoomsCalendar({ date, onPick, onMine }) {
                   </div>
                 )}
                 {bookings
-                  .filter((b) => b.end > from)
+                  .filter((b) => b.end > shownFrom)
                   .map((b) => {
                     const kind = b.renter_id === renterId ? 'mine' : 'booked'
-                    const top = y(Math.max(b.start, from))
+                    const top = y(Math.max(b.start, shownFrom))
                     const tall = y(b.end) - top
                     return (
                       <button
@@ -152,22 +154,26 @@ export default function RoomsCalendar({ date, onPick, onMine }) {
   )
 }
 
-/** Key for the grid: the same "Free" colour as the map. */
+/** Key for the grid: free is white, time already gone is solid grey. */
 export function RoomsLegend() {
   const { t } = useTranslation()
   return (
-    <div className="flex items-center justify-between gap-2 px-1 text-[13px] whitespace-nowrap text-grey-ink">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-1 text-[13px] whitespace-nowrap text-grey-ink">
       <span className="flex items-center gap-1.5">
-        <span className="size-3 rounded-[4px] bg-free ring-1 ring-teal/40" />
+        <span className="size-3 rounded-[4px] bg-white ring-1 ring-black/20" />
         {t('legend.free')}
       </span>
       <span className="flex items-center gap-1.5">
-        <span className="size-3 rounded-[4px] bg-[#E4E6EB]" />
+        <span className="size-3 rounded-[4px] bg-[#F1F2F5] ring-1 ring-black/[0.12]" />
         {t('legend.booked')}
       </span>
       <span className="flex items-center gap-1.5">
         <span className="size-3 rounded-[4px] bg-navy/15" />
         {t('rooms_cal.yours')}
+      </span>
+      <span className="flex items-center gap-1.5">
+        <span className="size-3 rounded-[4px] bg-past" />
+        {t('timeline.past')}
       </span>
       <span className="flex items-center gap-1.5">
         <span className="hatch size-3 rounded-[4px]" />

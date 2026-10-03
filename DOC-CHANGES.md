@@ -5,7 +5,7 @@ A running list of what the documents need after the renter app changes that star
 
 Status: **built** = in the code now · **decided** = agreed, not built yet
 
-**As of 3 Oct: everything in section 1b is built** in the renter app (not pushed or deployed yet). Sections 2–7 are document work still to do.
+**As of 3 Oct: everything in section 1b is built**: the renter app, the reception dashboard and the demo. Sections 2–7 are document work still to do.
 
 ---
 
@@ -39,6 +39,10 @@ The markdown sources were folded into the PDF in commit `e204140`. To edit, rest
 
 > 4 month sis a lot make it just these days 2 weeks month and until anything
 
+> my bookings should have the option to toggle beltween my bookings as cards and as calendar.
+> in home page your bookings today should only the show the most close upcoming booking with confirm cancel buttons only ONE and it should b below wifi and seats free and above rooms today. roms today should flip colors in time so what didnt happen yet so from 9:30 onward it should be free remove the greenish color and the time before that passed should be entrely covered in opaque grey do not leave the edges.
+> what are u here to do gets asked multiple times when booking.
+
 **Why I asked for this / Principle I was following:** for you to fill in.
 
 ### 1b. AI-refined version: new round, "Round 12: Value first (after senior PM feedback)"
@@ -46,28 +50,37 @@ The markdown sources were folded into the PDF in commit `e204140`. To edit, rest
 | Decision | Why | Principle |
 |---|---|---|
 | Three tabs: **Today · Book ahead · My bookings** (was Map · Rooms · My bookings · Report) | Each tab answers one question: what's happening today, when can I book later, what have I booked. Matches the vision: *know before you go* (Today) and *sit where you booked* (My bookings) | Clear navigation; Hick's Law |
-| **Today** holds everything about today only: your bookings today, live seats, hours, cafeteria, Wi-Fi, notices, then every room's day | The first screen should answer "can I come in and work?" without scrolling past a gap | Visibility of system status; clicks to treasure |
+| **Today** holds everything about today only: live seats, hours, cafeteria, Wi-Fi and notices first, then your next booking, then every room's day | The first screen should answer "can I come in and work?" without scrolling past a gap | Visibility of system status; clicks to treasure |
 | **"22 seats free"** is the big number; "18 of 40 taken" is small | People ask "is there space for me?", not "how full is it?" | Visual hierarchy |
-| **Your booking today** sits at the top of Today, with **Confirm** right there when it's waiting | Confirming is what keeps your room; it used to be two tabs away | Make important actions obvious |
+| **Your next booking** (only one: the closest today that hasn't started) sits below the seats and Wi-Fi and above Rooms today, with **Confirm** (when it's waiting) and **Cancel** | Confirming is what keeps your room; it used to be two tabs away. One card, not a list, keeps Today short; the rest are on My bookings | Make important actions obvious; Miller's Law |
 | Removed the **Book a room** button, its "No map needed" note and the blank gap from Home | The rooms grid on Today *is* the booking surface now | Minimalist design |
 | Today's rooms show as the **full grid** (one column per room), starting at the current hour | You tap the exact free time you want: one step fewer than picking a room, then a time | Fitts's Law; clicks to treasure |
 | From Today you book **today only**: tap a free time → Review → Confirm | The quick, common case gets the shortest path | Clicks to treasure |
-| In the grid and timelines, **your own bookings are navy**; teal now only means free | "Yours" was teal too, so it looked free | Consistency; clear signals |
+| In the grid and timelines, **your own bookings are navy** | "Yours" was teal, the same as the map's "free" | Clear signals |
 | **Book ahead** has two ways in: **By time** (pick days and time, see which rooms are free) and **By room** (pick a room on the map, see its free days and hours) | Some people start from their schedule, others from a favourite room | Flexibility; user control |
 | Book ahead uses a **month calendar**; tap several days at once | A course on Mon and Wed is two taps, not two bookings | Fewer clicks |
 | **Repeat** is chosen straight away from chips: Just these days · 2 weeks · 1 month · Until… (no "Repeat? yes/no" step) | One tap instead of a switch plus a second question | Hick's Law; clicks to treasure |
 | Rooms show **"free all 32 times"** or **"free 29 of 32"** before you pick one | A room free on day 1 can be taken in week 9; you see it before booking, not after | Error prevention |
 | **One list of activities** ("What are you here to do?") used to filter rooms and as the booking's reason; labels shortened to Focused work · Call · Group work · Meeting · Interview · Other | Home and the booking form used to ask the same thing with two different lists | Consistency |
+| **Asked once:** if you picked an activity in Book ahead, Review shows it ("What's it for? Group work · Edit") instead of asking again | It was asked twice in one booking | Don't make people repeat themselves |
 | In Book ahead the **map is plain**: no live free/booked colours, each room shows its size, and rooms that don't suit the activity are dimmed | Live "free now" colours are misleading when you're planning next week | Relevance; error prevention |
 | The booking reason is **optional** | It helps Technopark, not the renter, and blocked the Confirm button | Remove friction; user control |
-| **Free time is teal everywhere** (map, grid, timelines) | "Free" was teal on the map but white in the grid | Consistency |
+| **Time reads like a clock:** free time is white; time that has already gone is **one solid grey block, edge to edge**; a booking running now is drawn from the now line so its name stays visible (Rooms today, the room sheet's timeline and reception's timeline) | The green tint on free time made the whole grid look busy, and the faint past shading let old bookings show through | Visibility of system status; clarity |
 | Reminder text for bookings that start within 2 hours: "Starts within 2 hours, so it's confirmed now", and the "released 1 hour before" line is hidden | The two lines contradicted each other | Clear, honest feedback |
 | Tapping the **avatar opens Account**: name, language, My reports, **Report a problem** (soft red, flag), Log out | The avatar looked tappable but did nothing | Affordance; Jakob's Law |
 | **Report a problem on a booking** appears once the booking has started (in place of Change / Cancel) and on past visits; it fills in the room and time | Problems happen while you're in the room; reception should know exactly which booking | Context; error prevention |
 | My bookings: "Used" → **"Checked in · until 10:00"**; a repeating booking counts once; Change / Cancel are hidden once a booking starts instead of greyed out | Clearer status; the count was inflated (21); disabled buttons are noise | Clarity; minimalist design |
 | Kept the name **My bookings** (not "History") | Most of what's there is upcoming bookings you act on; "History" sounds like past only | Clear labels |
+| **My bookings: Cards ⇄ Calendar** switch beside the title. Calendar is a month view with a dot per booking (amber = waiting for you, navy = confirmed or used, grey = cancelled or released); tap a day to see its bookings as cards | A repeating course is easier to read on a calendar than as a list | Flexibility; recognition over recall |
 | "Report an issue" is now **"Report a problem"** everywhere | One name for one action | Consistency |
 | Long repeating bookings show a summary on Review ("34 dates · Mon 5 Oct – Wed 27 Jan") with the first few dates and "+30 more" | A list of 34 date chips was a wall | Miller's Law; chunking |
+| **Reception:** the seat card adds "22 seats free" in teal under the count (the count still goes up with + because reception counts people in); the top bar leads with "22 seats free · 18 / 40" | Reception and renters read the same number | Consistency |
+| **Reception's Rooms today:** same time rules as the renter grid (free white, past solid grey); checked in is solid navy (was teal), confirmed light navy, awaiting amber | One colour language across both screens | Consistency |
+| **Reception's Rooms today:** labels fit the space: long bookings show name and times, short ones the name and start, very short ones just the name; hour labels thin out on small screens | Names were cut off ("Fa…"), especially in the demo | Legibility |
+| **Reception's bookings table** shows Awaiting confirmation / Confirmed instead of "Upcoming"; repeating bookings get a repeat mark | When a renter confirms from Today, the desk sees it straight away | Visibility of system status |
+| **Reports inbox** shows which booking a report is about ("Booking · Thu 1 Oct · 09:00–10:00") | Reports sent from a booking carry it; staff shouldn't have to ask | Context; fewer steps |
+| **People:** a repeating booking counts once in "Upcoming" | Same rule as My bookings (Tala showed 37 upcoming) | Consistency |
+| **Demo** header describes the new journey: confirm Tala's 13:30 on Today and watch reception change; check someone in and watch free seats drop on her phone; answer her report and the alert reaches her | The presentation should narrate a journey (Diaa's main point) | Storytelling |
 
 ### 1c. Earlier decisions this round overrides
 
@@ -133,8 +146,8 @@ Counted on the built prototype (3 Oct):
 - Narrate the journey on top of the demo (Diaa's main point): persona → moment → screens → outcome → metric.
 - Before/after slide for Today (old Home vs new Today) as evidence of iteration.
 
-## 8. Code still to sync later (not documents)
+## 8. Code sync (not documents)
 
-- Staff dashboard: "—" when a booking has no reason (**done**, so nothing breaks). Still to do: show which booking a report is about (reports now carry `booking_id`); names cut off in the Rooms today timeline.
-- Side-by-side demo: loads the renter app, so it updates by itself; re-run the demo story.
+- **Done:** reception dashboard and demo are synced (see the reception rows in 1b).
+- Prototype README also needs: the seat-card line ("Renters see the free seats on their Today screen"), the colour key (free white · past solid grey · awaiting amber · confirmed light navy · checked in navy), My bookings' Cards / Calendar switch, and the demo's three-step story.
 - Wireframes stay as they are.

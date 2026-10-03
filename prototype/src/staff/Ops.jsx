@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL, useSpaceName, usePersonName } from '../lib/hooks'
 import { NOTICE_TAGS, hoursFor, dateOf, minOfDay, renter as findRenter } from '../lib/logic'
-import { abs, fmtAbs, hm, parseHm } from '../lib/time'
+import { abs, fmtAbs, fmtDate, hm, parseHm } from '../lib/time'
 import { Card, Chip, Confirm, Field, Switch } from '../components/ui'
 import { StaffTitle } from './StaffLayout'
 
@@ -219,6 +219,7 @@ export function ReportsInbox() {
   const name = useSpaceName()
   const s = useStore()
   const [edits, setEdits] = useState({})
+  const booking = (r) => r.booking_id && s.data.bookings.find((b) => b.id === r.booking_id)
   return (
     <>
       <StaffTitle id="S-05" title={t('inbox.title')} />
@@ -241,7 +242,17 @@ export function ReportsInbox() {
                 <tr key={r.id} className={`border-b border-black/[0.06] align-middle last:border-0 ${r.status === 'sent' ? 'bg-navy/[0.04]' : ''}`}>
                   <td className="min-w-22 text-sm text-grey-ink">{fmtAbs(r.history[0].time, s.lang)}</td>
                   <td className="font-semibold">{pn(findRenter(s.data, r.renter_id))}</td>
-                  <td className="whitespace-nowrap">{name(r.space_id)}</td>
+                  <td className="whitespace-nowrap">
+                    {name(r.space_id)}
+                    {booking(r) && (
+                      <span className="block text-[13px] text-grey-ink">
+                        {t('inbox.booking')} · {fmtDate(booking(r).date, s.lang)} ·{' '}
+                        <span dir="ltr">
+                          {hm(booking(r).start)}–{hm(booking(r).end)}
+                        </span>
+                      </span>
+                    )}
+                  </td>
                   <td className="whitespace-nowrap">{r.types.map((k) => t(`issue.${k}`)).join(', ')}</td>
                   <td className="max-w-60 min-w-36 text-sm">
                     {r.note}

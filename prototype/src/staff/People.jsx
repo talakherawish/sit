@@ -71,9 +71,10 @@ export function People() {
                 const vs = visitsOf(r.id)
                 const open = vs.find((v) => !v.check_out)
                 const last = vs.reduce((m, v) => Math.max(m, v.check_in), 0)
-                const upcoming = s.data.bookings.filter(
+                const ahead = s.data.bookings.filter(
                   (b) => b.renter_id === r.id && ['awaiting_confirmation', 'confirmed'].includes(b.status) && endAbs(b) > s.now,
-                ).length
+                )
+                const upcoming = ahead.filter((b) => !b.series_id).length + new Set(ahead.filter((b) => b.series_id).map((b) => b.series_id)).size
                 return (
                   <tr
                     key={r.id}

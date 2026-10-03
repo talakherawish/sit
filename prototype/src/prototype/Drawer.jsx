@@ -192,7 +192,7 @@ function ScreenIndex() {
           {id}
         </button>
       ))}
-      <span className="w-full pt-1 text-xs text-grey-ink">R-08, R-09 and R-14 open from their flows; S-00 via the reception switch.</span>
+      <span className="w-full pt-1 text-xs text-grey-ink">R-08, R-09 and R-14 open from their flows; Account from the avatar; S-00 via the reception switch.</span>
     </div>
   )
 }
@@ -221,7 +221,7 @@ function TimeSim() {
     ? [
         ['2 h before', startAbs(target) - 120, 'Fires the reminder SMS → R-15'],
         ['1 h before, unconfirmed', startAbs(target) - 60, 'Unconfirmed → auto-released'],
-        ['At start time', startAbs(target), 'Change / Cancel lock'],
+        ['At start time', startAbs(target), 'Change / Cancel → Report a problem'],
         ['15 min after start, no check-in', startAbs(target) + 15, 'Confirmed but not checked in → released'],
       ]
     : []

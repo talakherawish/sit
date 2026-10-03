@@ -3,19 +3,19 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL, usePersonName, useRequireLogin, useSpaceName } from '../lib/hooks'
-import { ACTIVE, activeNotices, amenityStatus, endAbs, hoursFor, startAbs, dateOf, minOfDay, speedTests } from '../lib/logic'
+import { activeNotices, amenityStatus, hoursFor, startAbs, dateOf, minOfDay, speedTests } from '../lib/logic'
 import { hm } from '../lib/time'
 import RoomSheet, { RulesList } from '../components/RoomSheet'
 import RoomsCalendar, { RoomsLegend } from '../components/RoomsCalendar'
 import { AmenitySheet } from '../components/Amenities'
-import { ScreenId, Sheet, StatusChip } from '../components/ui'
+import { Confirm, ScreenId, Sheet, StatusChip } from '../components/ui'
 import Icon, { TechnoparkLogo } from '../components/Icon'
 
 const NOTICE_ICON = { wifi: 'wifi', events: 'megaphone', ac: 'drop', cleaning: 'drop' }
 
 /**
- * R-01 Today: everything about today only. Your bookings today, then "know before you go" (seats, hours,
- * cafeteria, Wi-Fi, notices), then every room's day; tap a free time to book it. Later days are on Book ahead.
+ * R-01 Today: everything about today only. "Know before you go" (seats, hours, cafeteria, Wi-Fi, notices),
+ * your next booking, then every room's day; tap a free time to book it. Later days are on Book ahead.
  */
 export default function Home() {
   const { t } = useTranslation()
@@ -76,8 +76,6 @@ export default function Home() {
         </h1>
         <ScreenId id="R-01" className="mt-1" />
       </header>
-
-      {me && <YourDay renterId={me.id} />}
 
       {/* Know before you go (US-1) */}
       <section className="space-y-3 px-4" aria-label={t('home.todays_status')}>
@@ -141,6 +139,8 @@ export default function Home() {
           </button>
         )}
       </section>
+
+      {me && <NextBooking renterId={me.id} />}
 
       {/* Every room's day; tap free time to book it (today only) */}
       <section aria-labelledby="h-rooms">
@@ -213,57 +213,70 @@ export default function Home() {
   )
 }
 
-/** The signed-in renter's bookings for the rest of today, with Confirm right there when one is waiting. */
-function YourDay({ renterId }) {
+/**
+ * Your next booking today (only the closest one that hasn't started), with Confirm when it's waiting
+ * and Cancel. The rest of your bookings are on My bookings.
+ */
+function NextBooking({ renterId }) {
   const { t } = useTranslation()
   const name = useSpaceName()
   const data = useStore((s) => s.data)
   const now = useStore((s) => s.now)
   const confirmBooking = useStore((s) => s.confirmBooking)
+  const cancelWithUndo = useStore((s) => s.cancelWithUndo)
   const showToast = useStore((s) => s.showToast)
+  const [cancelling, setCancelling] = useState(false)
   const today = dateOf(now)
-  const mine = data.bookings
-    .filter((b) => b.renter_id === renterId && b.date === today && ACTIVE.includes(b.status) && endAbs(b) > now)
-    .sort((a, b) => a.start - b.start)
-  if (!mine.length) return null
+  const next = data.bookings
+    .filter((b) => b.renter_id === renterId && b.date === today && ['awaiting_confirmation', 'confirmed'].includes(b.status) && startAbs(b) > now)
+    .sort((a, b) => a.start - b.start)[0]
+  if (!next) return null
+  const waiting = next.status === 'awaiting_confirmation'
   return (
-    <section className="px-4" aria-labelledby="h-yours">
-      <h2 id="h-yours" className="mb-1.5 px-1 text-[15px] font-semibold">
-        {t('today.yours')}
+    <section className="px-4" aria-labelledby="h-next">
+      <h2 id="h-next" className="mb-1.5 px-1 text-[15px] font-semibold">
+        {t('today.next')}
       </h2>
-      <div className="divide-y divide-black/[0.07] overflow-hidden rounded-[22px] bg-surface">
-        {mine.map((b) => {
-          const inRoom = b.status === 'used' || b.status === 'checked_in'
-          const waiting = b.status === 'awaiting_confirmation' && startAbs(b) > now
-          return (
-            <div key={b.id} className="flex min-h-16 items-center gap-3 px-4 py-2.5">
-              <Link to={`/r/confirmed/${b.id}`} className="min-w-0 flex-1 active:opacity-70">
-                <span className="block truncate text-[17px] font-semibold">{name(b.space_id)}</span>
-                <span className="flex flex-wrap items-center gap-x-2 text-[15px] text-grey-ink">
-                  <span dir="ltr" className="tabular-nums">
-                    {hm(b.start)}–{hm(b.end)}
-                  </span>
-                  <StatusChip status={inRoom ? 'checked_in' : b.status} label={inRoom ? t('bookings.in_room', { time: hm(b.end) }) : undefined} />
-                </span>
-              </Link>
-              {waiting && (
-                <button
-                  className="min-h-11 shrink-0 rounded-full bg-navy px-5 text-[15px] font-semibold text-white active:scale-[0.97]"
-                  onClick={() => {
-                    confirmBooking(b.id)
-                    showToast('toast.confirmed')
-                  }}
-                >
-                  {t('bookings.confirm')}
-                </button>
-              )}
-            </div>
-          )
-        })}
+      <div className="rounded-[22px] bg-surface p-4">
+        <Link to={`/r/confirmed/${next.id}`} className="-m-1 flex items-start justify-between gap-3 rounded-xl p-1 active:bg-black/[0.04]">
+          <span className="min-w-0">
+            <span className="block truncate text-[17px] font-semibold">{name(next.space_id)}</span>
+            <span dir="ltr" className="block text-[15px] text-grey-ink tabular-nums">
+              {hm(next.start)}–{hm(next.end)}
+            </span>
+          </span>
+          <StatusChip status={next.status} />
+        </Link>
+        {waiting && <p className="mt-2 text-[13px] text-grey-ink">{t('bookings.confirm_hint')}</p>}
+        <div className="mt-3 flex gap-2">
+          {waiting && (
+            <button
+              className="btn-primary !min-h-11 flex-1"
+              onClick={() => {
+                confirmBooking(next.id)
+                showToast('toast.confirmed')
+              }}
+            >
+              {t('bookings.confirm')}
+            </button>
+          )}
+          <button className="btn-danger !min-h-11 flex-1" onClick={() => setCancelling(true)}>
+            {t('bookings.cancel')}
+          </button>
+        </div>
       </div>
-      {mine.some((b) => b.status === 'awaiting_confirmation' && startAbs(b) > now) && (
-        <p className="mt-1.5 px-1 text-[13px] text-grey-ink">{t('bookings.confirm_hint')}</p>
-      )}
+      <Confirm
+        open={cancelling}
+        title={t('bookings.cancel_title')}
+        body={t('bookings.cancel_body')}
+        okLabel={t('bookings.cancel_ok')}
+        danger
+        onCancel={() => setCancelling(false)}
+        onOk={() => {
+          cancelWithUndo(next.id)
+          setCancelling(false)
+        }}
+      />
     </section>
   )
 }

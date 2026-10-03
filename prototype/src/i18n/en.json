@@ -324,7 +324,11 @@
     "count_one": "{{count}} booking",
     "count_other": "{{count}} bookings",
     "sort_newest": "Newest first",
-    "in_room": "Checked in · until {{time}}"
+    "in_room": "Checked in · until {{time}}",
+    "view": "View",
+    "view_cards": "Cards",
+    "view_calendar": "Calendar",
+    "none_day": "No bookings on this day."
   },
   "move": {
     "title": "Move booking",
@@ -476,7 +480,7 @@
     "post_now": "Post now",
     "minus": "One seat freed",
     "plus": "One seat taken",
-    "counter_hint": "Renters see this number on the Sit home page.",
+    "counter_hint": "Renters see the free seats on their Today screen.",
     "view_log": "View log",
     "notices": "Notices",
     "post_notice": "Post notice",
@@ -526,7 +530,8 @@
     "reset_seats": "Reset to 0",
     "reset_title": "Reset the seat count to 0?",
     "reset_body": "{{count}} people are counted in the open area now. Reset when the area is empty, for example at closing. It is saved in the seat log.",
-    "reset_ok": "Reset"
+    "reset_ok": "Reset",
+    "people_in": "people in the open area"
   },
   "notices": {
     "title": "Notices",
@@ -560,7 +565,8 @@
     "col_note": "Note",
     "col_status": "Status",
     "col_reply": "Reply",
-    "reply_ph": "Optional reply to renter"
+    "reply_ph": "Optional reply to renter",
+    "booking": "Booking"
   },
   "people": {
     "title": "People",
@@ -755,7 +761,7 @@
   },
   "demo": {
     "title": "Live demo: renter app and reception, side by side",
-    "hint": "Both screens share the same data. Check Leen in on the right and watch the seat count on the left, or answer a report on the right and watch the alert reach Tala.",
+    "hint": "Both screens share the same data. Confirm Tala’s 13:30 on her Today screen and watch it change at reception; check someone in at reception and watch the free seats drop on her phone; answer her report and the alert reaches her.",
     "panel": "Time & scenarios",
     "reset": "Reset demo",
     "renter": "Renter app · Tala",
@@ -770,11 +776,11 @@
     "free_at": "{{room}} free at {{time}}. Book"
   },
   "today": {
-    "yours": "Your bookings today",
     "rooms": "Rooms today",
     "rooms_hint": "Tap a free time to book it.",
     "ahead": "Book another day",
-    "ahead_hint": "Later dates, or a booking that repeats"
+    "ahead_hint": "Later dates, or a booking that repeats",
+    "next": "Your next booking"
   },
   "account": {
     "title": "Account",

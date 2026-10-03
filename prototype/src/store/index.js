@@ -129,6 +129,7 @@ const initial = () => ({
   pendingRating: {}, // renterId -> visitId
   reportSpace: null,
   reportBooking: null, // booking a report is about, when sent from that booking
+  bookingsView: 'cards', // My bookings: 'cards' | 'calendar'
   plan: null, // Book ahead choices (days, repeat, time, activity), kept while going to Review and back
   toast: null,
   drawerOpen: false,

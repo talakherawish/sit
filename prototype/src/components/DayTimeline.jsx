@@ -83,7 +83,7 @@ export default function DayTimeline({ spaceId, date, range, onChange }) {
   const BLOCK = {
     booked: 'bg-[#E4E6EB] text-ink/75',
     mine: 'bg-navy/10 text-navy',
-    past: 'bg-transparent text-grey-ink/70',
+    past: 'bg-past text-grey-ink',
     down: 'hatch text-[#a32f2f]',
   }
 
@@ -119,7 +119,7 @@ export default function DayTimeline({ spaceId, date, range, onChange }) {
           ))}
         </div>
 
-        <div className="relative flex-1 overflow-hidden rounded-2xl bg-surface" style={{ height }}>
+        <div className="relative flex-1 overflow-hidden rounded-2xl bg-white ring-1 ring-black/[0.08] ring-inset" style={{ height }}>
           {hours.map((m) => (
             <span key={m} className="absolute inset-x-0 border-t border-black/[0.07]" style={{ top: top(m) }} aria-hidden="true" />
           ))}
@@ -142,10 +142,10 @@ export default function DayTimeline({ spaceId, date, range, onChange }) {
           {/* labelled stretches */}
           {blocks.map((b) =>
             b.kind === 'free' ? (
-              // Same "Free" colour as the map and the rooms grid; taps go through to the half-hour buttons below
+              // Free time stays white, as in the rooms grid; taps go through to the half-hour buttons below
               <div
                 key={`f${b.from}`}
-                className="pointer-events-none absolute inset-x-1.5 flex items-start gap-1.5 overflow-hidden rounded-lg bg-free px-2.5 pt-[12px] text-[13px] font-medium text-[#2f5656]"
+                className="pointer-events-none absolute inset-x-1.5 flex items-start gap-1.5 overflow-hidden px-2.5 pt-[12px] text-[13px] font-medium text-[#2f5656]"
                 style={{ top: top(b.from) + 2, height: top(b.to) - top(b.from) - 4 }}
               >
                 <span className="mt-[6px] size-1.5 shrink-0 rounded-full bg-teal" />
@@ -154,8 +154,11 @@ export default function DayTimeline({ spaceId, date, range, onChange }) {
             ) : (
               <div
                 key={`${b.key}${b.from}`}
-                className={`absolute inset-x-1.5 flex items-start gap-1.5 overflow-hidden rounded-lg px-2.5 pt-[12px] text-[13px] font-medium ${BLOCK[b.kind]}`}
-                style={{ top: top(b.from) + 2, height: top(b.to) - top(b.from) - 4 }}
+                // Past time is one solid block edge to edge; bookings are inset cards
+                className={`absolute flex items-start gap-1.5 overflow-hidden px-2.5 pt-[12px] text-[13px] font-medium ${b.kind === 'past' ? 'inset-x-0' : 'inset-x-1.5 rounded-lg'} ${BLOCK[b.kind]}`}
+                style={
+                  b.kind === 'past' ? { top: top(b.from), height: top(b.to) - top(b.from) } : { top: top(b.from) + 2, height: top(b.to) - top(b.from) - 4 }
+                }
               >
                 {b.kind === 'booked' && <Icon name="lock" size={14} className="mt-[2px] shrink-0" />}
                 <span className="truncate">
