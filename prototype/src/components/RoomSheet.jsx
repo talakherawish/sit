@@ -3,12 +3,10 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL, useRequireLogin } from '../lib/hooks'
-import { dateOf, expandDates, minOfDay, nextFreeAt, stateAt } from '../lib/logic'
-import { fmtDate, hm } from '../lib/time'
-import CalendarPicker from './Calendar'
+import { dateOf, minOfDay, nextFreeAt, stateAt } from '../lib/logic'
+import { hm } from '../lib/time'
 import DayTimeline from './DayTimeline'
-import RepeatPicker from './Repeat'
-import { SectionLabel, Sheet } from './ui'
+import { Sheet } from './ui'
 import Icon from './Icon'
 
 /** Grouped list of house rules with check marks. */
@@ -27,14 +25,13 @@ export function RulesList({ rules }) {
 }
 
 /**
- * Bottom sheet for anything tapped on Today or in Book ahead: public seating or a bookable room.
- * `todayOnly` (from Today) shows just today's free times; otherwise it's for planning: pick days on a
- * month calendar, a time, and how long to repeat.
+ * Bottom sheet for public seating or a room tapped on Today: the room's free times today only.
+ * Later days are booked in the Book ahead form.
  */
-export default function RoomSheet({ id, onClose, onJump, todayOnly }) {
+export default function RoomSheet({ id, onClose, onJump }) {
   if (!id) return null
   if (id === 'public') return <PublicSheet onClose={onClose} />
-  return todayOnly ? <TodayRoomSheet key={id} id={id} onClose={onClose} onJump={onJump} /> : <PlanRoomSheet key={id} id={id} onClose={onClose} />
+  return <TodayRoomSheet key={id} id={id} onClose={onClose} onJump={onJump} />
 }
 
 function PublicSheet({ onClose }) {
@@ -155,87 +152,6 @@ function TodayRoomSheet({ id, onClose, onJump }) {
         <Icon name="calendar" size={18} />
         {t('room.another_day')}
       </button>
-    </Sheet>
-  )
-}
-
-/**
- * From Book ahead (By room): pick days on a month calendar, a time on one of them, and how long to
- * repeat. Teal dots on the calendar show the days the room is free at that time.
- */
-function PlanRoomSheet({ id, onClose }) {
-  const { t } = useTranslation()
-  const L = useL()
-  const navigate = useNavigate()
-  const requireLogin = useRequireLogin()
-  const data = useStore((s) => s.data)
-  const lang = useStore((s) => s.lang)
-  const plan = useStore((s) => s.plan)
-  const set = useStore((s) => s.set)
-  const [dates, setDates] = useState([])
-  const [focus, setFocus] = useState(null)
-  const [range, setRange] = useState(null)
-  const [rep, setRep] = useState({ repeat: 'none', until: null })
-  const sp = data.spaces.find((s) => s.id === id)
-  const sorted = [...dates].sort()
-  const { dates: all, closed } = expandDates(data, sorted, rep.repeat, rep.until)
-
-  const toggle = (d) => {
-    if (dates.includes(d)) {
-      const rest = dates.filter((x) => x !== d)
-      setDates(rest)
-      if (focus === d) setFocus([...rest].sort()[0] || null)
-    } else {
-      setDates([...dates, d])
-      setFocus(d)
-    }
-  }
-  const book = () => {
-    const items = all.map((date) => ({ date, spaceId: id, start: range.start, end: range.end }))
-    set({ draft: { spaceId: id, date: all[0], dates: all, start: range.start, end: range.end, items, reason: plan?.reason || '', source: 'room' } })
-    onClose()
-    requireLogin('/r/book')
-  }
-  const ready = !!range && all.length > 0
-
-  return (
-    <Sheet
-      open
-      onClose={onClose}
-      title={L(sp.label)}
-      subtitle={roomMeta(t, sp)}
-      footer={
-        <div className="grid grid-cols-[auto_1fr] gap-2">
-          <button className="btn-secondary px-5" onClick={() => navigate(`/r/room/${id}`)}>
-            {t('room.details')}
-          </button>
-          <button className="btn-primary" onClick={book} disabled={!ready}>
-            {!dates.length ? t('ahead.pick_days') : !range ? t('room.pick_time') : t('ahead.book_n', { count: all.length })}
-          </button>
-        </div>
-      }
-    >
-      <section>
-        <CalendarPicker monthOnly spaceId={id} start={range?.start ?? null} end={range?.end ?? null} selected={dates} focus={focus} onToggle={toggle} />
-        <p className="mt-1.5 px-1 text-[13px] text-grey-ink">{!dates.length ? t('ahead.tap_days') : range ? t('room.more_days_hint') : t('room.more_days_pick_time')}</p>
-      </section>
-
-      {focus && (
-        <section className="mt-6">
-          <SectionLabel>{t('ahead.times_on', { date: fmtDate(focus, lang, { weekday: 'long', day: 'numeric', month: 'short' }) })}</SectionLabel>
-          <DayTimeline spaceId={id} date={focus} range={range} onChange={setRange} />
-        </section>
-      )}
-
-      <div className="mt-6">
-        <RepeatPicker repeat={rep.repeat} until={rep.until} first={sorted[0]} onChange={setRep} />
-        {all.length > 0 && (
-          <p className="mt-1 px-1 text-[13px] font-medium text-ink">
-            {t('ahead.n_dates', { count: all.length })}
-            {closed.length > 0 && <span className="font-normal text-grey-ink"> · {t('ahead.closed_skipped', { count: closed.length })}</span>}
-          </p>
-        )}
-      </div>
     </Sheet>
   )
 }

@@ -125,6 +125,46 @@ textarea {
 .animate-screen {
   animation: screen 0.25s ease-out;
 }
+/* Booking receipt (Book ahead): rises from the bottom, holds so it can be read, then leaves off the top */
+@keyframes receipt {
+  0% {
+    transform: translateY(120vh);
+  }
+  16% {
+    transform: translateY(0);
+  }
+  80% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-140vh);
+  }
+}
+.animate-receipt {
+  animation: receipt 3.4s cubic-bezier(0.32, 0.72, 0, 1) both;
+}
+@keyframes receipt-calm {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  12%,
+  85% {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-receipt {
+    animation: receipt-calm 3.4s ease both;
+  }
+}
+/* Torn-paper bottom edge of the receipt */
+.receipt-teeth {
+  height: 12px;
+  background:
+    linear-gradient(135deg, #fff 50%, transparent 50%) 0 0 / 12px 12px repeat-x,
+    linear-gradient(225deg, #fff 50%, transparent 50%) 0 0 / 12px 12px repeat-x;
+}
 .live-dot {
   position: relative;
 }

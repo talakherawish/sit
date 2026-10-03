@@ -4,9 +4,10 @@ import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useReasonText, useReportBooking, useSpaceName, useTemplate } from '../lib/hooks'
 import { ACTIVE, endAbs, freeStarts, hoursFor, startAbs, dateOf, minOfDay, renter as findRenter } from '../lib/logic'
-import { addDays, addMonths, fmtDate, hm, weekday } from '../lib/time'
+import { addDays, fmtDate, hm } from '../lib/time'
 import { Chip, Confirm, Empty, ScreenTitle, Segmented, StatusChip } from '../components/ui'
 import Icon from '../components/Icon'
+import MonthGrid from '../components/MonthGrid'
 import { NeedLogin } from './RenterLayout'
 
 /** R-13 My bookings: as cards (Upcoming / Past) or as a month calendar. */
@@ -258,72 +259,16 @@ function BookingsCalendar({ bookings, render }) {
     .filter((d) => d >= today && byDay[d].some((b) => endAbs(b) > now))
     .sort()[0]
   const [day, setDay] = useState(nextDay || today)
-  const [cursor, setCursor] = useState(`${(nextDay || today).slice(0, 8)}01`)
-
-  const first = addDays(cursor, -weekday(cursor)) // weeks start on Sunday
-  const days = Array.from({ length: 42 }, (_, i) => addDays(first, i))
   const list = byDay[day] || []
 
   return (
     <div>
-      <div className="rounded-2xl bg-surface p-3">
-        <div className="mb-3 flex items-center gap-2">
-          <span className="min-w-0 flex-1 truncate px-1 text-[17px] font-semibold">{fmtDate(cursor, lang, { month: 'long', year: 'numeric' })}</span>
-          <button
-            type="button"
-            onClick={() => setCursor(addMonths(cursor, -1))}
-            className="grid size-9 place-items-center rounded-full text-navy"
-            aria-label={t('cal.prev')}
-          >
-            <Icon name="back" size={18} className="rtl:rotate-180" />
-          </button>
-          <button
-            type="button"
-            onClick={() => setCursor(addMonths(cursor, 1))}
-            className="grid size-9 place-items-center rounded-full text-navy"
-            aria-label={t('cal.next')}
-          >
-            <Icon name="next" size={18} className="rtl:rotate-180" />
-          </button>
-        </div>
-        <div className="grid grid-cols-7 text-center text-[12px] font-medium text-grey-ink" aria-hidden="true">
-          {days.slice(0, 7).map((d) => (
-            <span key={d} className="pb-1">
-              {fmtDate(d, lang, { weekday: lang === 'ar' ? 'short' : 'narrow' })}
-            </span>
-          ))}
-        </div>
-        <div className="grid grid-cols-7 gap-y-1">
-          {days.map((d) => {
-            const items = byDay[d] || []
-            const on = d === day
-            return (
-              <button
-                key={d}
-                type="button"
-                onClick={() => setDay(d)}
-                aria-pressed={on}
-                aria-label={`${fmtDate(d, lang, { weekday: 'long', day: 'numeric', month: 'long' })}${items.length ? ` — ${t('bookings.count', { count: items.length })}` : ''}`}
-                className={`flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-xl ${d.slice(0, 7) !== cursor.slice(0, 7) ? 'opacity-40' : ''}`}
-              >
-                <span
-                  className={`grid size-9 place-items-center rounded-full text-[16px] ${
-                    on ? 'bg-navy font-semibold text-white' : d === today ? 'font-bold text-teal' : 'text-ink'
-                  }`}
-                >
-                  {Number(d.slice(8))}
-                </span>
-                <span className="flex h-1.5 gap-0.5" aria-hidden="true">
-                  {items.slice(0, 3).map((b) => (
-                    <span key={b.id} className={`size-1.5 rounded-full ${DOT[b.status] || 'bg-grey/40'}`} />
-                  ))}
-                </span>
-              </button>
-            )
-          })}
-        </div>
-      </div>
-
+      <MonthGrid
+        value={day}
+        onPick={setDay}
+        dots={(d) => (byDay[d] || []).slice(0, 3).map((b) => DOT[b.status] || 'bg-grey/40')}
+        describe={(d) => (byDay[d] ? t('bookings.count', { count: byDay[d].length }) : '')}
+      />
       <h2 className="mt-5 mb-1.5 px-1 text-[15px] font-semibold">{fmtDate(day, lang, { weekday: 'long', day: 'numeric', month: 'long' })}</h2>
       <div className="space-y-3">{list.length ? list.map(render) : <Empty>{t('bookings.none_day')}</Empty>}</div>
     </div>

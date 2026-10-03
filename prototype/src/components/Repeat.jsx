@@ -1,47 +1,55 @@
+import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
-import { REPEATS, repeatEnd } from '../lib/logic'
+import { REPEATS, defaultUntil } from '../lib/logic'
 import { addDays, addMonths, fmtDate } from '../lib/time'
 import { Chip, SectionLabel } from './ui'
 
 /**
- * Repeat, chosen straight away: Just these days · 2 weeks · 1 month · Until… (no "Repeat? yes/no" step).
- * Repeats every picked weekday once a week. `first` is the earliest picked day.
+ * Repeat, all in one row: Weekly · Monthly · Until <date>. Tap a pattern to pick it, tap again to
+ * unpick; nothing picked = no repeat. Picking a pattern fills in Until (a month ahead for weekly, six
+ * for monthly) so it's never open-ended; tap Until to change the date. `first` is the earliest picked day.
  */
 export default function RepeatPicker({ repeat, until, first, onChange }) {
   const { t } = useTranslation()
   const lang = useStore((s) => s.lang)
-  const end = first ? repeatEnd(first, repeat, until) : null
+  const input = useRef(null)
+  const year = first && until && until.slice(0, 4) !== first.slice(0, 4)
+  const untilText = until ? fmtDate(until, lang, year ? { day: 'numeric', month: 'short', year: 'numeric' } : { day: 'numeric', month: 'short' }) : ''
+  const pick = (k) => (repeat === k ? onChange({ repeat: null, until: null }) : onChange({ repeat: k, until: defaultUntil(first, k) }))
   return (
     <section>
-      <SectionLabel>{t('repeat.title')}</SectionLabel>
-      <div className="flex flex-wrap gap-2">
+      <SectionLabel>
+        {t('repeat.title')} <span className="font-normal text-grey-ink">· {t('review.optional')}</span>
+      </SectionLabel>
+      {/* Faded (not crossed out) until there's a day to repeat */}
+      <div className={`flex flex-wrap gap-2 ${first ? '' : 'pointer-events-none opacity-40'}`} aria-disabled={!first}>
         {REPEATS.map((k) => (
-          <Chip
-            key={k}
-            active={repeat === k}
-            disabled={!first && k !== 'none'}
-            onClick={() => onChange({ repeat: k, until: k === 'until' ? until || (first && addMonths(first, 1)) : until })}
-          >
+          <Chip key={k} active={repeat === k} onClick={() => pick(k)}>
             {t(`repeat.${k}`)}
           </Chip>
         ))}
+        {/* The date input sits invisibly over the chip, so a tap opens the phone's own date picker */}
+        <span className={`relative ${repeat ? '' : 'pointer-events-none opacity-50'}`}>
+          <Chip active={!!repeat} onClick={() => input.current?.showPicker?.()}>
+            {repeat ? t('repeat.until_date', { date: untilText }) : t('repeat.until')}
+          </Chip>
+          {repeat && (
+            <input
+              ref={input}
+              type="date"
+              aria-label={t('repeat.until_label')}
+              className="absolute inset-0 cursor-pointer opacity-0"
+              onClick={(e) => e.currentTarget.showPicker?.()}
+              value={until || ''}
+              min={addDays(first, 7)}
+              max={addMonths(first, 12)}
+              onChange={(e) => e.target.value && onChange({ repeat, until: e.target.value })}
+            />
+          )}
+        </span>
       </div>
-      {repeat === 'until' && first && (
-        <label className="mt-2 flex min-h-12 items-center gap-3 rounded-2xl bg-surface px-4">
-          <span className="text-[17px]">{t('repeat.until_label')}</span>
-          <input
-            type="date"
-            aria-label={t('repeat.until_label')}
-            className="min-h-11 flex-1 bg-transparent text-end text-[17px] text-navy outline-none"
-            value={until || ''}
-            min={addDays(first, 7)}
-            max={addMonths(first, 12)}
-            onChange={(e) => onChange({ repeat, until: e.target.value || null })}
-          />
-        </label>
-      )}
-      {end && <p className="mt-1.5 px-1 text-[13px] text-grey-ink">{t('repeat.every_week_until', { date: fmtDate(end, lang, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) })}</p>}
+      {!repeat && <p className="mt-1.5 px-1 text-[13px] text-grey-ink">{t('repeat.none_hint')}</p>}
     </section>
   )
 }

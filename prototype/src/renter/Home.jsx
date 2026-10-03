@@ -207,7 +207,7 @@ export default function Home() {
       {data.amenities.some((a) => a.id === roomSheet) ? (
         <AmenitySheet id={roomSheet} onClose={closeRoom} />
       ) : (
-        <RoomSheet id={roomSheet} onClose={closeRoom} onJump={onSelect} todayOnly />
+        <RoomSheet id={roomSheet} onClose={closeRoom} onJump={onSelect} />
       )}
     </div>
   )

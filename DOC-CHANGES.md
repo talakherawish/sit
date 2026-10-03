@@ -43,6 +43,11 @@ The markdown sources were folded into the PDF in commit `e204140`. To edit, rest
 > in home page your bookings today should only the show the most close upcoming booking with confirm cancel buttons only ONE and it should b below wifi and seats free and above rooms today. roms today should flip colors in time so what didnt happen yet so from 9:30 onward it should be free remove the greenish color and the time before that passed should be entrely covered in opaque grey do not leave the edges.
 > what are u here to do gets asked multiple times when booking.
 
+> i am thinking of changing the book ahead to feel mre like a form filling, so no by time or by room just one continuous form, starting with days in the calendar then time from to without the min options. lets prompt this first
+> so first is remov ethe pick days and a time, then a room thats free subtitle. first below book ahead is the calendar then repeat section with option weekly monthly and util all in the same row. if none chosen it means no repeat. u can click and unclick. then time picker with options all in the same row too then the floor map with highligted rooms that align with previous booking specifications the rest is faded. u pick a room and lastly the what are u here to do today and a confirm booking button. there are options to see a specific rooms availablity by clicking on the room a page with the rooms images name and calendar availability show all for thet room only. then if i choose a date i can see that specific days bookings. is that clear?
+
+Answers to the follow-up questions: repeat = "Weekly/Monthly + Until date"; room page = "room details"; Review = "skip it and show a receipt of the booking make it from the bottom make the motion of the receipt upwards and leave out of the top of the screen."; partly free rooms = "rooms available on some days shuldshow differently like partially available. or a combination of rooms that make thebooking work highliht in the same color".
+
 **Why I asked for this / Principle I was following:** for you to fill in.
 
 ### 1b. AI-refined version: new round, "Round 12: Value first (after senior PM feedback)"
@@ -57,13 +62,16 @@ The markdown sources were folded into the PDF in commit `e204140`. To edit, rest
 | Today's rooms show as the **full grid** (one column per room), starting at the current hour | You tap the exact free time you want: one step fewer than picking a room, then a time | Fitts's Law; clicks to treasure |
 | From Today you book **today only**: tap a free time → Review → Confirm | The quick, common case gets the shortest path | Clicks to treasure |
 | In the grid and timelines, **your own bookings are navy** | "Yours" was teal, the same as the map's "free" | Clear signals |
-| **Book ahead** has two ways in: **By time** (pick days and time, see which rooms are free) and **By room** (pick a room on the map, see its free days and hours) | Some people start from their schedule, others from a favourite room | Flexibility; user control |
-| Book ahead uses a **month calendar**; tap several days at once | A course on Mon and Wed is two taps, not two bookings | Fewer clicks |
-| **Repeat** is chosen straight away from chips: Just these days · 2 weeks · 1 month · Until… (no "Repeat? yes/no" step) | One tap instead of a switch plus a second question | Hick's Law; clicks to treasure |
-| Rooms show **"free all 32 times"** or **"free 29 of 32"** before you pick one | A room free on day 1 can be taken in week 9; you see it before booking, not after | Error prevention |
+| **Book ahead is one form**, top to bottom: days → repeat → from / to → room on the map → what you're here to do → Confirm (no "By time / By room" switch, no subtitle) | Feels like filling in a form: one path, every choice in sight, nothing to choose between first | Hick's Law; recognition over recall |
+| Days on a **month calendar**; tap several days at once | A course on Mon and Wed is two taps, not two bookings | Fewer clicks |
+| **Repeat** in one row: **Weekly · Monthly · Until <date>**; tap to pick, tap again to unpick, nothing picked = no repeat. Picking one fills in Until (a month for weekly, six months for monthly) | No "Repeat? yes/no" step, and never open-ended | Clicks to treasure; error prevention |
+| **Time** is From and To side by side (the 30 min / 1 h / 2 h length buttons are gone) | People think in start and end times | Match the real world |
+| On the **map**, rooms free on every date are highlighted, rooms free on only some are amber with "29 / 34" (the rest are skipped), others faded | A room free on day 1 can be taken in week 9; you see it before booking, not after | Error prevention; visibility of system status |
+| If no single room works, a **combination of rooms** that together cover every date is highlighted in the same colour, with "Use these rooms" | A course shouldn't fail because no one room is free every time | Flexibility; error prevention |
+| The picked room's card has **Room details**: photos, size, features and the room's own month calendar of availability; tap a day to see its bookings | Some people choose a room by looking at it and its week | Recognition over recall |
+| **No Review screen in Book ahead:** Confirm books it and a **receipt** rises from the bottom, holds, then leaves off the top; "Booked · Undo" follows. Reminder: the day before each booking | One less screen; the receipt is the clear ending | Peak-End Rule; clicks to treasure |
 | **One list of activities** ("What are you here to do?") used to filter rooms and as the booking's reason; labels shortened to Focused work · Call · Group work · Meeting · Interview · Other | Home and the booking form used to ask the same thing with two different lists | Consistency |
 | **Asked once:** if you picked an activity in Book ahead, Review shows it ("What's it for? Group work · Edit") instead of asking again | It was asked twice in one booking | Don't make people repeat themselves |
-| In Book ahead the **map is plain**: no live free/booked colours, each room shows its size, and rooms that don't suit the activity are dimmed | Live "free now" colours are misleading when you're planning next week | Relevance; error prevention |
 | The booking reason is **optional** | It helps Technopark, not the renter, and blocked the Confirm button | Remove friction; user control |
 | **Time reads like a clock:** free time is white; time that has already gone is **one solid grey block, edge to edge**; a booking running now is drawn from the now line so its name stays visible (Rooms today, the room sheet's timeline and reception's timeline) | The green tint on free time made the whole grid look busy, and the faint past shading let old bookings show through | Visibility of system status; clarity |
 | Reminder text for bookings that start within 2 hours: "Starts within 2 hours, so it's confirmed now", and the "released 1 hour before" line is hidden | The two lines contradicted each other | Clear, honest feedback |
@@ -73,7 +81,7 @@ The markdown sources were folded into the PDF in commit `e204140`. To edit, rest
 | Kept the name **My bookings** (not "History") | Most of what's there is upcoming bookings you act on; "History" sounds like past only | Clear labels |
 | **My bookings: Cards ⇄ Calendar** switch beside the title. Calendar is a month view with a dot per booking (amber = waiting for you, navy = confirmed or used, grey = cancelled or released); tap a day to see its bookings as cards | A repeating course is easier to read on a calendar than as a list | Flexibility; recognition over recall |
 | "Report an issue" is now **"Report a problem"** everywhere | One name for one action | Consistency |
-| Long repeating bookings show a summary on Review ("34 dates · Mon 5 Oct – Wed 27 Jan") with the first few dates and "+30 more" | A list of 34 date chips was a wall | Miller's Law; chunking |
+| Long repeating bookings show a summary ("34 dates · Mon 5 Oct – Wed 27 Jan") on the receipt and on Review | A list of 34 date chips was a wall | Miller's Law; chunking |
 | **Reception:** the seat card adds "22 seats free" in teal under the count (the count still goes up with + because reception counts people in); the top bar leads with "22 seats free · 18 / 40" | Reception and renters read the same number | Consistency |
 | **Reception's Rooms today:** same time rules as the renter grid (free white, past solid grey); checked in is solid navy (was teal), confirmed light navy, awaiting amber | One colour language across both screens | Consistency |
 | **Reception's Rooms today:** labels fit the space: long bookings show name and times, short ones the name and start, very short ones just the name; hour labels thin out on small screens | Names were cut off ("Fa…"), especially in the demo | Legibility |
@@ -89,7 +97,8 @@ Keep the old rounds (they're a history), but the reader should know these change
 - Round 4: "Book more days switch in the room sheet" → replaced by repeat chips (no switch).
 - Round 4 / 8: Home's floor plan and "What are you here to do?" → moved to Book ahead.
 - Round 8: "Book a room button at the bottom of the first screen" → removed.
-- Round 9: "List view is kept one tap away" → List view removed; Book ahead has By time / By room.
+- Round 9: "List view is kept one tap away" → List view removed; Book ahead is one form.
+- (This round, earlier version) Book ahead "By time / By room" and the "Just these days · 2 weeks · 1 month · Until…" chips → replaced by the one form and Weekly · Monthly · Until.
 - Round 10: "Report is the fourth tab again" → Report moved into Account and onto bookings.
 
 ### 1d. "Clicks to book" table
@@ -99,8 +108,7 @@ Counted on the built prototype (3 Oct):
 | Task | Before | Now |
 |---|---|---|
 | Book a room today | Book a room → tap free time → sheet: Book → reason (required) → Confirm (5 taps) | Tap a free time on Today → Confirm (2 taps) |
-| A course twice a week until a date (34 sessions) | Not possible in one go | Book ahead → tap Mon → tap Wed → Until… + date → start time → length → tap room → Confirm (about 8) |
-| Same, starting from a room | Room → Book more days switch → calendar → days → time → Book → reason → Confirm | Book ahead → By room → tap room on map → tap day → tap start and end time → repeat chip → Book → Confirm (about 8) |
+| A course twice a week until a date | Not possible in one go | Book ahead → tap Mon → tap Wed → Weekly (Until filled in; change it if needed) → From → To → tap room → Confirm (about 8, no Review screen) |
 
 ---
 
@@ -113,11 +121,7 @@ Counted on the built prototype (3 Oct):
 
 ## 2. Prototype README (`prototype/README.md`)
 
-- Live links: `/r/home` is now **Today**; `/r/list` is now **Book ahead**.
-- Surfaces / screen list: tabs are Today · Book ahead · My bookings; Report (R-16) and My reports (R-17) are reached from Account; new Account sheet.
-- "Booking a room" paragraph: rewrite for Today (grid → Review) and Book ahead (By time / By room, month calendar, repeat chips).
-- "Features planned for later sprints": **repeat bookings** and a small part of **profile** (the Account sheet) are now in this build.
-- Demo start state: Tala's Today shows her checked-in Focus Room 1 booking and the 13:30 call waiting for confirmation.
+**Done (3 Oct):** rewritten for the current build: tabs, a Renter app and a Staff dashboard section, the side-by-side story, "time reads like a clock", the colour key, booking window and no-show rules. Update its Book ahead bullet again if the Book ahead form redesign goes ahead.
 
 ---
 
@@ -149,5 +153,5 @@ Counted on the built prototype (3 Oct):
 ## 8. Code sync (not documents)
 
 - **Done:** reception dashboard and demo are synced (see the reception rows in 1b).
-- Prototype README also needs: the seat-card line ("Renters see the free seats on their Today screen"), the colour key (free white · past solid grey · awaiting amber · confirmed light navy · checked in navy), My bookings' Cards / Calendar switch, and the demo's three-step story.
+- Prototype README: **done** (see section 2).
 - Wireframes stay as they are.

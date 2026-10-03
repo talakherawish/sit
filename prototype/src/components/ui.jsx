@@ -97,7 +97,7 @@ export function OverlayHost({ children }) {
   )
 }
 
-function Overlay({ children }) {
+export function Overlay({ children }) {
   const host = useContext(OverlayCtx)
   if (host === undefined) return children('fixed')
   return host ? createPortal(children('absolute'), host) : null

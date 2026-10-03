@@ -3,37 +3,62 @@ import { abs, split, weekday, addDays, addMonths, ceil30 } from './time'
 export const ACTIVE = ['awaiting_confirmation', 'confirmed', 'checked_in', 'used']
 /** One list for "What are you here to do?" and a booking's (optional) reason. */
 export const REASONS = ['study', 'client_call', 'group_project', 'meeting', 'interview', 'other']
-/** Which rooms suit each activity (zone types). */
-export const REASON_FITS = {
-  study: ['small_room'],
-  client_call: ['small_room'],
-  interview: ['small_room'],
-  group_project: ['big_room'],
-  meeting: ['big_room'],
-  other: ['small_room', 'big_room'],
-}
-export const REPEATS = ['none', '2w', '1m', 'until']
-
-/** Last day a repeat runs to, counted from the first picked day (null = just the picked days). */
-export function repeatEnd(first, repeat, until) {
-  if (repeat === '2w') return addDays(first, 13)
-  if (repeat === '1m') return addDays(addMonths(first, 1), -1)
-  if (repeat === 'until') return until || null
-  return null
-}
+/** Repeat patterns; none picked = no repeat. Each runs until its "Until" date. */
+export const REPEATS = ['weekly', 'monthly']
+/** "Until" filled in when a repeat is picked: a month for weekly, six months for monthly. */
+export const defaultUntil = (first, repeat) => addMonths(first, repeat === 'monthly' ? 6 : 1)
 
 /**
- * Picked days plus the same weekdays every week up to the repeat's end. Returns the open days to
- * book and the days skipped because the building is closed.
+ * Picked days plus their repeats up to `until`: the same weekday every week, or the same date every
+ * month (months without that date are skipped). Returns the open days to book and the days skipped
+ * because the building is closed.
  */
 export function expandDates(data, picked, repeat, until) {
   const sorted = [...new Set(picked)].sort()
   if (!sorted.length) return { dates: [], closed: [] }
-  const end = repeatEnd(sorted[0], repeat, until)
   const all = new Set(sorted)
-  if (end) for (const d of sorted) for (let x = addDays(d, 7); x <= end; x = addDays(x, 7)) all.add(x)
+  if (repeat && until)
+    for (const d of sorted) {
+      if (repeat === 'weekly') for (let x = addDays(d, 7); x <= until; x = addDays(x, 7)) all.add(x)
+      else
+        for (let n = 1; ; n++) {
+          const x = addMonths(d, n)
+          if (x > until) break
+          if (x.slice(8) === d.slice(8)) all.add(x)
+        }
+    }
   const list = [...all].sort()
   return { dates: list.filter((d) => hoursFor(data, d)), closed: list.filter((d) => !hoursFor(data, d)) }
+}
+
+/**
+ * For each room, which of `dates` it's free on from `start` to `end` (and you aren't booked elsewhere,
+ * and it isn't already past). If no single room is free on every date, `combo` is a small set of rooms
+ * that together cover them all (picked greedily, biggest coverage first), or null.
+ */
+export function roomCoverage(data, dates, start, end, renterId, now) {
+  const today = dateOf(now)
+  const mine = (date) => data.bookings.some((b) => b.renter_id === renterId && b.date === date && ACTIVE.includes(b.status) && b.start < end && start < b.end)
+  const rooms = data.spaces.map((sp) => ({
+    id: sp.id,
+    free: dates.filter((d) => isFree(data, sp.id, d, start, end) && !mine(d) && !(d === today && start < minOfDay(now))),
+  }))
+  let combo = null
+  if (dates.length && !rooms.some((r) => r.free.length === dates.length)) {
+    const left = new Set(dates.filter((d) => !mine(d)))
+    const picked = []
+    while (left.size) {
+      const best = rooms
+        .filter((r) => !picked.includes(r))
+        .map((r) => ({ r, n: r.free.filter((d) => left.has(d)).length }))
+        .sort((a, b) => b.n - a.n)[0]
+      if (!best || !best.n) break
+      picked.push(best.r)
+      best.r.free.forEach((d) => left.delete(d))
+    }
+    if (!left.size && picked.length > 1) combo = picked.map((r) => r.id)
+  }
+  return { rooms, combo }
 }
 export const REMINDERS = ['2h', '3h', '1d', 'eve']
 export const ISSUE_TYPES = ['ac', 'wifi', 'noise', 'cleanliness', 'furniture', 'other']
