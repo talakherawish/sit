@@ -153,6 +153,9 @@ export function reminderAt(date, start, reminder) {
 export const activeNotices = (data, now) =>
   data.notices.filter((n) => !n.removed && n.posted_at <= now && n.expires_at > now).sort((a, b) => b.posted_at - a.posted_at)
 
+/** The one notice renters see on Today: an event comes first (it changes how the day goes), else the latest. */
+export const todayNotice = (notices) => notices.find((n) => n.tag === 'events') || notices[0]
+
 export const startAbs = (b) => abs(b.date, b.start)
 export const endAbs = (b) => abs(b.date, b.end)
 

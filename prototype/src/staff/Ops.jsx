@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL, useSpaceName, usePersonName } from '../lib/hooks'
-import { NOTICE_TAGS, hoursFor, dateOf, minOfDay, renter as findRenter } from '../lib/logic'
+import { NOTICE_TAGS, activeNotices, todayNotice, hoursFor, dateOf, minOfDay, renter as findRenter } from '../lib/logic'
 import { abs, fmtAbs, fmtDate, hm, parseHm } from '../lib/time'
 import { Card, Chip, Confirm, Field, Switch } from '../components/ui'
 import { StaffTitle } from './StaffLayout'
@@ -51,6 +51,7 @@ export function Notices() {
     setSpaceId('')
     setDaily(false)
   }
+  const shownOnToday = todayNotice(activeNotices(s.data, s.now))
   const live = s.data.notices.filter((n) => !n.removed && n.expires_at > s.now).sort((a, b) => b.posted_at - a.posted_at)
   const earlier = s.data.notices.filter((n) => !n.removed && n.expires_at <= s.now).sort((a, b) => b.posted_at - a.posted_at)
 
@@ -143,6 +144,7 @@ export function Notices() {
                       {n.space_id && ` · ${name(n.space_id)}`}
                       {n.daily && ` · ${t('notices.daily_short')}`}
                       {n.edited_at && ` · ${t('notices.edited')}`}
+                      {n.id === shownOnToday?.id && <b className="text-navy"> · {t('staff.on_today')}</b>}
                     </p>
                     {editing?.id === n.id ? (
                       <input

@@ -6,6 +6,7 @@ import { useL, usePersonName } from '../lib/hooks'
 import { ACTIVE, dateOf, hoursFor, minOfDay, renter as findRenter } from '../lib/logic'
 import { hm } from '../lib/time'
 import Icon from '../components/Icon'
+import { AvailabilityModal } from './BookFor'
 
 // Same rules as the renter app: free time is white and time already gone has a see-through grey cover. Bookings are
 // amber while awaiting, navy tint once confirmed, solid navy when the renter is in the room.
@@ -31,6 +32,7 @@ export default function RoomsDay() {
   // Width of the time track, so labels fit whatever the screen (the demo shows this dashboard scaled down).
   const track = useRef(null)
   const [width, setWidth] = useState(600)
+  const [room, setRoom] = useState(null) // room whose photos and calendar are open
   const open = !!h
   useEffect(() => {
     const el = track.current
@@ -60,20 +62,12 @@ export default function RoomsDay() {
           </Link>
         </h2>
         <div className="flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-grey-ink">
-          <span className="flex items-center gap-1.5">
-            <span className="size-3 rounded-[4px] bg-white ring-1 ring-black/20" />
-            {t('legend.free')}
-          </span>
           {['awaiting_confirmation', 'confirmed', 'checked_in'].map((k) => (
             <span key={k} className="flex items-center gap-1.5">
               <span className={`size-3 rounded-[4px] ring-1 ${BLOCK[k]}`} />
               {t(`status.${k}`)}
             </span>
           ))}
-          <span className="flex items-center gap-1.5">
-            <span className="size-3 rounded-[4px] bg-past" />
-            {t('timeline.past')}
-          </span>
         </div>
       </div>
 
@@ -95,14 +89,17 @@ export default function RoomsDay() {
           const down = sp.down && sp.down.date === date ? sp.down : null
           return (
             <div key={sp.id} className="flex items-stretch">
-              <div className="relative flex w-28 shrink-0 items-center gap-1 border-e border-black/[0.06] ps-4 pe-1">
+              <button
+                onClick={() => setRoom(sp.id)}
+                className="relative flex w-28 shrink-0 items-center gap-1 border-e border-black/[0.06] ps-4 pe-1 text-start hover:bg-black/[0.03]"
+              >
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[15px] font-semibold" title={L(sp.label)}>
                     {L(sp.short)}
                   </span>
                   <span className="block text-[12px] text-grey-ink">{t('map.people', { n: sp.capacity })}</span>
                 </span>
-              </div>
+              </button>
 
               <div className="relative h-16 flex-1" dir="ltr">
                 {hours.map((m) => (
@@ -165,6 +162,7 @@ export default function RoomsDay() {
         <Icon name="info" size={16} className="text-navy" />
         {t('staff.rooms_today_hint', { time: hm(nowMin) })}
       </p>
+      {room && <AvailabilityModal id={room} onClose={() => setRoom(null)} />}
     </div>
   )
 }

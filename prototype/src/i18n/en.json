@@ -524,7 +524,7 @@
     "walkin_hint": "Same sign-up form as the app.",
     "log_title": "Seat-count log",
     "rooms_today": "Rooms today",
-    "rooms_today_hint": "The teal line is now ({{time}}). Click a booking to check its renter in.",
+    "rooms_today_hint": "The teal line is now ({{time}}). Click a booking to check its renter in. Click a room for its photos and calendar.",
     "book_slot": "Book {{room}} at {{time}} for someone",
     "sort_time": "Time",
     "sort_room": "Room",
@@ -541,7 +541,8 @@
     "reset_body": "{{count}} people are counted in the open area now. Reset when the area is empty, for example at closing. It is saved in the seat log.",
     "reset_ok": "Reset",
     "people_in": "people in the open area",
-    "nav_book": "Book for someone"
+    "nav_book": "Book for someone",
+    "on_today": "Shown on renters’ Today"
   },
   "notices": {
     "title": "Notices",

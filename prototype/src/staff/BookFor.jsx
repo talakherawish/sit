@@ -7,6 +7,7 @@ import { dateOf, normPhone } from '../lib/logic'
 import BookingPlanner from '../components/BookingPlanner'
 import RoomAvailability from '../components/RoomAvailability'
 import { Modal, ScreenId, SectionLabel } from '../components/ui'
+import { PhotoCarousel } from '../components/RoomPhoto'
 import Icon from '../components/Icon'
 import { SignUpForm } from '../renter/Auth'
 import { StaffTitle } from './StaffLayout'
@@ -130,8 +131,12 @@ function WhoFor({ renterId, onPick }) {
   )
 }
 
-/** A room's month of availability and a day's bookings, without leaving the form. */
-function AvailabilityModal({ id, onClose }) {
+/**
+ * A room at a glance, the way renters see it on Today: photos, then its month of availability and the
+ * picked day's bookings (today first). Used by "See availability" here and by room names on Rooms today.
+ */
+export function AvailabilityModal({ id, onClose }) {
+  const { t } = useTranslation()
   const L = useL()
   const data = useStore((s) => s.data)
   const now = useStore((s) => s.now)
@@ -139,6 +144,10 @@ function AvailabilityModal({ id, onClose }) {
   const sp = data.spaces.find((x) => x.id === id)
   return (
     <Modal open onClose={onClose} title={L(sp.label)}>
+      <PhotoCarousel space={sp} className="mb-3" />
+      <p className="mb-5 text-[15px] text-grey-ink">
+        {t('map.people', { n: sp.capacity })} · {sp.size_m2} m² · {sp.features.map((f) => t(`feature.${f}`)).join(' · ')}
+      </p>
       <RoomAvailability id={id} day={day} onDay={setDay} readOnly />
     </Modal>
   )

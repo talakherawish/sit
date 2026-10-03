@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL, usePersonName, useSpaceName } from '../lib/hooks'
-import { REMINDERS, activeNotices, amenityStatus, hoursFor, isFree, reminderAt, startAbs, dateOf, minOfDay, speedTests } from '../lib/logic'
+import { REMINDERS, activeNotices, todayNotice, amenityStatus, hoursFor, isFree, reminderAt, startAbs, dateOf, minOfDay, speedTests } from '../lib/logic'
 import { ceil30, fmtDate, hm } from '../lib/time'
 import { useDuration } from '../components/DayTimeline'
 import Receipt from '../components/Receipt'
@@ -50,8 +50,7 @@ export default function Home() {
   const today = dateOf(now)
   const h = hoursFor(data, today)
   const notices = activeNotices(data, now)
-  // Only one notice on Today: an event comes first (it changes how the day feels), else the latest.
-  const latest = notices.find((n) => n.tag === 'events') || notices[0]
+  const latest = todayNotice(notices)
   const { taken, total } = data.seats
   const me = data.renters.find((r) => r.id === renterId)
   const pn = usePersonName()

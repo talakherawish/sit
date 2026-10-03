@@ -102,6 +102,8 @@ Answers to the follow-up questions: repeat = "Weekly/Monthly + Until date"; room
 | Long repeating bookings show a summary ("34 dates · Mon 5 Oct – Wed 27 Jan") on the receipt and on Review | A list of 34 date chips was a wall | Miller's Law; chunking |
 | **Reception:** the seat card adds "22 seats free" in teal under the count (the count still goes up with + because reception counts people in); the top bar leads with "22 seats free · 18 / 40" | Reception and renters read the same number | Consistency |
 | **Reception's Rooms today:** same time rules as the renter grid (free white, past solid grey); checked in is solid navy (was teal), confirmed light navy, awaiting amber | One colour language across both screens | Consistency |
+| **Reception matches the renter changes:** the colour key keeps only the three booking states (Free and Past are gone, as on the renter grid); **clicking a room name** opens the room with its **photos**, size and features, and its month calendar with today's bookings (the same window as "See availability" in Book for someone); the notice renters see on Today is marked **"Shown on renters' Today"** on S-01 and S-04; Settings shows the room pictures instead of colour swatches | Reception should see what renters see, and know which notice reaches their phones | Consistency |
+| **Demo** "Time & scenarios" personas updated: Tala is "weekly Tue 09:00 · Focus Room 3 today 13:30", and the old "Big Room" names are now Room 1 / 2 | The panel described the old data | Consistency |
 | **Reception's Rooms today:** labels fit the space: long bookings show name and times, short ones the name and start, very short ones just the name; hour labels thin out on small screens | Names were cut off ("Fa…"), especially in the demo | Legibility |
 | **Reception's bookings table** shows Awaiting confirmation / Confirmed instead of "Upcoming"; repeating bookings get a repeat mark | When a renter confirms from Today, the desk sees it straight away | Visibility of system status |
 | **Reports inbox** shows which booking a report is about ("Booking · Thu 1 Oct · 09:00–10:00") | Reports sent from a booking carry it; staff shouldn't have to ask | Context; fewer steps |
@@ -172,6 +174,6 @@ Counted on the built prototype (3 Oct):
 
 ## 8. Code sync (not documents)
 
-- **Done:** reception dashboard and demo are synced (see the reception rows in 1b).
+- **Done:** reception dashboard and demo are synced with every change so far, including the Today redesign, photos and room window (see the reception rows in 1b).
 - Prototype README: **done** (see section 2).
 - Wireframes stay as they are.

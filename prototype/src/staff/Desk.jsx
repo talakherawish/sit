@@ -3,7 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL, useSpaceName, STAFF, usePersonName } from '../lib/hooks'
-import { ACTIVE, activeNotices, normPhone, staffStatus, dateOf, endAbs, minOfDay, startAbs, renter as findRenter } from '../lib/logic'
+import { ACTIVE, activeNotices, todayNotice, normPhone, staffStatus, dateOf, endAbs, minOfDay, startAbs, renter as findRenter } from '../lib/logic'
 import { fmtAbs, hm } from '../lib/time'
 import { Card, Confirm, Modal, ScreenId, StatusChip } from '../components/ui'
 import Icon from '../components/Icon'
@@ -138,6 +138,7 @@ export function Today() {
                       <span className="block text-[15px] leading-snug">{L(n.text)}</span>
                       <span className="block text-[13px] text-grey-ink">
                         {t(`tag.${n.tag}`)} · {hm(minOfDay(n.posted_at))}
+                        {n === todayNotice(notices) && <span className="font-semibold text-navy"> · {t('staff.on_today')}</span>}
                       </span>
                     </span>
                   </li>

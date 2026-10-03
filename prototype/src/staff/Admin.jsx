@@ -3,6 +3,7 @@ import { useStore } from '../store'
 import { useL } from '../lib/hooks'
 import { fmtDate, hm, weekdayName } from '../lib/time'
 import { Card } from '../components/ui'
+import { RoomPhoto } from '../components/RoomPhoto'
 import { StaffTitle } from './StaffLayout'
 
 /** S-10 Settings: rooms and hours (#1, #4) — read-only in the prototype */
@@ -45,8 +46,8 @@ export function RoomSettings() {
                   <td>{sp.features.map((f) => t(`feature.${f}`)).join(', ')}</td>
                   <td>
                     <div className="flex gap-1">
-                      {sp.photos.map((c, i) => (
-                        <span key={i} className="size-5 rounded" style={{ background: c }} />
+                      {sp.photos.map((_, i) => (
+                        <RoomPhoto key={i} space={sp} i={i} className="!w-12 !rounded-md" label={t('details.photo', { n: i + 1, room: L(sp.label) })} />
                       ))}
                     </div>
                   </td>
