@@ -17,8 +17,8 @@ export function freeMinutes(data, id, date, now) {
 }
 
 /**
- * One room's availability: a month calendar with a dot per day (teal = has free time, amber = under
- * an hour left, grey = fully booked) and the picked day's bookings as a timeline. Room details (R-03)
+ * One room's availability: a month calendar where free days are left plain and only busy days get a
+ * dot (amber = under an hour left, grey = fully booked) and the picked day's bookings as a timeline. Room details (R-03)
  * lets you pick a time on it; reception's "See availability" shows it `readOnly`.
  */
 export default function RoomAvailability({ id, day, onDay, range, onRange, readOnly }) {
@@ -33,7 +33,8 @@ export default function RoomAvailability({ id, day, onDay, range, onRange, readO
   const dot = (d) => {
     if (closed(d)) return []
     const n = freeMinutes(data, id, d, now)
-    return [n >= 60 ? 'bg-teal' : n > 0 ? 'bg-amber' : 'bg-grey/40']
+    // A free day gets no dot; only days that are filling up or full are marked
+    return n >= 60 ? [] : [n > 0 ? 'bg-amber' : 'bg-grey/40']
   }
   return (
     <>
@@ -51,10 +52,6 @@ export default function RoomAvailability({ id, day, onDay, range, onRange, readO
           }}
         />
         <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 px-1 text-[13px] text-grey-ink">
-          <span className="flex items-center gap-1.5">
-            <span className="size-1.5 rounded-full bg-teal" />
-            {t('details.legend_free')}
-          </span>
           <span className="flex items-center gap-1.5">
             <span className="size-1.5 rounded-full bg-amber" />
             {t('details.legend_little')}

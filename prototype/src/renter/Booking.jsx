@@ -367,10 +367,17 @@ export function Confirmed() {
         </Group>
         {series > 1 && <p className="px-1 text-[15px] text-grey-ink">{t('confirmed.series', { count: series })}</p>}
         <div className="grid gap-2">
-          {b.status === 'awaiting_confirmation' && b.reminder_sent && (
-            <Link to={`/r/reminder/${b.id}`} className="btn-primary">
-              {t('bookings.confirm_now')}
-            </Link>
+          {/* Confirm any time it's waiting, not only once the reminder has gone out (same as Today) */}
+          {b.status === 'awaiting_confirmation' && !started && (
+            <button
+              className="btn-primary"
+              onClick={() => {
+                s.confirmBooking(b.id)
+                s.showToast('toast.confirmed')
+              }}
+            >
+              {t('bookings.confirm')}
+            </button>
           )}
           {fresh && (
             <Link to="/r/bookings" className="btn-primary">

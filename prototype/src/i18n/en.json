@@ -229,7 +229,7 @@
     "reason_required": "Pick a reason to book",
     "reason_other": "Tell us the reason",
     "reminder": "Reminder",
-    "no_reminder": "Starts within 2 hours, so it’s confirmed now. No need to confirm later.",
+    "no_reminder": "Starts within 2 hours, so it’s confirmed now.",
     "no_reminder_short": "None (starts soon)",
     "reminder_hint": "Confirm from the reminder, or the room is released 1 hour before.",
     "repeat": "Repeat",
@@ -787,12 +787,10 @@
   },
   "today": {
     "rooms": "Rooms today",
-    "rooms_hint": "Tap a free time to book it.",
     "ahead": "Book another day",
     "ahead_hint": "Later dates, or a booking that repeats",
     "next": "Your next booking",
     "confirm_booking": "Confirm booking",
-    "untap": "Tap the picked time again to remove it.",
     "next_free": "Next free {{time}}"
   },
   "account": {

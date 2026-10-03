@@ -38,8 +38,8 @@ export function BookAhead() {
 }
 
 /**
- * R-03 Room details: photos, what's in the room, and this room's availability: a month calendar with
- * a dot per day (teal = has free time, amber = under an hour left, grey = fully booked), and the
+ * R-03 Room details: photos, what's in the room, and this room's availability: a month calendar where
+ * only busy days get a dot (amber = under an hour left, grey = fully booked), and the
  * picked day's bookings as a timeline. Book takes you to Review (today) or into the Book ahead form.
  */
 export function RoomDetails() {

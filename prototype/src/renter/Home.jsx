@@ -67,6 +67,28 @@ export default function Home() {
 
   // Book: pick the soonest free hour in any room (half an hour if that's all there is) and bring the grid up.
   const grid = useRef(null)
+  // Today is two stops: the first screen and Rooms today. When a scroll stops in between, it carries on
+  // to the next stop in the direction you were going; inside the grid you scroll freely.
+  useEffect(() => {
+    const main = grid.current?.closest('main')
+    if (!main) return
+    let settled = main.scrollTop
+    let timer
+    const onScroll = () => {
+      clearTimeout(timer)
+      timer = setTimeout(() => {
+        const stop = grid.current.offsetTop - parseFloat(getComputedStyle(main).scrollPaddingTop)
+        const y = main.scrollTop
+        if (y > 2 && y < stop - 2) main.scrollTo({ top: y > settled ? stop : 0, behavior: 'smooth' })
+        else settled = y
+      }, 140)
+    }
+    main.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      clearTimeout(timer)
+      main.removeEventListener('scroll', onScroll)
+    }
+  }, [])
   let soonest = null
   for (let m = h ? Math.max(h.open, ceil30(min)) : Infinity; !soonest && m + 30 <= h?.close; m += 30) {
     const sp = data.spaces.find((s) => isFree(data, s.id, today, m, m + 30))
@@ -79,99 +101,102 @@ export default function Home() {
 
   return (
     <div className="space-y-7 pt-6 pb-4">
-      <header className="px-5">
-        <h1 className="font-head text-[30px] leading-[1.15] font-bold tracking-tight">
-          {t(`home.greeting_${part}`)}
-          {me && (
-            <span className="text-grey-ink">
-              {lang === 'ar' ? '، ' : ', '}
-              {pn(me, true)}
-            </span>
-          )}
-        </h1>
-        <ScreenId id="R-01" className="mt-1" />
-      </header>
+      {/* The first screen, down to Book a room, fills the phone so Rooms today doesn't peek in underneath:
+          visible height = screen − nav bar − tab bar (59 / 79 px), less this page's top padding and gap */}
+      <div className="min-h-[calc(var(--screen-h)-var(--app-top)-163px)] space-y-7 sm:min-h-[calc(var(--screen-h)-235px)]">
+        <header className="px-5">
+          <h1 className="font-head text-[30px] leading-[1.15] font-bold tracking-tight">
+            {t(`home.greeting_${part}`)}
+            {me && (
+              <span className="text-grey-ink">
+                {lang === 'ar' ? '، ' : ', '}
+                {pn(me, true)}
+              </span>
+            )}
+          </h1>
+          <ScreenId id="R-01" className="mt-1" />
+        </header>
 
-      {/* Know before you go (US-1) */}
-      <section className="space-y-3 px-4" aria-label={t('home.todays_status')}>
-        <button
-          onClick={() => onSelect('public')}
-          className="block w-full rounded-[24px] bg-surface px-5 pt-4 pb-5 text-start active:bg-black/[0.06]"
-          aria-label={t('home.seats_aria', { taken, total })}
-        >
-          <span className="flex items-center gap-2 text-[13px] font-medium text-grey-ink">
-            <span className="live-dot size-2 rounded-full bg-teal" />
-            {t('home.live')} · {L(data.zones[0].name)}
-          </span>
-          <span className="mt-1.5 flex items-end gap-3">
-            <span className="font-head text-[52px] leading-none font-bold tracking-tight text-[#2f5656] tabular-nums">{total - taken}</span>
-            <span className="pb-1.5 text-[19px] leading-tight font-semibold text-[#2f5656]">{t('home.seats_free_word', { count: total - taken })}</span>
-            <span className="ms-auto pb-1.5 text-end text-[15px] text-grey-ink" dir="auto">
-              {t('home.seats_of', { taken, total })}
-            </span>
-          </span>
-          {/* one tick per seat: tall teal = free */}
-          <span className="mt-4 flex h-5 items-end gap-[3px]" dir="ltr" aria-hidden="true">
-            {Array.from({ length: total }, (_, k) => (
-              <span key={k} className={`flex-1 rounded-full transition-all ${k < taken ? 'h-2 bg-black/[0.12]' : 'h-full bg-teal'}`} />
-            ))}
-          </span>
-        </button>
-
-        <div className="grid grid-cols-3 gap-2">
-          <Tile
-            to="/r/hours"
-            icon="clock"
-            label={t('home.hours')}
-            value={
-              !h
-                ? t('home.closed_today')
-                : min < h.open
-                  ? t('home.opens_at', { time: hm(h.open) })
-                  : min < h.close
-                    ? t('home.until', { time: hm(h.close) })
-                    : t('amenity.closed')
-            }
-            good={!!h && min >= h.open && min < h.close}
-          />
-          <CafeteriaTile onOpen={onSelect} />
-          <WifiTile onOpen={onSelect} />
-        </div>
-
-        {latest && (
+        {/* Know before you go (US-1) */}
+        <section className="space-y-3 px-4" aria-label={t('home.todays_status')}>
           <button
-            onClick={() => setSheet('notices')}
-            className="flex min-h-14 w-full items-center gap-3 rounded-[20px] bg-navy/[0.06] px-4 py-3 text-start active:bg-navy/[0.1]"
+            onClick={() => onSelect('public')}
+            className="block w-full rounded-[24px] bg-surface px-5 pt-4 pb-5 text-start active:bg-black/[0.06]"
+            aria-label={t('home.seats_aria', { taken, total })}
           >
-            <Icon name={NOTICE_ICON[latest.tag] || 'megaphone'} size={18} className="shrink-0 text-navy" />
-            <span className="min-w-0 flex-1">
-              <span className="block truncate text-[15px] font-medium">{L(latest.text)}</span>
-              <span className="block text-[13px] text-grey-ink">
-                {t(`tag.${latest.tag}`)} · {t('home.posted', { time: hm(minOfDay(latest.posted_at)) })}
+            <span className="flex items-center gap-2 text-[13px] font-medium text-grey-ink">
+              <span className="live-dot size-2 rounded-full bg-teal" />
+              {t('home.live')} · {L(data.zones[0].name)}
+            </span>
+            <span className="mt-1.5 flex items-end gap-3">
+              <span className="font-head text-[52px] leading-none font-bold tracking-tight text-[#2f5656] tabular-nums">{total - taken}</span>
+              <span className="pb-1.5 text-[19px] leading-tight font-semibold text-[#2f5656]">{t('home.seats_free_word', { count: total - taken })}</span>
+              <span className="ms-auto pb-1.5 text-end text-[15px] text-grey-ink" dir="auto">
+                {t('home.seats_of', { taken, total })}
               </span>
             </span>
-            <Icon name="next" size={16} className="shrink-0 text-grey-ink/60 rtl:rotate-180" />
+            {/* one tick per seat: tall teal = free */}
+            <span className="mt-4 flex h-5 items-end gap-[3px]" dir="ltr" aria-hidden="true">
+              {Array.from({ length: total }, (_, k) => (
+                <span key={k} className={`flex-1 rounded-full transition-all ${k < taken ? 'h-2 bg-black/[0.12]' : 'h-full bg-teal'}`} />
+              ))}
+            </span>
           </button>
-        )}
 
-        {me && <NextBooking renterId={me.id} />}
+          <div className="grid grid-cols-3 gap-2">
+            <Tile
+              to="/r/hours"
+              icon="clock"
+              label={t('home.hours')}
+              value={
+                !h
+                  ? t('home.closed_today')
+                  : min < h.open
+                    ? t('home.opens_at', { time: hm(h.open) })
+                    : min < h.close
+                      ? t('home.until', { time: hm(h.close) })
+                      : t('amenity.closed')
+              }
+              good={!!h && min >= h.open && min < h.close}
+            />
+            <CafeteriaTile onOpen={onSelect} />
+            <WifiTile onOpen={onSelect} />
+          </div>
 
-        {soonest && (
-          <button onClick={bookSoonest} className="btn-primary flex w-full items-center gap-2 !px-5">
-            <Icon name="plus" size={20} className="shrink-0" />
-            <span className="flex-1 text-start">{t('home.book_cta')}</span>
-            <span className="text-[15px] font-medium opacity-80">{t('today.next_free', { time: hm(soonest.start) })}</span>
-          </button>
-        )}
-      </section>
+          {latest && (
+            <button
+              onClick={() => setSheet('notices')}
+              className="flex min-h-14 w-full items-center gap-3 rounded-[20px] bg-navy/[0.06] px-4 py-3 text-start active:bg-navy/[0.1]"
+            >
+              <Icon name={NOTICE_ICON[latest.tag] || 'megaphone'} size={18} className="shrink-0 text-navy" />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-[15px] font-medium">{L(latest.text)}</span>
+                <span className="block text-[13px] text-grey-ink">
+                  {t(`tag.${latest.tag}`)} · {t('home.posted', { time: hm(minOfDay(latest.posted_at)) })}
+                </span>
+              </span>
+              <Icon name="next" size={16} className="shrink-0 text-grey-ink/60 rtl:rotate-180" />
+            </button>
+          )}
 
-      {/* Every room's day; tap free time to book it (today only) */}
+          {me && <NextBooking renterId={me.id} />}
+
+          {soonest && (
+            <button onClick={bookSoonest} className="btn-primary flex w-full items-center gap-2 !px-5">
+              <Icon name="plus" size={20} className="shrink-0" />
+              <span className="flex-1 text-start">{t('home.book_cta')}</span>
+              <span className="text-[15px] font-medium opacity-80">{t('today.next_free', { time: hm(soonest.start) })}</span>
+            </button>
+          )}
+        </section>
+      </div>
+
+      {/* Every room's day; tap free time to book it (today only). Its own section: scrolling to it brings it to the top */}
       <section ref={grid} aria-labelledby="h-rooms">
         <div className="mb-2 px-5">
           <h2 id="h-rooms" className="font-head text-[24px] font-bold tracking-tight">
             {t('today.rooms')}
           </h2>
-          <p className="text-[15px] text-grey-ink">{t('today.rooms_hint')}</p>
         </div>
         <RoomsCalendar date={today} onPick={(id) => onSelect(id)} onMine={(id) => navigate(`/r/confirmed/${id}`)} selection={pick} onSelect={setPick} />
         <QuickBook pick={pick} onChange={setPick} />
@@ -256,12 +281,14 @@ function NextBooking({ renterId }) {
       <Link to={`/r/confirmed/${next.id}`} className="flex min-w-0 flex-1 items-center gap-3 active:opacity-60">
         <Icon name="ticket" size={18} className="shrink-0 text-navy" />
         <span className="min-w-0">
-          <span className="block truncate text-[13px] text-grey-ink">{waiting ? t('today.next') : `${t('today.next')} · ${t('status.confirmed')}`}</span>
-          <span className="block truncate text-[15px] font-medium">
-            {name(next.space_id, true)} ·{' '}
-            <span dir="ltr" className="tabular-nums">
+          {/* Time first so it never gets cut off on a phone; the room and "next booking" can */}
+          <span className="block text-[15px] font-medium tabular-nums">
+            <span dir="ltr">
               {hm(next.start)}–{hm(next.end)}
             </span>
+          </span>
+          <span className="block truncate text-[13px] text-grey-ink">
+            {name(next.space_id, true)} · {t(waiting ? 'today.next' : 'status.confirmed')}
           </span>
         </span>
       </Link>
@@ -428,7 +455,7 @@ function QuickBook({ pick, onChange }) {
                   ) : (
                     <p className="rounded-xl bg-surface px-3 py-2 text-[13px]">{t('book.no_reminder')}</p>
                   )}
-                  <p className="mt-2 text-[12px] text-grey-ink">{t(reminder ? 'book.reminder_hint' : 'today.untap')}</p>
+                  {reminder && <p className="mt-2 text-[12px] text-grey-ink">{t('book.reminder_hint')}</p>}
                   <div className="h-3" />
                 </div>
                 {/* room for the tab bar, which the panel sits behind */}
