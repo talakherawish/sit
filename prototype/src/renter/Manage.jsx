@@ -18,12 +18,25 @@ const KIND = {
   cancelled: ['cancelled', 'cancelled_by_staff', 'released'],
 }
 const FILTERS = ['awaiting', 'confirmed', 'attended', 'cancelled', 'recent']
-// The coloured edge down the start of a card, one per status
-const EDGE = {
-  awaiting_confirmation: 'before:bg-amber',
-  confirmed: 'before:bg-teal',
-  checked_in: 'before:bg-navy',
-  used: 'before:bg-navy',
+// A card's status badge: tinted so it reads at a glance, on the far side of the room name
+const BADGE = {
+  awaiting_confirmation: 'bg-amber/20 text-[#7a4f00]',
+  confirmed: 'bg-teal/15 text-[#2f5656]',
+  checked_in: 'bg-navy/10 text-navy',
+  used: 'bg-navy/10 text-navy',
+  cancelled: 'bg-red/10 text-[#a32f2f]',
+  cancelled_by_staff: 'bg-red/10 text-[#a32f2f]',
+  no_show: 'bg-red/10 text-[#a32f2f]',
+}
+function Badge({ status, label }) {
+  const { t } = useTranslation()
+  return (
+    <span
+      className={`ms-auto shrink-0 rounded-full px-2.5 py-0.5 text-[12px] font-semibold whitespace-nowrap ${BADGE[status] || 'bg-black/[0.05] text-grey-ink'}`}
+    >
+      {label ?? t(`status.${status}`)}
+    </span>
+  )
 }
 
 /**
@@ -267,13 +280,11 @@ function BookingCard({ b, onCancel }) {
   const st = useBookingState()(b)
   const gone = !ACTIVE.includes(b.status)
   return (
-    <article
-      className={`relative overflow-hidden rounded-[20px] bg-surface p-4 ps-5 before:absolute before:inset-y-0 before:start-0 before:w-1 ${EDGE[b.status] || 'before:bg-grey/40'}`}
-    >
+    <article className="rounded-[20px] bg-surface p-4">
       <Link to={`/r/confirmed/${b.id}`} className="-m-1 block rounded-xl p-1 active:bg-black/[0.04]">
         <div className="flex items-center gap-2">
           <h3 className="min-w-0 truncate text-[15px] font-semibold">{name(b.space_id)}</h3>
-          <StatusChip status={st.status} label={st.label} />
+          <Badge status={st.status} label={st.label} />
         </div>
         <div className={`mt-1 flex items-baseline justify-between gap-3 ${gone ? 'text-grey-ink' : ''}`}>
           <span dir="ltr" className={`font-head text-[24px] leading-tight font-bold tracking-tight tabular-nums ${gone ? 'line-through decoration-1' : ''}`}>
@@ -308,17 +319,15 @@ function SeriesCard({ list, open, onToggle, onCancel }) {
   const waiting = list.filter((b) => state(b).waiting).length
   const sameTime = list.every((b) => b.start === first.start && b.end === first.end)
   return (
-    <article
-      className={`relative overflow-hidden rounded-[20px] bg-surface before:absolute before:inset-y-0 before:start-0 before:w-1 ${EDGE[waiting ? 'awaiting_confirmation' : first.status] || 'before:bg-grey/40'}`}
-    >
-      <button onClick={onToggle} aria-expanded={open} className="block w-full p-4 ps-5 text-start active:bg-black/[0.03]">
+    <article className="overflow-hidden rounded-[20px] bg-surface">
+      <button onClick={onToggle} aria-expanded={open} className="block w-full p-4 text-start active:bg-black/[0.03]">
         <div className="flex items-center gap-2">
           <h3 className="min-w-0 truncate text-[15px] font-semibold">{name(first.space_id)}</h3>
           <span className="flex shrink-0 items-center gap-1 text-[13px] font-semibold text-navy">
             <Icon name="repeat" size={13} />
             {t('bookings.dates', { count: list.length })}
           </span>
-          {waiting > 0 && <StatusChip status="awaiting_confirmation" label={t('bookings.waiting', { count: waiting })} />}
+          {waiting > 0 && <Badge status="awaiting_confirmation" label={t('bookings.waiting', { count: waiting })} />}
         </div>
         <div className="mt-1 flex items-baseline justify-between gap-3">
           <span dir="ltr" className="font-head text-[24px] leading-tight font-bold tracking-tight tabular-nums">
@@ -338,7 +347,7 @@ function SeriesCard({ list, open, onToggle, onCancel }) {
         </p>
       </button>
       {open && (
-        <ul className="animate-fade ms-5 me-4 mb-2 divide-y divide-black/[0.06] border-t border-black/[0.06]">
+        <ul className="animate-fade mx-4 mb-2 divide-y divide-black/[0.06] border-t border-black/[0.06]">
           {list.map((b) => {
             const st = state(b)
             return (
