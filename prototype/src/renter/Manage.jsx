@@ -171,7 +171,8 @@ function useBookingState() {
     const active = ACTIVE.includes(b.status)
     const canEdit = active && !started && !inRoom
     const waiting = b.status === 'awaiting_confirmation' && !started
-    const status = inRoom && !isPast ? 'checked_in' : b.status
+    // A booking released because nobody checked in reads as a no-show
+    const status = inRoom && !isPast ? 'checked_in' : b.release_reason === 'no_checkin' ? 'no_show' : b.status
     const label = inRoom && !isPast ? t('bookings.in_room', { time: hm(b.end) }) : undefined
     // Only what you have to do, and by when: unconfirmed bookings go 1 h before, unclaimed ones 15 min after
     const note = waiting

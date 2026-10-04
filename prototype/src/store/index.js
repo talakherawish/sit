@@ -20,10 +20,13 @@ function buildData() {
     b.end = parseHm(b.end)
     b.reminder_at = b.reminder ? reminderAt(b.date, b.start, b.reminder) : null
     b.reminder_sent = b.status !== 'awaiting_confirmation'
-    b.created_at = abs(addDays(b.date, -2), 18 * 60)
+    b.created_at = b.created ? dt(b.created) : abs(addDays(b.date, -2), 18 * 60)
+    delete b.created
     return b
   }
   d.bookings.forEach(fixBooking)
+  // Series dates before today happened (unless listed otherwise); later ones wait for confirmation.
+  const today = seed.start_now.slice(0, 10)
   for (const s of d.series) {
     for (let date = s.from; date <= s.until; date = addDays(date, 1)) {
       if (!s.days.includes(weekday(date)) || !hoursFor(d, date)) continue
@@ -38,12 +41,25 @@ function buildData() {
           reason: s.reason,
           reminder: s.reminder,
           series_id: s.id,
-          status: 'awaiting_confirmation',
+          status: s.statuses?.[date] || (date < today ? 'used' : 'awaiting_confirmation'),
           created_by: 'renter',
           source: 'map',
+          created: s.created,
         }),
       )
     }
+  }
+  // Every past booking that was used has its check-in and check-out
+  for (const b of d.bookings) {
+    if (b.status !== 'used' || d.visits.some((v) => v.booking_id === b.id)) continue
+    d.visits.push({
+      id: `v-${b.id}`,
+      renter_id: b.renter_id,
+      check_in: `${b.date}T${hm(b.start - 3)}`,
+      check_out: b.date < today ? `${b.date}T${hm(b.end + 2)}` : null,
+      via: 'sit',
+      booking_id: b.id,
+    })
   }
   d.visits.forEach((v) => {
     v.check_in = dt(v.check_in)
@@ -78,6 +94,36 @@ function buildData() {
       time: dt('2026-10-01T08:05'),
       read: false,
       link: '/r/home',
+    },
+    {
+      id: 'nt-m3',
+      renter_id: 'tala',
+      kind: 'cancel',
+      tpl: 'staff_cancelled',
+      params: { spaceId: 'big-2', date: '2026-10-13', time: '13:00', reason: 'AC repair' },
+      time: dt('2026-09-30T16:20'),
+      read: false,
+      link: '/r/bookings',
+    },
+    {
+      id: 'nt-m4',
+      renter_id: 'tala',
+      kind: 'report',
+      tpl: 'report_status',
+      params: { status: 'fixed', spaceId: 'focus-3' },
+      time: dt('2026-09-22T13:00'),
+      read: true,
+      link: '/r/reports',
+    },
+    {
+      id: 'nt-m5',
+      renter_id: 'tala',
+      kind: 'release',
+      tpl: 'released',
+      params: { spaceId: 'focus-2', time: '15:00', date: '2026-09-24', why: 'unconfirmed' },
+      time: dt('2026-09-24T14:00'),
+      read: true,
+      link: '/r/bookings',
     },
     {
       id: 'nt-m2',
