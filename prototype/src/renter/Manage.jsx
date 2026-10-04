@@ -2,145 +2,77 @@ import { useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
-import { useReasonText, useReportBooking, useSpaceName, useTemplate } from '../lib/hooks'
+import { useReportBooking, useSpaceName, useTemplate } from '../lib/hooks'
 import { ACTIVE, endAbs, freeStarts, hoursFor, startAbs, dateOf, minOfDay, renter as findRenter } from '../lib/logic'
 import { addDays, fmtDate, hm } from '../lib/time'
-import { Chip, Confirm, Empty, ScreenTitle, Segmented, StatusChip } from '../components/ui'
+import { Chip, Confirm, Empty, ScreenTitle, StatusChip } from '../components/ui'
 import Icon from '../components/Icon'
 import MonthGrid from '../components/MonthGrid'
 import { NeedLogin } from './RenterLayout'
 
-/** R-13 My bookings: as cards (Upcoming / Past) or as a month calendar. */
+// Filter chips: any mix of the four kinds, plus Most recent (newest bookings first). None = everything.
+const KIND = {
+  awaiting: ['awaiting_confirmation'],
+  confirmed: ['confirmed'],
+  attended: ['checked_in', 'used'],
+  cancelled: ['cancelled', 'cancelled_by_staff', 'released'],
+}
+const FILTERS = ['awaiting', 'confirmed', 'attended', 'cancelled', 'recent']
+// The coloured edge down the start of a card, one per status
+const EDGE = {
+  awaiting_confirmation: 'before:bg-amber',
+  confirmed: 'before:bg-teal',
+  checked_in: 'before:bg-navy',
+  used: 'before:bg-navy',
+}
+
+/**
+ * R-13 My bookings: cards or a month calendar. Cards are filtered with quiet chips (no Upcoming / Past
+ * switch): with none picked you see what's coming up, soonest first, then what's past. A repeating booking
+ * is one card that opens to show every date in it.
+ */
 export function MyBookings() {
   const { t } = useTranslation()
-  const navigate = useNavigate()
   const s = useStore()
   const view = s.bookingsView || 'cards'
-  const [tab, setTab] = useState('upcoming')
-  const [sort, setSort] = useState('soonest') // soonest | latest | booked
+  const [filters, setFilters] = useState([])
   const [cancel, setCancel] = useState(null)
   const [whole, setWhole] = useState(false)
-  const [expanded, setExpanded] = useState({})
-  const name = useSpaceName()
-  const reasonText = useReasonText()
-  const report = useReportBooking()
+  const [open, setOpen] = useState({}) // series cards opened
   const me = findRenter(s.data, s.renterId)
   if (!me) return <NeedLogin returnTo="/r/bookings" />
 
   const mine = s.data.bookings.filter((b) => b.renter_id === me.id)
-  const order = {
-    soonest: (a, b) => startAbs(a) - startAbs(b),
-    latest: (a, b) => startAbs(b) - startAbs(a),
-    booked: (a, b) => b.created_at - a.created_at,
-  }
-  // "Soonest" on Past means the most recent visit first.
-  const by = tab === 'past' ? { soonest: order.latest, latest: order.soonest, booked: order.booked }[sort] : order[sort]
-  const upcoming = mine.filter((b) => endAbs(b) > s.now).sort(by)
-  const past = mine.filter((b) => endAbs(b) <= s.now).sort(by)
+  const kinds = filters.filter((f) => f !== 'recent')
+  const recent = filters.includes('recent')
+  const shown = kinds.length ? mine.filter((b) => kinds.some((k) => KIND[k].includes(b.status))) : mine
+  const toggle = (f) => setFilters((on) => (on.includes(f) ? on.filter((x) => x !== f) : [...on, f]))
 
-  // Collapse recurring series to their next booking (+ "N more").
-  const seen = {}
-  const rows = []
-  for (const b of tab === 'upcoming' ? upcoming : past) {
-    if (tab === 'upcoming' && b.series_id) {
-      seen[b.series_id] = (seen[b.series_id] || 0) + 1
-      if (seen[b.series_id] > 1 && !expanded[b.series_id]) continue
+  // Most recent = newest bookings first, in one list. Otherwise: coming up (soonest first), then past (latest first).
+  const sections = recent
+    ? [{ key: 'recent', list: [...shown].sort((a, b) => b.created_at - a.created_at) }]
+    : [
+        { key: 'upcoming', list: shown.filter((b) => endAbs(b) > s.now).sort((a, b) => startAbs(a) - startAbs(b)) },
+        { key: 'past', list: shown.filter((b) => endAbs(b) <= s.now).sort((a, b) => startAbs(b) - startAbs(a)) },
+      ].filter((x) => x.list.length)
+  // A repeating booking becomes one card, where its first date would be.
+  const cardsOf = (list) => {
+    const out = []
+    const series = {}
+    for (const b of list) {
+      if (!b.series_id) out.push({ key: b.id, one: b })
+      else if (series[b.series_id]) series[b.series_id].push(b)
+      else out.push({ key: b.series_id, many: (series[b.series_id] = [b]) })
     }
-    rows.push(b)
+    return out.map((c) => (c.many?.length === 1 ? { key: c.key, one: c.many[0] } : c))
   }
-  const more = (sid) => upcoming.filter((b) => b.series_id === sid).length - 1
-  // A repeating booking counts once.
-  const count =
-    tab === 'upcoming' ? upcoming.filter((b) => !b.series_id).length + new Set(upcoming.filter((b) => b.series_id).map((b) => b.series_id)).size : past.length
 
   const doCancel = () => {
     s.cancelWithUndo(cancel.id, whole)
     setCancel(null)
     setWhole(false)
   }
-  const again = (b) => {
-    s.set({ draft: { spaceId: b.space_id, reason: b.reason, reasonOther: b.reason_other, source: 'rebook' } })
-    navigate('/r/book')
-  }
-
-  /** One booking card. `grouped` adds "+N more" for a repeating booking (cards view, Upcoming). */
-  const card = (b, grouped) => {
-    const isPast = endAbs(b) <= s.now
-    const started = s.now >= startAbs(b)
-    const active = ACTIVE.includes(b.status)
-    const inRoom = b.status === 'used' || b.status === 'checked_in'
-    const canEdit = active && !started && !inRoom
-    const waiting = b.status === 'awaiting_confirmation' && !started
-    return (
-      <article key={b.id} className="rounded-2xl bg-surface p-4">
-        <Link to={`/r/confirmed/${b.id}`} className="-m-1 flex items-start justify-between gap-2 rounded-xl p-1 active:bg-black/[0.04]">
-          <div>
-            <h2 className="text-[17px] font-semibold">{name(b.space_id)}</h2>
-            <p className="text-sm">
-              {fmtDate(b.date, s.lang)} ·{' '}
-              <span dir="ltr" className="whitespace-nowrap">
-                {hm(b.start)}–{hm(b.end)}
-              </span>
-            </p>
-            {b.reason && <p className="text-sm text-grey-ink">{reasonText(b)}</p>}
-          </div>
-          <StatusChip status={inRoom && !isPast ? 'checked_in' : b.status} label={inRoom && !isPast ? t('bookings.in_room', { time: hm(b.end) }) : undefined} />
-        </Link>
-        {b.series_id && !isPast && (
-          <p className="mt-1 flex items-center gap-1.5 text-sm">
-            <Icon name="repeat" size={14} className="text-grey-ink" />
-            <span className="font-medium">{t('bookings.series')}</span>
-            {grouped && more(b.series_id) > 0 && !expanded[b.series_id] && (
-              <button className="btn-link ms-1 !min-h-0" onClick={() => setExpanded({ ...expanded, [b.series_id]: true })}>
-                {t('bookings.more', { count: more(b.series_id) })}
-              </button>
-            )}
-          </p>
-        )}
-        {!isPast && canEdit && (
-          <>
-            {waiting && <p className="mt-2 text-[13px] text-grey-ink">{t('bookings.confirm_hint')}</p>}
-            <div className="mt-3 flex gap-2">
-              {waiting && (
-                <button
-                  className="btn-secondary flex-1 !bg-navy !text-white"
-                  onClick={() => {
-                    s.confirmBooking(b.id)
-                    s.showToast('toast.confirmed')
-                  }}
-                >
-                  {t('bookings.confirm')}
-                </button>
-              )}
-              <button className="btn-secondary flex-1" onClick={() => navigate(`/r/bookings/${b.id}/move`)}>
-                {t('bookings.change')}
-              </button>
-              <button className="btn-danger flex-1" onClick={() => setCancel(b)}>
-                {t('bookings.cancel')}
-              </button>
-            </div>
-          </>
-        )}
-        {/* Once it has started (or you're in the room), Change / Cancel give way to Report a problem */}
-        {((!isPast && active && !canEdit) || (isPast && b.status === 'used')) && (
-          <button className="btn-danger mt-3 w-full" onClick={() => report(b)}>
-            <Icon name="flag" size={18} />
-            {t('account.report')}
-          </button>
-        )}
-        {b.status === 'cancelled_by_staff' && !isPast && (
-          <Link to="/r/list" className="btn-link">
-            {t('notif.book_another')}
-          </Link>
-        )}
-        {isPast && (
-          <button className="btn-link" onClick={() => again(b)}>
-            {t('bookings.again')}
-          </button>
-        )}
-      </article>
-    )
-  }
+  const card = (b) => <BookingCard key={b.id} b={b} onCancel={setCancel} />
 
   return (
     <>
@@ -149,41 +81,52 @@ export function MyBookings() {
       </ScreenTitle>
       <div className="px-4">
         {view === 'calendar' ? (
-          <BookingsCalendar bookings={mine} render={(b) => card(b, false)} />
+          <BookingsCalendar bookings={mine} render={card} />
         ) : (
           <>
-            <Segmented
-              className="mb-3"
-              label={t('bookings.title')}
-              value={tab}
-              onChange={setTab}
-              options={[
-                ['upcoming', t('bookings.upcoming')],
-                ['past', t('bookings.past')],
-              ]}
-            />
-            <div className="mb-3 flex items-center justify-between px-1">
-              <span className="text-[13px] text-grey-ink">{t('bookings.count', { count })}</span>
-              <label className="relative flex min-h-11 items-center gap-1 text-[15px] font-medium text-navy">
-                <span className="sr-only">{t('bookings.sort')}</span>
-                <Icon name="chevrons" size={16} />
-                <select
-                  value={sort}
-                  onChange={(e) => setSort(e.target.value)}
-                  className="appearance-none bg-transparent pe-1 font-medium text-navy outline-none"
-                >
-                  {['soonest', 'latest', 'booked'].map((k) => (
-                    <option key={k} value={k}>
-                      {t(`bookings.sort_${tab === 'past' ? { soonest: 'newest', latest: 'oldest', booked: 'booked' }[k] : k}`)}
-                    </option>
-                  ))}
-                </select>
-              </label>
+            <div className="fade-x no-scrollbar -mx-4 mb-4 flex gap-1.5 overflow-x-auto px-4" role="group" aria-label={t('bookings.filters')}>
+              {FILTERS.map((f) => {
+                const on = filters.includes(f)
+                return (
+                  <button
+                    key={f}
+                    onClick={() => toggle(f)}
+                    aria-pressed={on}
+                    className={`flex h-8 shrink-0 items-center gap-1 rounded-full px-3 text-[13px] font-medium transition-colors ${
+                      on ? 'bg-ink text-white' : 'text-grey-ink ring-1 ring-black/[0.1] ring-inset active:bg-black/[0.04]'
+                    }`}
+                  >
+                    {on && <Icon name="check" size={13} className="stroke-[3]" />}
+                    {t(`bookings.filter_${f}`)}
+                  </button>
+                )
+              })}
             </div>
-            <div className="space-y-3">
-              {!rows.length && <Empty>{tab === 'upcoming' ? t('bookings.none_upcoming') : t('bookings.none_past')}</Empty>}
-              {rows.map((b) => card(b, tab === 'upcoming'))}
-            </div>
+            {!sections.length && <Empty>{filters.length ? t('bookings.none_filtered') : t('bookings.none_upcoming')}</Empty>}
+            {sections.map((sec) => (
+              <section key={sec.key} className="mb-6">
+                {sec.key !== 'recent' && (
+                  <h2 className="mb-2 px-1 text-[13px] font-semibold text-grey-ink">
+                    {t(`bookings.${sec.key}`)} · {cardsOf(sec.list).length}
+                  </h2>
+                )}
+                <div className="space-y-2.5">
+                  {cardsOf(sec.list).map((c) =>
+                    c.one ? (
+                      card(c.one)
+                    ) : (
+                      <SeriesCard
+                        key={c.key}
+                        list={c.many}
+                        open={!!open[c.key]}
+                        onToggle={() => setOpen({ ...open, [c.key]: !open[c.key] })}
+                        onCancel={setCancel}
+                      />
+                    ),
+                  )}
+                </div>
+              </section>
+            ))}
           </>
         )}
       </div>
@@ -214,6 +157,227 @@ export function MyBookings() {
         )}
       </Confirm>
     </>
+  )
+}
+
+/** What a booking's status is right now, and the one short line that goes with it. */
+function useBookingState() {
+  const { t } = useTranslation()
+  const now = useStore((s) => s.now)
+  return (b) => {
+    const isPast = endAbs(b) <= now
+    const started = now >= startAbs(b)
+    const inRoom = b.status === 'used' || b.status === 'checked_in'
+    const active = ACTIVE.includes(b.status)
+    const canEdit = active && !started && !inRoom
+    const waiting = b.status === 'awaiting_confirmation' && !started
+    const status = inRoom && !isPast ? 'checked_in' : b.status
+    const label = inRoom && !isPast ? t('bookings.in_room', { time: hm(b.end) }) : undefined
+    // Only what you have to do, and by when: unconfirmed bookings go 1 h before, unclaimed ones 15 min after
+    const note = waiting
+      ? t('bookings.confirm_by', { time: hm(Math.max(0, b.start - 60)) })
+      : b.status === 'confirmed' && !started
+        ? t('bookings.checkin_by', { time: hm(b.start + 15) })
+        : null
+    return { isPast, started, inRoom, active, canEdit, waiting, status, label, note }
+  }
+}
+
+const pill = 'min-h-9 shrink-0 rounded-full px-3.5 text-[15px] active:opacity-80'
+
+/** The actions under a booking: Confirm · Change · Cancel before it starts; Report a problem once it has. */
+function Actions({ b, st, onCancel }) {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const s = useStore()
+  const report = useReportBooking()
+  if (st.canEdit && !st.isPast)
+    return (
+      <div className="mt-3 flex gap-2">
+        {st.waiting && (
+          <button
+            className={`${pill} bg-navy font-semibold text-white`}
+            onClick={() => {
+              s.confirmBooking(b.id)
+              s.showToast('toast.confirmed')
+            }}
+          >
+            {t('bookings.confirm')}
+          </button>
+        )}
+        <button className={`${pill} bg-black/[0.05] font-medium text-ink`} onClick={() => navigate(`/r/bookings/${b.id}/move`)}>
+          {t('bookings.change')}
+        </button>
+        <button className={`${pill} bg-black/[0.05] font-medium text-[#c23b3b]`} onClick={() => onCancel(b)}>
+          {t('bookings.cancel')}
+        </button>
+      </div>
+    )
+  // Once it has started (or you're in the room), Change / Cancel give way to Report a problem
+  if ((!st.isPast && st.active) || (st.isPast && b.status === 'used'))
+    return (
+      <div className="mt-3 flex gap-2">
+        <button className={`${pill} flex items-center gap-1.5 bg-red/10 font-medium text-[#c23b3b]`} onClick={() => report(b)}>
+          <Icon name="flag" size={16} />
+          {t('account.report')}
+        </button>
+        {st.isPast && <AgainButton b={b} />}
+      </div>
+    )
+  if (b.status === 'cancelled_by_staff' && !st.isPast)
+    return (
+      <Link to="/r/list" className={`${pill} mt-3 inline-flex items-center bg-black/[0.05] font-medium text-navy`}>
+        {t('notif.book_another')}
+      </Link>
+    )
+  if (st.isPast)
+    return (
+      <div className="mt-3">
+        <AgainButton b={b} />
+      </div>
+    )
+  return null
+}
+
+function AgainButton({ b }) {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const set = useStore((s) => s.set)
+  return (
+    <button
+      className={`${pill} bg-black/[0.05] font-medium text-navy`}
+      onClick={() => {
+        set({ draft: { spaceId: b.space_id, reason: b.reason, reasonOther: b.reason_other, source: 'rebook' } })
+        navigate('/r/book')
+      }}
+    >
+      {t('bookings.again')}
+    </button>
+  )
+}
+
+/**
+ * One booking, laid out the same whatever its status: room and status on top, then the time large with the
+ * date on the far side, then one short line (confirm by / check in by) and the actions.
+ */
+function BookingCard({ b, onCancel }) {
+  const lang = useStore((s) => s.lang)
+  const name = useSpaceName()
+  const st = useBookingState()(b)
+  const gone = !ACTIVE.includes(b.status)
+  return (
+    <article
+      className={`relative overflow-hidden rounded-[20px] bg-surface p-4 ps-5 before:absolute before:inset-y-0 before:start-0 before:w-1 ${EDGE[b.status] || 'before:bg-grey/40'}`}
+    >
+      <Link to={`/r/confirmed/${b.id}`} className="-m-1 block rounded-xl p-1 active:bg-black/[0.04]">
+        <div className="flex items-center gap-2">
+          <h3 className="min-w-0 truncate text-[15px] font-semibold">{name(b.space_id)}</h3>
+          <StatusChip status={st.status} label={st.label} />
+        </div>
+        <div className={`mt-1 flex items-baseline justify-between gap-3 ${gone ? 'text-grey-ink' : ''}`}>
+          <span dir="ltr" className={`font-head text-[24px] leading-tight font-bold tracking-tight tabular-nums ${gone ? 'line-through decoration-1' : ''}`}>
+            {hm(b.start)}–{hm(b.end)}
+          </span>
+          <span className="shrink-0 text-[15px] font-medium text-grey-ink">{fmtDate(b.date, lang, { weekday: 'short', day: 'numeric', month: 'short' })}</span>
+        </div>
+        {st.note && <p className="mt-0.5 text-[13px] text-grey-ink">{st.note}</p>}
+      </Link>
+      <Actions b={b} st={st} onCancel={onCancel} />
+    </article>
+  )
+}
+
+/**
+ * A repeating booking as one card: room, the time large and the days it repeats on, then its first and
+ * last date. Opening it lists every date, each with its status, Confirm when it's waiting, and a tap for details.
+ */
+function SeriesCard({ list, open, onToggle, onCancel }) {
+  const { t } = useTranslation()
+  const s = useStore()
+  const name = useSpaceName()
+  const state = useBookingState()
+  const first = list[0]
+  const last = list[list.length - 1]
+  const short = (d) => fmtDate(d, s.lang, { weekday: 'short', day: 'numeric', month: 'short' })
+  const dow = (b) => new Date(`${b.date}T00:00`).getDay()
+  const days = [...new Set(list.map(dow))]
+    .sort()
+    .map((d) => fmtDate(list.find((b) => dow(b) === d).date, s.lang, { weekday: 'short' }))
+    .join(' · ')
+  const waiting = list.filter((b) => state(b).waiting).length
+  const sameTime = list.every((b) => b.start === first.start && b.end === first.end)
+  return (
+    <article
+      className={`relative overflow-hidden rounded-[20px] bg-surface before:absolute before:inset-y-0 before:start-0 before:w-1 ${EDGE[waiting ? 'awaiting_confirmation' : first.status] || 'before:bg-grey/40'}`}
+    >
+      <button onClick={onToggle} aria-expanded={open} className="block w-full p-4 ps-5 text-start active:bg-black/[0.03]">
+        <div className="flex items-center gap-2">
+          <h3 className="min-w-0 truncate text-[15px] font-semibold">{name(first.space_id)}</h3>
+          <span className="flex shrink-0 items-center gap-1 text-[13px] font-semibold text-navy">
+            <Icon name="repeat" size={13} />
+            {t('bookings.dates', { count: list.length })}
+          </span>
+          {waiting > 0 && <StatusChip status="awaiting_confirmation" label={t('bookings.waiting', { count: waiting })} />}
+        </div>
+        <div className="mt-1 flex items-baseline justify-between gap-3">
+          <span dir="ltr" className="font-head text-[24px] leading-tight font-bold tracking-tight tabular-nums">
+            {hm(first.start)}–{hm(first.end)}
+            {!sameTime && '…'}
+          </span>
+          <span className="shrink-0 text-[15px] font-medium text-grey-ink">{t('bookings.every', { days })}</span>
+        </div>
+        <p className="mt-0.5 flex items-center justify-between gap-2 text-[13px] text-grey-ink">
+          <span className="truncate">
+            {short(first.date)} – {short(last.date)}
+          </span>
+          <span className="flex shrink-0 items-center gap-0.5 font-medium text-navy">
+            {open ? t('bookings.hide') : t('bookings.show_all')}
+            <Icon name="next" size={14} className={`transition-transform ${open ? '-rotate-90' : 'rotate-90'}`} />
+          </span>
+        </p>
+      </button>
+      {open && (
+        <ul className="animate-fade ms-5 me-4 mb-2 divide-y divide-black/[0.06] border-t border-black/[0.06]">
+          {list.map((b) => {
+            const st = state(b)
+            return (
+              <li key={b.id} className="flex min-h-12 items-center gap-2 py-1">
+                <Link to={`/r/confirmed/${b.id}`} className="flex min-w-0 flex-1 items-center gap-3 active:opacity-60">
+                  <span className="w-[96px] shrink-0 text-[15px] font-medium">{short(b.date)}</span>
+                  {!sameTime && (
+                    <span dir="ltr" className="shrink-0 text-[13px] text-grey-ink tabular-nums">
+                      {hm(b.start)}
+                    </span>
+                  )}
+                  {/* A waiting date says so with its Confirm button */}
+                  {!st.waiting && <StatusChip status={st.status} label={st.label} />}
+                </Link>
+                {st.waiting ? (
+                  <button
+                    className="min-h-8 shrink-0 rounded-full bg-navy px-3 text-[13px] font-semibold text-white active:opacity-80"
+                    onClick={() => {
+                      s.confirmBooking(b.id)
+                      s.showToast('toast.confirmed')
+                    }}
+                  >
+                    {t('bookings.confirm')}
+                  </button>
+                ) : (
+                  st.canEdit && (
+                    <button
+                      className="min-h-8 shrink-0 rounded-full px-2 text-[13px] font-medium text-[#c23b3b] active:bg-black/[0.05]"
+                      onClick={() => onCancel(b)}
+                    >
+                      {t('bookings.cancel')}
+                    </button>
+                  )
+                )}
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </article>
   )
 }
 
