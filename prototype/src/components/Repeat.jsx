@@ -49,7 +49,6 @@ export default function RepeatPicker({ repeat, until, first, onChange }) {
           )}
         </span>
       </div>
-      {!repeat && <p className="mt-1.5 px-1 text-[13px] text-grey-ink">{t('repeat.none_hint')}</p>}
     </section>
   )
 }

@@ -801,7 +801,6 @@
   },
   "ahead": {
     "title": "Book ahead",
-    "days": "Days",
     "tap_days": "Tap every day you need.",
     "time": "Time",
     "pick_first": "Pick days and a time to see which rooms are free.",
@@ -840,8 +839,7 @@
     "monthly": "Monthly",
     "until": "Until",
     "until_date": "Until {{date}}",
-    "until_label": "Repeat until",
-    "none_hint": "Nothing picked means no repeat."
+    "until_label": "Repeat until"
   },
   "receipt": {
     "title": "Booked",

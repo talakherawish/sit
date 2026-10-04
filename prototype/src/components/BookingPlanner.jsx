@@ -135,7 +135,8 @@ export default function BookingPlanner({ renterId, planKey = 'plan', desk = fals
     if (!receipt) return
     const { ids } = receipt
     setReceipt(null)
-    document.querySelector('main')?.scrollTo({ top: 0, behavior: 'smooth' })
+    // The renter app's visible swipe panel, else the page itself (staff)
+    ;(document.querySelector('[data-scroller]:not([inert])') || document.querySelector('main'))?.scrollTo({ top: 0, behavior: 'smooth' })
     window.scrollTo({ top: 0, behavior: 'smooth' })
     const undo = () => useStore.getState().removeBookings(ids)
     if (createdBy === 'staff') s.showToast('toast.staff_booked', { name: pn(renter) }, undo)
@@ -144,7 +145,6 @@ export default function BookingPlanner({ renterId, planKey = 'plan', desk = fals
 
   const days = (
     <section className={pad}>
-      <SectionLabel>{t('ahead.days')}</SectionLabel>
       <CalendarPicker monthOnly selected={plan.dates} focus={sorted[sorted.length - 1]} onToggle={toggle} />
       <p className="mt-1.5 px-1 text-[13px] text-grey-ink">{sorted.length ? sorted.map(short).join(' · ') : t('ahead.tap_days')}</p>
     </section>

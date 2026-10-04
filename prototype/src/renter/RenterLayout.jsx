@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
@@ -8,10 +8,25 @@ import { hm } from '../lib/time'
 import Icon, { TechnoparkLogo } from '../components/Icon'
 import { OverlayHost, ScreenId, Sheet, Toast } from '../components/ui'
 import AccountSheet from './Account'
+import Home from './Home'
+import { BookAhead } from './Browse'
+import { MyBookings } from './Manage'
+
+// A scrolling page between the nav bar and the tab bar; content scrolls underneath both.
+const PAGE =
+  'no-scrollbar snap-y snap-proximity scroll-pt-[calc(52px+var(--app-top))] overflow-x-hidden overflow-y-auto pt-[calc(52px+var(--app-top))] pb-24 sm:scroll-pt-[104px] sm:pt-[104px] sm:pb-28'
+
+// The three tabs, in swipe order. Their routes in App.jsx are drawn here, side by side, instead of in the Outlet.
+const TABS = [
+  { key: 'today', icon: 'sun', path: '/r/home', page: (active) => <Home active={active} /> },
+  { key: 'ahead', icon: 'calendar', path: '/r/list', page: () => <BookAhead /> },
+  { key: 'bookings', icon: 'ticket', path: '/r/bookings', page: () => <MyBookings /> },
+]
 
 export default function RenterLayout() {
   const loc = useLocation()
   const main = useRef(null)
+  const tab = TABS.findIndex((x) => x.path === loc.pathname)
 
   useEffect(() => {
     main.current?.scrollTo(0, 0)
@@ -31,14 +46,15 @@ export default function RenterLayout() {
           <OverlayHost>
             <div className="absolute top-[11px] left-1/2 z-50 hidden h-[34px] w-[120px] -translate-x-1/2 rounded-full bg-black sm:block" aria-hidden="true" />
             <TopBar />
-            <main
-              ref={main}
-              className="no-scrollbar absolute inset-0 snap-y snap-proximity scroll-pt-[calc(52px+var(--app-top))] overflow-x-hidden overflow-y-auto pt-[calc(52px+var(--app-top))] pb-24 sm:scroll-pt-[104px] sm:pt-[104px] sm:pb-28"
-            >
-              <div key={loc.pathname} className="animate-screen">
-                <Outlet />
-              </div>
-            </main>
+            {tab >= 0 ? (
+              <TabPager index={tab} />
+            ) : (
+              <main ref={main} data-scroller className={`absolute inset-0 ${PAGE}`}>
+                <div key={loc.pathname} className="animate-screen">
+                  <Outlet />
+                </div>
+              </main>
+            )}
             <TabBar />
             <div className="absolute bottom-2 left-1/2 z-50 hidden h-[5px] w-[134px] -translate-x-1/2 rounded-full bg-black/85 sm:block" aria-hidden="true" />
             <LoginGate />
@@ -48,6 +64,146 @@ export default function RenterLayout() {
         </div>
       </div>
     </div>
+  )
+}
+
+/**
+ * Today, Book ahead and My bookings side by side, like Instagram: swipe left or right to move between them,
+ * and the page follows your finger. Touch and trackpads use the browser's own swipe (so a strip that scrolls
+ * sideways inside a page still scrolls first); a mouse can drag too, for the desktop demo. Each page keeps
+ * its place while you're on the others. Tapping the tab you're already on scrolls it back to the top.
+ */
+function TabPager({ index }) {
+  const track = useRef(null)
+  const panels = useRef([])
+  const navigate = useNavigate()
+  const { key } = useLocation()
+  const [mouse, setMouse] = useState(false) // mid mouse-drag: no snapping, no selecting text
+
+  // Scroll offset of page i; in Arabic the pages run right to left and scrollLeft counts down from 0.
+  const leftOf = (i) => (getComputedStyle(track.current).direction === 'rtl' ? -1 : 1) * i * track.current.clientWidth
+  const at = () => Math.round(Math.abs(track.current.scrollLeft) / track.current.clientWidth)
+
+  // Route → page: open on the right page, slide over when a tab is tapped, back to top on the current tab.
+  const first = useRef(true)
+  const lastKey = useRef(key)
+  useLayoutEffect(() => {
+    const el = track.current
+    // Slide, unless motion is turned down or the page is in the background (browsers pause the slide there)
+    const behavior = document.hidden || matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth'
+    if (first.current) {
+      first.current = false
+      el.scrollLeft = leftOf(index)
+    } else if (at() !== index) el.scrollTo({ left: leftOf(index), behavior })
+    else if (lastKey.current !== key) panels.current[index]?.scrollTo({ top: 0, behavior })
+    lastKey.current = key
+  }, [index, key])
+
+  // Switching language flips which side the pages sit on; stay on the same page.
+  const lang = useStore((s) => s.lang)
+  const lastLang = useRef(lang)
+  useEffect(() => {
+    if (lastLang.current === lang) return
+    lastLang.current = lang
+    // After the page's direction has been flipped (App sets it in an effect that runs after this one)
+    const id = setTimeout(() => (track.current.scrollLeft = leftOf(index)))
+    return () => clearTimeout(id)
+  }, [lang]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Page → route: once a swipe settles on another page, that tab becomes the current one.
+  const idx = useRef(index)
+  idx.current = index
+  useEffect(() => {
+    const el = track.current
+    let timer
+    const onScroll = () => {
+      clearTimeout(timer)
+      timer = setTimeout(() => {
+        const i = at()
+        if (i !== idx.current && !el.dataset.dragging) navigate(TABS[i].path, { replace: true })
+      }, 90)
+    }
+    // A slide frozen halfway while the page was in the background lands on its page when you come back
+    const onShow = () => !document.hidden && el.scrollTo({ left: leftOf(idx.current), behavior: 'instant' })
+    el.addEventListener('scroll', onScroll, { passive: true })
+    document.addEventListener('visibilitychange', onShow)
+    return () => {
+      clearTimeout(timer)
+      el.removeEventListener('scroll', onScroll)
+      document.removeEventListener('visibilitychange', onShow)
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Mouse drag. Ignored on form fields and on anything that scrolls sideways itself.
+  const down = (e) => {
+    if (e.pointerType !== 'mouse' || e.button !== 0) return
+    const el = track.current
+    for (let n = e.target; n && n !== el; n = n.parentElement) {
+      if (n.matches('input, select, textarea, [contenteditable]')) return
+      if (n.scrollWidth > n.clientWidth && /auto|scroll/.test(getComputedStyle(n).overflowX)) return
+    }
+    const x0 = e.clientX
+    const y0 = e.clientY
+    const from = el.scrollLeft
+    const w = el.clientWidth
+    let dragging = false
+    const move = (ev) => {
+      const dx = ev.clientX - x0
+      if (!dragging) {
+        if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(ev.clientY - y0)) return
+        dragging = true
+        el.dataset.dragging = '1'
+        setMouse(true)
+        window.getSelection()?.removeAllRanges()
+      }
+      el.scrollLeft = from - dx
+    }
+    const up = (ev) => {
+      window.removeEventListener('pointermove', move)
+      window.removeEventListener('pointerup', up)
+      window.removeEventListener('pointercancel', up)
+      if (!dragging) return
+      // A fifth of the screen is enough to turn the page
+      const dx = ev.clientX - x0
+      const sign = getComputedStyle(el).direction === 'rtl' ? -1 : 1
+      const start = Math.round(Math.abs(from) / w)
+      const step = Math.abs(dx) > w / 5 ? -Math.sign(dx) * sign : 0
+      const to = Math.max(0, Math.min(TABS.length - 1, start + step))
+      delete el.dataset.dragging
+      setMouse(false)
+      el.scrollTo({ left: leftOf(to), behavior: 'smooth' })
+      // The drag ends with a click on whatever was under the mouse; swallow it
+      const swallow = (c) => {
+        c.stopPropagation()
+        c.preventDefault()
+      }
+      window.addEventListener('click', swallow, { capture: true, once: true })
+      setTimeout(() => window.removeEventListener('click', swallow, { capture: true }), 0)
+    }
+    window.addEventListener('pointermove', move)
+    window.addEventListener('pointerup', up)
+    window.addEventListener('pointercancel', up)
+  }
+
+  return (
+    <main
+      ref={track}
+      onPointerDown={down}
+      className={`no-scrollbar absolute inset-0 flex overflow-x-auto overflow-y-hidden overscroll-x-contain ${mouse ? 'select-none' : 'snap-x snap-mandatory'}`}
+    >
+      {TABS.map((tab, i) => (
+        <div
+          key={tab.key}
+          ref={(n) => (panels.current[i] = n)}
+          data-scroller
+          inert={i !== index}
+          aria-hidden={i !== index}
+          className={`h-full w-full shrink-0 snap-start snap-always ${PAGE}`}
+        >
+          {tab.page(i === index)}
+        </div>
+      ))}
+    </main>
   )
 }
 
@@ -185,22 +341,17 @@ function TabBar() {
   const navigate = useNavigate()
   const requireLogin = useRequireLogin()
   // Today = know before you go (and book today); Book ahead = later days and repeats; My bookings = sit where you booked.
-  const tabs = [
-    { key: 'today', icon: 'sun', match: ['/r/home'], open: () => navigate('/r/home') },
-    { key: 'ahead', icon: 'calendar', match: ['/r/list'], open: () => navigate('/r/list') },
-    { key: 'bookings', icon: 'ticket', match: ['/r/bookings'], open: () => requireLogin('/r/bookings') },
-  ]
   return (
     <nav
       className="absolute inset-x-0 bottom-0 z-30 grid grid-cols-3 border-t border-black/[0.06] bg-white/75 pb-1 backdrop-blur-xl backdrop-saturate-150 sm:pb-6"
       aria-label={t('nav.tabs')}
     >
-      {tabs.map((tab) => {
-        const active = tab.match.some((m) => pathname.startsWith(m))
+      {TABS.map((tab) => {
+        const active = pathname.startsWith(tab.path)
         return (
           <button
             key={tab.key}
-            onClick={tab.open}
+            onClick={() => (tab.key === 'bookings' ? requireLogin(tab.path) : navigate(tab.path))}
             aria-current={active ? 'page' : undefined}
             className={`flex min-h-[54px] flex-col items-center justify-center gap-0.5 text-[12px] font-medium transition-colors ${active ? 'text-navy' : 'text-grey-ink'}`}
           >

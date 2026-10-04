@@ -20,7 +20,7 @@ const NOTICE_ICON = { wifi: 'wifi', events: 'megaphone', ac: 'drop', cleaning: '
  * your next booking as one small row, a Book button, then every room's day; tap a free time to book it.
  * Later days are on Book ahead.
  */
-export default function Home() {
+export default function Home({ active = true }) {
   const { t } = useTranslation()
   const L = useL()
   const navigate = useNavigate()
@@ -69,7 +69,7 @@ export default function Home() {
   // Today is two stops: the first screen and Rooms today. When a scroll stops in between, it carries on
   // to the next stop in the direction you were going; inside the grid you scroll freely.
   useEffect(() => {
-    const main = grid.current?.closest('main')
+    const main = grid.current?.closest('[data-scroller]')
     if (!main) return
     let settled = main.scrollTop
     let timer
@@ -198,7 +198,8 @@ export default function Home() {
           </h2>
         </div>
         <RoomsCalendar date={today} onPick={(id) => onSelect(id)} onMine={(id) => navigate(`/r/confirmed/${id}`)} selection={pick} onSelect={setPick} />
-        <QuickBook pick={pick} onChange={setPick} />
+        {/* Swiped over to another tab: the bar tucks away, and comes back when you swipe back */}
+        <QuickBook pick={active ? pick : null} onChange={setPick} />
         {/* room for the Confirm booking bar so it never hides the end of the page */}
         <div className={`mt-4 px-4 ${pick ? 'pb-16' : ''}`}>
           <Link to="/r/list" className="flex min-h-14 w-full items-center gap-3 rounded-2xl bg-surface px-4 active:bg-black/[0.06]">
