@@ -1,5 +1,5 @@
 {
-  "start_now": "2026-10-01T09:30",
+  "start_now": "2026-10-04T09:30",
   "seats": {
     "total": 40,
     "taken": 18
@@ -417,7 +417,7 @@
       "id": "b-tala-today",
       "renter_id": "tala",
       "space_id": "focus-1",
-      "date": "2026-10-01",
+      "date": "2026-10-04",
       "start": "09:00",
       "end": "10:00",
       "reason": "study",
@@ -430,7 +430,7 @@
       "id": "b-tala-call",
       "renter_id": "tala",
       "space_id": "focus-3",
-      "date": "2026-10-01",
+      "date": "2026-10-04",
       "start": "13:30",
       "end": "15:00",
       "reason": "client_call",
@@ -443,7 +443,7 @@
       "id": "b-shahd",
       "renter_id": "shahd",
       "space_id": "focus-3",
-      "date": "2026-10-01",
+      "date": "2026-10-04",
       "start": "09:30",
       "end": "11:00",
       "reason": "client_call",
@@ -456,7 +456,7 @@
       "id": "b-fatima",
       "renter_id": "fatima",
       "space_id": "focus-2",
-      "date": "2026-10-01",
+      "date": "2026-10-04",
       "start": "10:00",
       "end": "11:00",
       "reason": "study",
@@ -469,7 +469,7 @@
       "id": "b-fatima-2",
       "renter_id": "fatima",
       "space_id": "big-1",
-      "date": "2026-10-01",
+      "date": "2026-10-04",
       "start": "12:00",
       "end": "13:00",
       "reason": "meeting",
@@ -482,7 +482,7 @@
       "id": "b-shahd-2",
       "renter_id": "shahd",
       "space_id": "focus-1",
-      "date": "2026-10-01",
+      "date": "2026-10-04",
       "start": "14:00",
       "end": "15:30",
       "reason": "interview",
@@ -495,7 +495,7 @@
       "id": "b-leen",
       "renter_id": "leen",
       "space_id": "big-2",
-      "date": "2026-10-01",
+      "date": "2026-10-04",
       "start": "15:00",
       "end": "17:00",
       "reason": "group_project",
@@ -772,16 +772,16 @@
       "end": "12:00",
       "reason": "study",
       "reminder": "2h",
-      "status": "confirmed",
+      "status": "used",
       "created_by": "renter",
       "source": "map",
       "created": "2026-09-30T22:40"
     },
     {
-      "id": "b-tala-oct04",
+      "id": "b-tala-oct06",
       "renter_id": "tala",
       "space_id": "big-1",
-      "date": "2026-10-04",
+      "date": "2026-10-06",
       "start": "11:00",
       "end": "12:30",
       "reason": "meeting",
@@ -859,13 +859,13 @@
       "status": "awaiting_confirmation",
       "created_by": "renter",
       "source": "map",
-      "created": "2026-10-01T08:55"
+      "created": "2026-10-04T08:55"
     },
     {
-      "id": "b-tala-oct22",
+      "id": "b-tala-oct21",
       "renter_id": "tala",
       "space_id": "big-1",
-      "date": "2026-10-22",
+      "date": "2026-10-21",
       "start": "10:00",
       "end": "11:00",
       "reason": "interview",
@@ -887,7 +887,7 @@
       "status": "confirmed",
       "created_by": "renter",
       "source": "map",
-      "created": "2026-10-01T09:12"
+      "created": "2026-10-04T09:12"
     }
   ],
   "series": [
@@ -931,7 +931,7 @@
     {
       "id": "v-tala",
       "renter_id": "tala",
-      "check_in": "2026-10-01T09:02",
+      "check_in": "2026-10-04T09:02",
       "check_out": null,
       "via": "sit",
       "booking_id": "b-tala-today"
@@ -939,7 +939,7 @@
     {
       "id": "v-shahd",
       "renter_id": "shahd",
-      "check_in": "2026-10-01T09:28",
+      "check_in": "2026-10-04T09:28",
       "check_out": null,
       "via": "sit",
       "booking_id": "b-shahd"
@@ -1003,35 +1003,35 @@
   ],
   "seat_log": [
     {
-      "time": "2026-10-01T08:00",
+      "time": "2026-10-04T08:00",
       "change": "0",
       "new_total": 0,
       "source": "manual",
       "staff": "Rana"
     },
     {
-      "time": "2026-10-01T08:35",
+      "time": "2026-10-04T08:35",
       "change": "+6",
       "new_total": 6,
       "source": "manual",
       "staff": "Rana"
     },
     {
-      "time": "2026-10-01T09:02",
+      "time": "2026-10-04T09:02",
       "change": "+1",
       "new_total": 7,
       "source": "check_in",
       "staff": "Rana"
     },
     {
-      "time": "2026-10-01T09:15",
+      "time": "2026-10-04T09:15",
       "change": "+10",
       "new_total": 17,
       "source": "manual",
       "staff": "Rana"
     },
     {
-      "time": "2026-10-01T09:28",
+      "time": "2026-10-04T09:28",
       "change": "+1",
       "new_total": 18,
       "source": "check_in",
@@ -1047,8 +1047,8 @@
         "ar": "فعالية في القاعة الرئيسية 10:00–14:00، توقّع بعض الضجيج"
       },
       "space_id": null,
-      "posted_at": "2026-10-01T08:05",
-      "expires_at": "2026-10-01T18:00",
+      "posted_at": "2026-10-04T08:05",
+      "expires_at": "2026-10-04T18:00",
       "daily": false
     },
     {
@@ -1059,8 +1059,8 @@
         "ar": "عاد الواي فاي إلى سرعته الكاملة"
       },
       "space_id": null,
-      "posted_at": "2026-10-01T08:40",
-      "expires_at": "2026-10-01T18:00",
+      "posted_at": "2026-10-04T08:40",
+      "expires_at": "2026-10-04T18:00",
       "daily": false
     },
     {
@@ -1095,7 +1095,7 @@
         },
         {
           "status": "in_progress",
-          "time": "2026-10-01T08:15"
+          "time": "2026-10-04T08:15"
         }
       ],
       "reply": "Technician booked for this afternoon."
@@ -1355,67 +1355,67 @@
       ],
       "speed_tests": [
         {
-          "time": "2026-10-01T07:50",
+          "time": "2026-10-04T07:50",
           "down": 6,
           "up": 2,
           "ping": 180
         },
         {
-          "time": "2026-10-01T08:35",
+          "time": "2026-10-04T08:35",
           "down": 88,
           "up": 39,
           "ping": 14
         },
         {
-          "time": "2026-10-01T09:20",
+          "time": "2026-10-04T09:20",
           "down": 94,
           "up": 41,
           "ping": 12
         },
         {
-          "time": "2026-10-01T10:20",
+          "time": "2026-10-04T10:20",
           "down": 91,
           "up": 40,
           "ping": 13
         },
         {
-          "time": "2026-10-01T11:20",
+          "time": "2026-10-04T11:20",
           "down": 72,
           "up": 33,
           "ping": 19
         },
         {
-          "time": "2026-10-01T12:20",
+          "time": "2026-10-04T12:20",
           "down": 85,
           "up": 38,
           "ping": 15
         },
         {
-          "time": "2026-10-01T13:20",
+          "time": "2026-10-04T13:20",
           "down": 93,
           "up": 42,
           "ping": 12
         },
         {
-          "time": "2026-10-01T14:20",
+          "time": "2026-10-04T14:20",
           "down": 90,
           "up": 40,
           "ping": 13
         },
         {
-          "time": "2026-10-01T15:20",
+          "time": "2026-10-04T15:20",
           "down": 96,
           "up": 43,
           "ping": 11
         },
         {
-          "time": "2026-10-01T16:20",
+          "time": "2026-10-04T16:20",
           "down": 97,
           "up": 44,
           "ping": 11
         },
         {
-          "time": "2026-10-01T17:20",
+          "time": "2026-10-04T17:20",
           "down": 98,
           "up": 44,
           "ping": 10
