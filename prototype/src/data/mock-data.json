@@ -440,32 +440,6 @@
       "source": "map"
     },
     {
-      "id": "b-shahd",
-      "renter_id": "shahd",
-      "space_id": "focus-3",
-      "date": "2026-10-04",
-      "start": "09:30",
-      "end": "11:00",
-      "reason": "client_call",
-      "reminder": null,
-      "status": "used",
-      "created_by": "renter",
-      "source": "list"
-    },
-    {
-      "id": "b-fatima",
-      "renter_id": "fatima",
-      "space_id": "focus-2",
-      "date": "2026-10-04",
-      "start": "10:00",
-      "end": "11:00",
-      "reason": "study",
-      "reminder": "3h",
-      "status": "confirmed",
-      "created_by": "renter",
-      "source": "map"
-    },
-    {
       "id": "b-fatima-2",
       "renter_id": "fatima",
       "space_id": "big-1",
@@ -477,19 +451,6 @@
       "status": "confirmed",
       "created_by": "staff",
       "source": "staff"
-    },
-    {
-      "id": "b-shahd-2",
-      "renter_id": "shahd",
-      "space_id": "focus-1",
-      "date": "2026-10-04",
-      "start": "14:00",
-      "end": "15:30",
-      "reason": "interview",
-      "reminder": "2h",
-      "status": "awaiting_confirmation",
-      "created_by": "renter",
-      "source": "filter"
     },
     {
       "id": "b-leen",
@@ -505,33 +466,6 @@
       "source": "map"
     },
     {
-      "id": "b-leen-past",
-      "renter_id": "leen",
-      "space_id": "big-1",
-      "date": "2026-09-24",
-      "start": "13:00",
-      "end": "15:00",
-      "reason": "group_project",
-      "reminder": "2h",
-      "status": "used",
-      "created_by": "renter",
-      "source": "map"
-    },
-    {
-      "id": "b-leen-past2",
-      "renter_id": "leen",
-      "space_id": "focus-3",
-      "date": "2026-09-17",
-      "start": "10:00",
-      "end": "12:00",
-      "reason": "study",
-      "reminder": "eve",
-      "status": "released",
-      "release_reason": "unconfirmed",
-      "created_by": "renter",
-      "source": "list"
-    },
-    {
       "id": "b-ahead-1",
       "renter_id": "leen",
       "space_id": "big-1",
@@ -543,125 +477,6 @@
       "status": "confirmed",
       "created_by": "renter",
       "source": "ahead"
-    },
-    {
-      "id": "b-ahead-2",
-      "renter_id": "leen",
-      "space_id": "big-1",
-      "date": "2026-10-26",
-      "start": "10:00",
-      "end": "12:00",
-      "reason": "meeting",
-      "reminder": null,
-      "status": "confirmed",
-      "created_by": "renter",
-      "source": "ahead"
-    },
-    {
-      "id": "b-ahead-3",
-      "renter_id": "fatima",
-      "space_id": "focus-2",
-      "date": "2026-10-07",
-      "start": "10:00",
-      "end": "11:00",
-      "reason": "study",
-      "reminder": null,
-      "status": "confirmed",
-      "created_by": "renter",
-      "source": "ahead"
-    },
-    {
-      "id": "b-ahead-4",
-      "renter_id": "fatima",
-      "space_id": "focus-1",
-      "date": "2026-10-11",
-      "start": "14:00",
-      "end": "16:00",
-      "reason": "study",
-      "reminder": null,
-      "status": "confirmed",
-      "created_by": "renter",
-      "source": "ahead"
-    },
-    {
-      "id": "b-ahead-5",
-      "renter_id": "leen",
-      "space_id": "big-1",
-      "date": "2026-10-11",
-      "start": "14:00",
-      "end": "16:00",
-      "reason": "group_project",
-      "reminder": null,
-      "status": "confirmed",
-      "created_by": "renter",
-      "source": "ahead"
-    },
-    {
-      "id": "b-ahead-6",
-      "renter_id": "shahd",
-      "space_id": "focus-3",
-      "date": "2026-10-11",
-      "start": "14:00",
-      "end": "16:00",
-      "reason": "client_call",
-      "reminder": null,
-      "status": "confirmed",
-      "created_by": "renter",
-      "source": "ahead"
-    },
-    {
-      "id": "b-ahead-7",
-      "renter_id": "fatima",
-      "space_id": "focus-2",
-      "date": "2026-10-18",
-      "start": "14:00",
-      "end": "16:00",
-      "reason": "study",
-      "reminder": null,
-      "status": "confirmed",
-      "created_by": "renter",
-      "source": "ahead"
-    },
-    {
-      "id": "b-ahead-8",
-      "renter_id": "leen",
-      "space_id": "big-2",
-      "date": "2026-10-18",
-      "start": "14:00",
-      "end": "16:00",
-      "reason": "meeting",
-      "reminder": null,
-      "status": "confirmed",
-      "created_by": "renter",
-      "source": "ahead"
-    },
-    {
-      "id": "b-tala-sep08",
-      "renter_id": "tala",
-      "space_id": "focus-2",
-      "date": "2026-09-08",
-      "start": "10:00",
-      "end": "12:00",
-      "reason": "study",
-      "reminder": "2h",
-      "status": "used",
-      "created_by": "renter",
-      "source": "map",
-      "created": "2026-09-06T20:10"
-    },
-    {
-      "id": "b-tala-sep10",
-      "renter_id": "tala",
-      "space_id": "big-1",
-      "date": "2026-09-10",
-      "start": "14:00",
-      "end": "15:00",
-      "reason": "meeting",
-      "reminder": "2h",
-      "status": "used",
-      "created_by": "renter",
-      "source": "map",
-      "created": "2026-09-03T11:30"
     },
     {
       "id": "b-tala-sep15",
@@ -693,34 +508,6 @@
       "created": "2026-09-12T19:00"
     },
     {
-      "id": "b-tala-sep19",
-      "renter_id": "tala",
-      "space_id": "big-2",
-      "date": "2026-09-19",
-      "start": "12:00",
-      "end": "14:00",
-      "reason": "group_project",
-      "reminder": "2h",
-      "status": "used",
-      "created_by": "renter",
-      "source": "map",
-      "created": "2026-09-16T17:25"
-    },
-    {
-      "id": "b-tala-sep22",
-      "renter_id": "tala",
-      "space_id": "focus-3",
-      "date": "2026-09-22",
-      "start": "09:30",
-      "end": "10:30",
-      "reason": "client_call",
-      "reminder": "2h",
-      "status": "used",
-      "created_by": "renter",
-      "source": "map",
-      "created": "2026-09-21T21:05"
-    },
-    {
       "id": "b-tala-sep24",
       "renter_id": "tala",
       "space_id": "focus-2",
@@ -734,20 +521,6 @@
       "source": "map",
       "release_reason": "unconfirmed",
       "created": "2026-09-20T10:15"
-    },
-    {
-      "id": "b-tala-p2",
-      "renter_id": "tala",
-      "space_id": "focus-1",
-      "date": "2026-09-29",
-      "start": "09:00",
-      "end": "10:00",
-      "reason": "study",
-      "reminder": "2h",
-      "status": "used",
-      "created_by": "renter",
-      "source": "map",
-      "created": "2026-09-27T18:00"
     },
     {
       "id": "b-tala-p1",
@@ -764,20 +537,6 @@
       "created": "2026-09-28T18:00"
     },
     {
-      "id": "b-tala-oct03",
-      "renter_id": "tala",
-      "space_id": "focus-1",
-      "date": "2026-10-03",
-      "start": "11:00",
-      "end": "12:00",
-      "reason": "study",
-      "reminder": "2h",
-      "status": "used",
-      "created_by": "renter",
-      "source": "map",
-      "created": "2026-09-30T22:40"
-    },
-    {
       "id": "b-tala-oct06",
       "renter_id": "tala",
       "space_id": "big-1",
@@ -790,34 +549,6 @@
       "created_by": "renter",
       "source": "map",
       "created": "2026-09-25T09:10"
-    },
-    {
-      "id": "b-tala-oct08",
-      "renter_id": "tala",
-      "space_id": "focus-2",
-      "date": "2026-10-08",
-      "start": "14:00",
-      "end": "16:00",
-      "reason": "study",
-      "reminder": "2h",
-      "status": "confirmed",
-      "created_by": "renter",
-      "source": "map",
-      "created": "2026-09-28T13:00"
-    },
-    {
-      "id": "b-tala-oct12",
-      "renter_id": "tala",
-      "space_id": "big-2",
-      "date": "2026-10-12",
-      "start": "13:00",
-      "end": "14:30",
-      "reason": "group_project",
-      "reminder": "2h",
-      "status": "cancelled",
-      "created_by": "renter",
-      "source": "map",
-      "created": "2026-09-26T16:45"
     },
     {
       "id": "b-tala-oct13",
@@ -846,68 +577,9 @@
       "created_by": "renter",
       "source": "map",
       "created": "2026-09-30T15:30"
-    },
-    {
-      "id": "b-tala-oct18",
-      "renter_id": "tala",
-      "space_id": "focus-3",
-      "date": "2026-10-18",
-      "start": "10:00",
-      "end": "11:00",
-      "reason": "interview",
-      "reminder": "2h",
-      "status": "awaiting_confirmation",
-      "created_by": "renter",
-      "source": "map",
-      "created": "2026-10-04T08:55"
-    },
-    {
-      "id": "b-tala-oct21",
-      "renter_id": "tala",
-      "space_id": "big-1",
-      "date": "2026-10-21",
-      "start": "10:00",
-      "end": "11:00",
-      "reason": "interview",
-      "reminder": "2h",
-      "status": "confirmed",
-      "created_by": "renter",
-      "source": "map",
-      "created": "2026-09-24T14:00"
-    },
-    {
-      "id": "b-tala-nov03",
-      "renter_id": "tala",
-      "space_id": "big-1",
-      "date": "2026-11-03",
-      "start": "10:00",
-      "end": "12:00",
-      "reason": "meeting",
-      "reminder": "2h",
-      "status": "confirmed",
-      "created_by": "renter",
-      "source": "map",
-      "created": "2026-10-04T09:12"
     }
   ],
   "series": [
-    {
-      "id": "ser-tala",
-      "renter_id": "tala",
-      "space_id": "focus-1",
-      "days": [2],
-      "from": "2026-10-06",
-      "until": "2026-10-27",
-      "start": "09:00",
-      "end": "10:00",
-      "reason": "study",
-      "reminder": "2h",
-      "created": "2026-09-30T19:30",
-      "statuses": {
-        "2026-10-06": "confirmed",
-        "2026-10-13": "confirmed"
-      }
-    },
     {
       "id": "ser-tala-course",
       "renter_id": "tala",
@@ -937,14 +609,6 @@
       "booking_id": "b-tala-today"
     },
     {
-      "id": "v-shahd",
-      "renter_id": "shahd",
-      "check_in": "2026-10-04T09:28",
-      "check_out": null,
-      "via": "sit",
-      "booking_id": "b-shahd"
-    },
-    {
       "id": "v-tala-p1",
       "renter_id": "tala",
       "check_in": "2026-09-30T08:56",
@@ -961,14 +625,6 @@
       "booking_id": null
     },
     {
-      "id": "v-tala-p2",
-      "renter_id": "tala",
-      "check_in": "2026-09-29T08:58",
-      "check_out": "2026-09-29T10:01",
-      "via": "sit",
-      "booking_id": "b-tala-p2"
-    },
-    {
       "id": "v-fatima-p1",
       "renter_id": "fatima",
       "check_in": "2026-09-29T11:05",
@@ -983,14 +639,6 @@
       "check_out": "2026-09-28T16:10",
       "via": "walk_in",
       "booking_id": null
-    },
-    {
-      "id": "v-leen-p1",
-      "renter_id": "leen",
-      "check_in": "2026-09-24T12:50",
-      "check_out": "2026-09-24T15:04",
-      "via": "sit",
-      "booking_id": "b-leen-past"
     },
     {
       "id": "v-ahmed-p2",

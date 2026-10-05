@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useL, usePersonName } from '../lib/hooks'
-import { REASONS, dateOf, defaultUntil, expandDates, hoursFor, minOfDay, roomCoverage } from '../lib/logic'
+import { REASONS, dateOf, defaultUntil, expandDates, hoursFor, minOfDay, planSchedule } from '../lib/logic'
 import { addDays, fmtDate, hm } from '../lib/time'
 import { AmenitySheet } from './Amenities'
 import CalendarPicker from './Calendar'
@@ -17,13 +17,15 @@ import Icon from './Icon'
 const PLAN = { dates: [], repeat: null, until: null, start: null, end: null, room: null, reason: '' }
 // Bookings made ahead have no Review screen to choose a reminder on: they're reminded the day before.
 export const AHEAD_REMINDER = '1d'
+const FEW = 5
 
 /**
  * The booking form shared by the renter's Book ahead (R-02) and reception's Book for someone (S-07),
  * filled in from top to bottom: days on a month calendar → repeat (weekly / monthly until a date, or
  * none) → from / to → a room on the map (rooms free on every date highlighted, partly free ones amber,
- * the rest faded; if no single room works, a combination that covers every date is highlighted
- * together) → what they're here to do → Confirm, which shows a receipt instead of a Review screen.
+ * the rest faded). No date is ever skipped: where the picked room is taken, another room fills in (or
+ * the time is split across rooms), listed under the room → what they're here to do → Confirm, which
+ * shows a receipt instead of a Review screen.
  *
  * - `renterId`: who it's for (null = guest on the renter app, or nobody picked yet at reception).
  * - `planKey`: where the choices live in the store, so leaving and coming back keeps them.
@@ -45,6 +47,7 @@ export default function BookingPlanner({ renterId, planKey = 'plan', desk = fals
   const setPlan = (patch) => s.set({ [planKey]: { ...plan, ...patch } })
   const [sheet, setSheet] = useState(null) // public seating / amenity tapped on the map
   const [receipt, setReceipt] = useState(null)
+  const [allOthers, setAllOthers] = useState(false) // the schedule's other dates, past the first few
   const today = dateOf(s.now)
   const short = (d) => fmtDate(d, lang, { weekday: 'short', day: 'numeric', month: 'short' })
   const pad = desk ? '' : 'px-4'
@@ -72,18 +75,23 @@ export default function BookingPlanner({ renterId, planKey = 'plan', desk = fals
     setPlan({ start, end })
   }
 
-  // Which rooms work for those dates and times (for this renter: their other bookings count as clashes).
+  // A schedule that covers every date: the picked room where it's free, other rooms (or a split of the
+  // time) where it isn't. For this renter, their other bookings count as clashes.
   const ready = all.length > 0 && plan.start !== null && plan.end !== null
-  const cov = ready ? roomCoverage(data, all, plan.start, plan.end, renterId, s.now) : null
+  const room = data.spaces.some((sp) => sp.id === plan.room) ? plan.room : null
+  const cov = ready ? planSchedule(data, all, plan.start, plan.end, renterId, s.now, room) : null
   const full = cov ? cov.rooms.filter((r) => r.free.length === all.length) : []
-  const combo = cov?.combo || null
-  const room = plan.room === 'combo' && !combo ? null : plan.room
   const freeOf = (id) => cov?.rooms.find((r) => r.id === id)?.free || []
+  const items = room && cov ? cov.items : []
+  const helpers = [...new Set(items.map((it) => it.spaceId))].filter((id) => id !== room)
+  // Dates that aren't simply the picked room for the whole time, shown under it.
+  const others = room && cov ? cov.days.filter((d) => d.yours || d.gaps.length || d.parts.some((p) => p.spaceId !== room)) : []
+  const gapDays = others.filter((d) => d.gaps.length).length
   const marks = cov
     ? Object.fromEntries(
         cov.rooms.map((r) => {
           const n = r.free.length
-          const tone = n === all.length ? 'full' : combo?.includes(r.id) ? 'combo' : n ? 'partial' : 'none'
+          const tone = n === all.length ? 'full' : helpers.includes(r.id) ? 'combo' : n ? 'partial' : 'none'
           return [
             r.id,
             { tone, label: n === all.length ? (n > 1 ? t('ahead.all_n', { count: n }) : t('legend.free')) : n ? `${n} / ${all.length}` : t('cal.taken') },
@@ -91,18 +99,9 @@ export default function BookingPlanner({ renterId, planKey = 'plan', desk = fals
         }),
       )
     : undefined
-
-  // What gets booked: the room's free dates (others skipped), or each date in the first combination room free then.
-  const items = !ready
-    ? []
-    : room === 'combo'
-      ? all.map((date) => ({ date, spaceId: combo.find((id) => freeOf(id).includes(date)), start: plan.start, end: plan.end })).filter((it) => it.spaceId)
-      : room
-        ? freeOf(room).map((date) => ({ date, spaceId: room, start: plan.start, end: plan.end }))
-        : []
-  const skipped = ready && room ? all.length - items.length : 0
   const needsRenter = !renterId && !onNoRenter
-  const pickedRooms = room === 'combo' ? combo : room ? [room] : []
+  const space = (id) => data.spaces.find((x) => x.id === id)
+  const roomName = (id) => L(space(id).label)
 
   const onMap = (id) => {
     if (data.spaces.some((sp) => sp.id === id)) setPlan({ room: room === id ? null : id })
@@ -183,27 +182,24 @@ export default function BookingPlanner({ renterId, planKey = 'plan', desk = fals
     <section className={pad} aria-live="polite">
       <SectionLabel>{t('ahead.room')}</SectionLabel>
       {!ready && <p className="mb-2 px-1 text-[13px] text-grey-ink">{t('ahead.pick_first')}</p>}
-      {ready && !full.length && combo && (
+      {ready && !full.length && !room && cov.items.length > 0 && (
         <div className="mb-3 rounded-2xl bg-navy/[0.06] px-4 py-3">
           <p className="text-[15px] font-semibold">{t(all.length === 2 ? 'ahead.combo_title_both' : 'ahead.combo_title', { count: all.length })}</p>
-          <p className="text-[15px]">{t('ahead.combo_body', { rooms: combo.map((id) => L(data.spaces.find((x) => x.id === id).label)).join(' + ') })}</p>
-          <button
-            className={`mt-2 min-h-10 rounded-full px-4 text-[15px] font-semibold ${room === 'combo' ? 'bg-navy text-white' : 'bg-white text-navy'}`}
-            onClick={() => setPlan({ room: room === 'combo' ? null : 'combo' })}
-          >
-            {room === 'combo' ? t('ahead.combo_using') : t('ahead.combo_use')}
+          <p className="text-[15px]">{t('ahead.fill_body')}</p>
+          <button className="mt-2 min-h-10 rounded-full bg-white px-4 text-[15px] font-semibold text-navy" onClick={() => setPlan({ room: cov.best })}>
+            {t('ahead.fill_pick')}
           </button>
         </div>
       )}
-      {ready && !full.length && !combo && !cov.rooms.some((r) => r.free.length) && (
+      {ready && !cov.items.length && cov.days.some((d) => d.gaps.length) && (
         <p className="mb-3 rounded-2xl bg-amber/15 px-4 py-3 text-[15px] text-[#7a4f00]">{t('ahead.none_free')}</p>
       )}
-      <FloorPlan date={today} min={minOfDay(s.now)} plain={!ready} marks={marks} selected={pickedRooms} onSelect={onMap} />
+      <FloorPlan date={today} min={minOfDay(s.now)} plain={!ready} marks={marks} selected={room} onSelect={onMap} />
       {ready && (
         <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 px-1 text-[13px] text-grey-ink">
           <span className="flex items-center gap-1.5">
             <span className="size-3 rounded-[4px] bg-[#E3EAF5] ring-1 ring-navy/30" />
-            {combo && !full.length ? t('ahead.legend_combo') : t('ahead.legend_full')}
+            {helpers.length && !full.length ? t('ahead.legend_combo') : t('ahead.legend_full')}
           </span>
           <span className="flex items-center gap-1.5">
             <span className="size-3 rounded-[4px] bg-[#FBEFD8] ring-1 ring-amber/50" />
@@ -215,36 +211,72 @@ export default function BookingPlanner({ renterId, planKey = 'plan', desk = fals
           </span>
         </div>
       )}
-      {pickedRooms.length > 0 && (
+      {room && (
         <div className="mt-3 divide-y divide-black/[0.07] overflow-hidden rounded-2xl bg-surface">
-          {pickedRooms.map((id) => {
-            const sp = data.spaces.find((x) => x.id === id)
-            const n = room === 'combo' ? items.filter((it) => it.spaceId === id).length : freeOf(id).length
-            return (
-              <div key={id} className="flex items-center gap-3 px-4 py-3">
-                <span className="min-w-0 flex-1">
-                  <span className="block text-[17px] font-semibold">{L(sp.label)}</span>
-                  <span className="block truncate text-[13px] text-grey-ink">
-                    {t('map.people', { n: sp.capacity })} · {sp.features.map((f) => t(`feature.${f}`)).join(' · ')}
-                  </span>
-                  {ready && (
-                    <span
-                      className={`block text-[13px] font-medium ${room === 'combo' || n === all.length ? 'text-navy' : n ? 'text-[#7a4f00]' : 'text-[#a32f2f]'}`}
-                    >
-                      {room === 'combo'
-                        ? t('ahead.combo_share', { count: n })
-                        : n === all.length
-                          ? t('ahead.all_dates', { count: n })
-                          : n
-                            ? t('ahead.some_dates', { free: n, count: all.length })
-                            : t('ahead.no_dates')}
-                    </span>
-                  )}
+          <div className="flex items-center gap-3 px-4 py-3">
+            <span className="min-w-0 flex-1">
+              <span className="block text-[17px] font-semibold">{roomName(room)}</span>
+              <span className="block truncate text-[13px] text-grey-ink">
+                {t('map.people', { n: space(room).capacity })} ·{' '}
+                {space(room)
+                  .features.map((f) => t(`feature.${f}`))
+                  .join(' · ')}
+              </span>
+              {ready && (
+                <span className={`block text-[13px] font-medium ${freeOf(room).length === all.length ? 'text-navy' : 'text-[#7a4f00]'}`}>
+                  {freeOf(room).length === all.length
+                    ? t('ahead.all_dates', { count: all.length })
+                    : freeOf(room).length
+                      ? t('ahead.some_dates', { free: freeOf(room).length, count: all.length })
+                      : t('ahead.no_dates')}
                 </span>
-                {roomLink?.(id)}
-              </div>
-            )
-          })}
+              )}
+            </span>
+            {roomLink?.(room)}
+          </div>
+          {others.length > 0 && (
+            <div className="px-4 py-3">
+              <p className="text-[15px] font-semibold">{t('ahead.schedule')}</p>
+              <ul className="mt-1 text-[13px]">
+                {all.length > others.length && (
+                  <li className="flex gap-3 py-1.5">
+                    <span className="w-28 shrink-0 font-medium">{t('ahead.n_dates', { count: all.length - others.length })}</span>
+                    <span className="min-w-0 flex-1">{roomName(room)}</span>
+                  </li>
+                )}
+                {(allOthers ? others : others.slice(0, FEW)).map((d) => (
+                  <li key={d.date} className="flex gap-3 border-t border-black/[0.05] py-1.5">
+                    <span className="w-28 shrink-0 font-medium">{short(d.date)}</span>
+                    <span className="min-w-0 flex-1">
+                      {[...d.parts, ...d.gaps]
+                        .sort((a, b) => a.start - b.start)
+                        .map((p) =>
+                          p.spaceId ? (
+                            <span key={p.start} className={`block ${p.spaceId !== room ? 'font-medium text-navy' : ''}`}>
+                              {p.start === plan.start && p.end === plan.end ? (
+                                roomName(p.spaceId)
+                              ) : (
+                                <Span from={p.start} to={p.end} label={roomName(p.spaceId)} />
+                              )}
+                            </span>
+                          ) : (
+                            <span key={p.start} className="block font-medium text-[#a32f2f]">
+                              <Span from={p.start} to={p.end} label={t(p.past ? 'ahead.gap_past' : 'ahead.gap_taken')} />
+                            </span>
+                          ),
+                        )}
+                      {d.yours && <span className="block text-grey-ink">{t(d.parts.length || d.gaps.length ? 'ahead.yours_part' : 'ahead.yours_all')}</span>}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              {others.length > FEW && (
+                <button className="mt-1 min-h-10 text-[15px] font-semibold text-navy" onClick={() => setAllOthers(!allOthers)}>
+                  {allOthers ? t('ahead.show_less') : t('ahead.show_all', { count: others.length })}
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
     </section>
@@ -267,7 +299,7 @@ export default function BookingPlanner({ renterId, planKey = 'plan', desk = fals
 
   const confirmRow = (
     <div className={`space-y-2 ${pad}`}>
-      {skipped > 0 && <p className="rounded-2xl bg-amber/15 px-4 py-2.5 text-[13px] text-[#7a4f00]">{t('ahead.skipped_note', { count: skipped })}</p>}
+      {gapDays > 0 && <p className="rounded-2xl bg-amber/15 px-4 py-2.5 text-[13px] text-[#7a4f00]">{t('ahead.gap_note', { count: gapDays })}</p>}
       <button className="btn-primary w-full" disabled={!items.length || needsRenter} onClick={confirm}>
         {renter && createdBy === 'staff'
           ? t('staff_book.confirm_for', { count: items.length || 1, name: pn(renter, true) })
@@ -351,5 +383,17 @@ function TimeField({ label, value, options, onChange, disabled }) {
       </select>
       <Icon name="chevrons" size={14} className="shrink-0 text-grey-ink/70" />
     </label>
+  )
+}
+
+/** A time range followed by what's in it: "09:00–11:00 · Focus room 2". */
+function Span({ from, to, label }) {
+  return (
+    <>
+      <span dir="ltr" className="tabular-nums">
+        {hm(from)}–{hm(to)}
+      </span>{' '}
+      · {label}
+    </>
   )
 }

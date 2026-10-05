@@ -44,7 +44,7 @@ Built around the product vision, _"Know before you go and sit where you booked, 
   1. **Days** on a month calendar (tap as many as you need).
   2. **Repeat** in one row: **Weekly · Monthly · Until <date>**. Tap to pick, tap again to unpick; nothing picked = no repeat. Picking one fills in Until (a month ahead for weekly, six for monthly); tap Until to change it (up to 12 months).
   3. **Time:** From and To side by side.
-  4. **Room** on the floor plan: rooms free on every date are highlighted, rooms free on only some are amber with "29 / 34" (the other dates are skipped), the rest are faded. If no single room works, a **combination** of rooms that together cover every date is highlighted in the same colour ("Use these rooms"). The picked room's card links to **Room details**.
+  4. **Room** on the floor plan: rooms free on every date are highlighted, rooms free on only some are amber with "29 / 34", the rest are faded. **No date is ever skipped:** pick any room and, on the dates it's taken, **Your schedule** under it puts you in another room (highlighted on the map), or splits the time across rooms ("10:00–11:00 · Focus Room 1, 11:00–12:00 · Room 1"). Only a half hour when every room is taken can't be booked; it's shown in red. If no single room is free on every date, **Pick one for me** picks the room free most often. The picked room's card links to **Room details**.
   5. **What are you here to do?** (optional; becomes the booking's reason).
   6. **Confirm** books it, with a reminder the day before each booking. No Review screen: a **receipt** rises from the bottom, holds, then leaves off the top, and "Booked · Undo" appears.
 - **Room details (R-03):** photos, size, capacity and features, then this room's **availability**: a month calendar with a dot per day (teal = free time, amber = under an hour left, grey = fully booked) and the picked day's bookings as a timeline. Book this room goes to Review for today, or into the Book ahead form (room, day and time filled in) for later days.
@@ -68,14 +68,14 @@ Built around the product vision, _"Know before you go and sit where you booked, 
 
 ## Demo start state
 
-The clock starts at **Thu 1 Oct 2026, 09:30**, and the app opens logged in as **Tala** with a lived-in account (bookings, reports). Pick **Guest** in P-01 for the browse-without-an-account story (US-1). Seeded data lives in `src/data/mock-data.json`; "Reset all data" in P-01 (or **Reset demo** on `/demo`) reloads it.
+The clock starts at **Sun 4 Oct 2026, 09:30**, and the app opens logged in as **Tala** with one booking in every state (awaiting, confirmed, checked in, used, cancelled, cancelled by reception, released, and a repeating course). Everyone else has only what the demo needs, so most rooms and days are free. Pick **Guest** in P-01 for the browse-without-an-account story (US-1). Seeded data lives in `src/data/mock-data.json`; "Reset all data" in P-01 (or **Reset demo** on `/demo`) reloads it.
 
-- **Tala Kherawish** — recurring Focus Room 1, Sun–Thu 09:00–10:00 (checked in today), plus a client call in Focus Room 3 at 13:30 awaiting confirmation: it's **Your next booking** on her Today screen.
+- **Tala Kherawish** — Focus Room 1 09:00–10:00 (checked in today), a client call in Focus Room 3 at 13:30 awaiting confirmation (**Your next booking** on her Today screen), and a Mon & Wed course in Focus Room 2, 16:00–17:30.
 - **Leen Anabtawi** (Arabic) — Room 2 today 15:00–17:00, awaiting confirmation, reminder 2 h before; one AC report in progress.
-- **Fatima Alkilani** — Focus Room 2 at 10:00 and Room 1 at 12:00 today.
-- **Shahd Mallah** — checked in to Focus Room 3 (09:30–11:00), plus Focus Room 1 at 14:00.
+- **Fatima Alkilani** — Room 1 at 12:00 today, booked by reception.
+- **Shahd Mallah** — no bookings.
 - **Ahmed Salamh** — no bookings yet; use him for the last-minute and "slot just taken" demos.
-- **For the Book ahead demo:** a few later bookings by Leen, Fatima and Shahd. Pick **Mon 5 + Wed 7 Oct, Weekly, 10:00–12:00** to see partly free rooms (Room 1, Focus Room 2), or **Sun 11 + Sun 18 Oct, 14:00–16:00** to see a combination (no single room is free on both days).
+- **For the Book ahead demo:** Leen has Room 1 on Mon 12 Oct, 10:00–12:00. Pick **Mon 5 Oct, Weekly, 10:00–12:00** and **Room 1**: it's amber ("4 / 5"), and Your schedule moves Mon 12 Oct to another room.
 
 **The side-by-side story** (also in the demo's header):
 

@@ -92,10 +92,10 @@ function Scenario() {
   const staff = pathname.startsWith('/s')
   const personas = [
     [null, 'Guest', 'Browses without an account'],
-    ['tala', 'Tala', 'Remote worker · weekly Tue 09:00 + Mon & Wed course · Focus Room 3 today 13:30'],
+    ['tala', 'Tala', 'Remote worker · Mon & Wed course · Focus Room 3 today 13:30 · one booking in every state'],
     ['leen', 'Leen', 'Student · Arabic · Room 2 today 15:00'],
-    ['fatima', 'Fatima', 'Focus Room 2 at 10:00 · Room 1 at 12:00'],
-    ['shahd', 'Shahd', 'In Focus Room 3 now · Focus Room 1 at 14:00'],
+    ['fatima', 'Fatima', 'Room 1 at 12:00 (booked by reception)'],
+    ['shahd', 'Shahd', 'No bookings today'],
     ['ahmed', 'Ahmed', 'Freelancer · no bookings yet'],
   ]
   return (

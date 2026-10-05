@@ -19,6 +19,10 @@ export default function Receipt({ bookings, email, reminder, forName, onDone }) 
   const first = bookings[0]
   const last = bookings[bookings.length - 1]
   const rooms = [...new Set(bookings.map((b) => b.space_id))]
+  const days = new Set(bookings.map((b) => b.date)).size
+  // A day split across rooms is several bookings; the time shown is the whole span.
+  const from = Math.min(...bookings.map((b) => b.start))
+  const to = Math.max(...bookings.map((b) => b.end))
   const short = (d) => fmtDate(d, lang, { weekday: 'short', day: 'numeric', month: 'short' })
   const Row = ({ label, children }) => (
     <div className="flex items-baseline justify-between gap-4 py-2">
@@ -43,10 +47,10 @@ export default function Receipt({ bookings, email, reminder, forName, onDone }) 
               <div className="mt-4 divide-y divide-dashed divide-black/15 border-t border-dashed border-black/15">
                 {forName && <Row label={t('receipt.for')}>{forName}</Row>}
                 <Row label={t('receipt.room')}>{rooms.map((id) => name(id)).join(' + ')}</Row>
-                <Row label={t('receipt.dates')}>{bookings.length > 1 ? `${short(first.date)} – ${short(last.date)}` : short(first.date)}</Row>
+                <Row label={t('receipt.dates')}>{days > 1 ? `${short(first.date)} – ${short(last.date)}` : short(first.date)}</Row>
                 <Row label={t('book.time')}>
                   <span dir="ltr">
-                    {hm(first.start)}–{hm(first.end)}
+                    {hm(from)}–{hm(to)}
                   </span>
                 </Row>
                 {first.reason && <Row label={t('review.purpose')}>{t(`reason.${first.reason}`)}</Row>}

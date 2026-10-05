@@ -32,34 +32,68 @@ export function expandDates(data, picked, repeat, until) {
 }
 
 /**
- * For each room, which of `dates` it's free on from `start` to `end` (and you aren't booked elsewhere,
- * and it isn't already past). If no single room is free on every date, `combo` is a small set of rooms
- * that together cover them all (picked greedily, biggest coverage first), or null.
+ * A schedule that books every one of `dates` from `start` to `end`, never skipping a date. Each date goes
+ * in `main` (the picked room) when it's free; else in another room free the whole time (the one used
+ * most so far, so the schedule stays in few rooms); else the time is split across rooms, each part in
+ * the room that stays free longest. Times you're already booked elsewhere are left out (you have them).
+ * Only a half hour when every room is taken (or that has already passed) can't be booked: a gap.
+ *
+ * Returns `rooms` (the dates each room is free the whole time, for the map), `best` (the room free on
+ * the most dates), `items` (what gets booked) and `days`: per date its `parts`, `gaps` and whether
+ * you're already booked for some of that time (`yours`).
  */
-export function roomCoverage(data, dates, start, end, renterId, now) {
+export function planSchedule(data, dates, start, end, renterId, now, main) {
   const today = dateOf(now)
-  const mine = (date) => data.bookings.some((b) => b.renter_id === renterId && b.date === date && ACTIVE.includes(b.status) && b.start < end && start < b.end)
-  const rooms = data.spaces.map((sp) => ({
-    id: sp.id,
-    free: dates.filter((d) => isFree(data, sp.id, d, start, end) && !mine(d) && !(d === today && start < minOfDay(now))),
-  }))
-  let combo = null
-  if (dates.length && !rooms.some((r) => r.free.length === dates.length)) {
-    const left = new Set(dates.filter((d) => !mine(d)))
-    const picked = []
-    while (left.size) {
-      const best = rooms
-        .filter((r) => !picked.includes(r))
-        .map((r) => ({ r, n: r.free.filter((d) => left.has(d)).length }))
-        .sort((a, b) => b.n - a.n)[0]
-      if (!best || !best.n) break
-      picked.push(best.r)
-      best.r.free.forEach((d) => left.delete(d))
+  const nowMin = minOfDay(now)
+  const mine = (d, a, b) => data.bookings.some((x) => x.renter_id === renterId && x.date === d && ACTIVE.includes(x.status) && x.start < b && a < x.end)
+  const past = (d, a) => d === today && a < nowMin
+  const ok = (id, d, a, b) => isFree(data, id, d, a, b) && !mine(d, a, b) && !past(d, a)
+  const ids = data.spaces.map((sp) => sp.id)
+  const rooms = ids.map((id) => ({ id, free: dates.filter((d) => ok(id, d, start, end)) }))
+  const best = [...rooms].sort((x, y) => y.free.length - x.free.length)[0]?.id || null
+  const lead = main || best
+  const used = {}
+  const use = (id) => (used[id] = (used[id] || 0) + 1)
+  const days = dates.map((date) => {
+    const day = { date, parts: [], gaps: [], yours: mine(date, start, end) }
+    // The whole time in one room: the picked one, else the one used most so far.
+    const whole = [lead, ...[...ids].sort((x, y) => (used[y] || 0) - (used[x] || 0))].find((id) => id && ok(id, date, start, end))
+    if (whole) {
+      day.parts.push({ spaceId: whole, start, end })
+      use(whole)
+      return day
     }
-    if (!left.size && picked.length > 1) combo = picked.map((r) => r.id)
-  }
-  return { rooms, combo }
+    // Otherwise half hour by half hour: each part goes in the room that stays free longest from there.
+    for (let m = start; m < end;) {
+      if (mine(date, m, m + 30)) {
+        m += 30
+        continue
+      }
+      let pick = null
+      let reach = m
+      for (const id of [day.parts.at(-1)?.spaceId, lead, ...ids]) {
+        if (!id) continue
+        let e = m
+        while (e < end && ok(id, date, e, e + 30)) e += 30
+        if (e > reach) [pick, reach] = [id, e]
+      }
+      if (pick) {
+        day.parts.push({ spaceId: pick, start: m, end: reach })
+        use(pick)
+        m = reach
+      } else {
+        const g = day.gaps.at(-1)
+        if (g && g.end === m) g.end = m + 30
+        else day.gaps.push({ start: m, end: m + 30, past: past(date, m) })
+        m += 30
+      }
+    }
+    return day
+  })
+  const items = days.flatMap((d) => d.parts.map((p) => ({ date: d.date, ...p })))
+  return { rooms, best, days, items }
 }
+
 export const REMINDERS = ['2h', '3h', '1d', 'eve']
 export const ISSUE_TYPES = ['ac', 'wifi', 'noise', 'cleanliness', 'furniture', 'other']
 export const NOTICE_TAGS = ['ac', 'wifi', 'events', 'other']
