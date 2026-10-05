@@ -113,7 +113,7 @@ export default function CalendarPicker({ spaceId, start, end, selected, focus, o
               <span
                 className={`grid size-9 place-items-center rounded-full text-[16px] ${
                   on ? 'bg-navy font-semibold text-white' : d === today ? 'font-bold text-teal' : 'text-ink'
-                } ${isFocus && on ? 'ring-2 ring-navy/30 ring-offset-2 ring-offset-surface' : ''}`}
+                } ${!h ? 'line-through' : ''} ${isFocus && on ? 'ring-2 ring-navy/30 ring-offset-2 ring-offset-surface' : ''}`}
               >
                 {Number(d.slice(8))}
               </span>
@@ -128,18 +128,25 @@ export default function CalendarPicker({ spaceId, start, end, selected, focus, o
           )
         })}
       </div>
-      {spaceId && (
-        <div className="mt-2 flex items-center gap-4 px-1 text-[12px] text-grey-ink">
-          <span className="flex items-center gap-1.5">
-            <span className="size-1.5 rounded-full bg-teal" />
-            {t('cal.free_at_time')}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="size-1.5 rounded-full bg-grey/50" />
-            {t('cal.taken')}
-          </span>
-        </div>
-      )}
+      <div className="mt-2 flex items-center gap-4 px-1 text-[12px] text-grey-ink">
+        {spaceId && (
+          <>
+            <span className="flex items-center gap-1.5">
+              <span className="size-1.5 rounded-full bg-teal" />
+              {t('cal.free_at_time')}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="size-1.5 rounded-full bg-grey/50" />
+              {t('cal.taken')}
+            </span>
+          </>
+        )}
+        {/* Closed days are struck through, so a faded day never reads as fully booked */}
+        <span className="flex items-center gap-1.5">
+          <span className="text-grey-ink/60 line-through">9</span>
+          {t('common.closed')}
+        </span>
+      </div>
     </div>
   )
 }

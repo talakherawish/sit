@@ -7,10 +7,11 @@ import Icon from './Icon'
 
 /**
  * A month you page through, one day picked at a time. `dots(date)` returns the dot classes to show
- * under a day (bookings, free time…), `disabled(date)` greys a day out, `describe(date)` adds to its
+ * under a day (bookings, free time…), `disabled(date)` greys a day out, `closed(date)` also strikes it
+ * through (the building is closed, so it doesn't read as fully booked), `describe(date)` adds to its
  * spoken label. Weeks start on Sunday.
  */
-export default function MonthGrid({ value, onPick, dots = () => [], disabled = () => false, describe = () => '' }) {
+export default function MonthGrid({ value, onPick, dots = () => [], disabled = () => false, closed = () => false, describe = () => '' }) {
   const { t } = useTranslation()
   const lang = useStore((s) => s.lang)
   const now = useStore((s) => s.now)
@@ -63,7 +64,7 @@ export default function MonthGrid({ value, onPick, dots = () => [], disabled = (
               className={`flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-xl disabled:opacity-30 ${d.slice(0, 7) !== cursor.slice(0, 7) ? 'opacity-40' : ''}`}
             >
               <span
-                className={`grid size-9 place-items-center rounded-full text-[16px] ${on ? 'bg-navy font-semibold text-white' : d === today ? 'font-bold text-teal' : 'text-ink'}`}
+                className={`grid size-9 place-items-center rounded-full text-[16px] ${on ? 'bg-navy font-semibold text-white' : d === today ? 'font-bold text-teal' : 'text-ink'} ${closed(d) ? 'line-through' : ''}`}
               >
                 {Number(d.slice(8))}
               </span>

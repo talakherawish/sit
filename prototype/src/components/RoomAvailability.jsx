@@ -29,7 +29,8 @@ export default function RoomAvailability({ id, day, onDay, range, onRange, readO
   const lang = useStore((s) => s.lang)
   const today = dateOf(now)
   const last = addDays(today, 60)
-  const closed = (d) => d < today || d > last || !hoursFor(data, d)
+  const shut = (d) => !hoursFor(data, d)
+  const closed = (d) => d < today || d > last || shut(d)
   const dot = (d) => {
     if (closed(d)) return []
     const n = freeMinutes(data, id, d, now)
@@ -44,6 +45,7 @@ export default function RoomAvailability({ id, day, onDay, range, onRange, readO
           value={day}
           onPick={onDay}
           disabled={closed}
+          closed={shut}
           dots={dot}
           describe={(d) => {
             if (closed(d)) return t('common.closed')
@@ -59,6 +61,10 @@ export default function RoomAvailability({ id, day, onDay, range, onRange, readO
           <span className="flex items-center gap-1.5">
             <span className="size-1.5 rounded-full bg-grey/40" />
             {t('details.full')}
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="text-grey-ink/60 line-through">9</span>
+            {t('common.closed')}
           </span>
         </div>
       </section>
