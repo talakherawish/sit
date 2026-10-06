@@ -398,10 +398,27 @@ export const useStore = create(
         logEvent(s, 'booking_cancelled', { visitor_id: r.id, by })
       }),
 
-    moveBooking: (id, date, start, end) =>
+    /**
+     * Change a booking's room, date and/or time. The version it replaces is kept on the same booking
+     * (`history`, newest first) so its card can show "Before the change". Undo on the toast puts it back.
+     */
+    changeWithUndo: (id, next) => {
+      const prev = JSON.parse(JSON.stringify(get().data.bookings.find((x) => x.id === id)))
+      get().changeBooking(id, next)
+      get().showToast('toast.changed', {}, () =>
+        set((s) => {
+          const i = s.data.bookings.findIndex((x) => x.id === id)
+          s.data.bookings[i] = prev
+          logEvent(s, 'booking_change_undone', { visitor_id: prev.renter_id })
+        }),
+      )
+    },
+
+    changeBooking: (id, { space_id, date, start, end }) =>
       set((s) => {
         const b = s.data.bookings.find((x) => x.id === id)
-        Object.assign(b, { date, start, end })
+        b.history = [{ space_id: b.space_id, date: b.date, start: b.start, end: b.end, changed_at: s.now }, ...(b.history || [])]
+        Object.assign(b, { space_id, date, start, end })
         if (b.reminder) {
           const rAt = reminderAt(date, start, b.reminder)
           if (rAt > s.now) Object.assign(b, { reminder_at: rAt, reminder_sent: false, status: 'awaiting_confirmation' })

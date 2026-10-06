@@ -354,11 +354,22 @@
     "show_all": "Show all",
     "hide": "Hide"
   },
-  "move": {
-    "title": "Move booking",
-    "free_only_one": "Free {{count}}-minute slots",
-    "free_only_other": "Free {{count}}-minute slots",
-    "save": "Save"
+  "change": {
+    "title": "Change booking",
+    "starts": "Starts",
+    "ends": "Ends",
+    "length_h": "{{h}} h",
+    "length_hm": "{{h}} h {{m}} min",
+    "room": "Room",
+    "stay": "Stay here",
+    "taken": "Taken then",
+    "end_then": "Free until {{time}} · end then?",
+    "none_free": "No other room is free then. Try another time.",
+    "earlier": "{{what}} earlier",
+    "later": "{{what}} later",
+    "before": "Before the change",
+    "cancel": "Cancel",
+    "save": "Save changes"
   },
   "reminder_screen": {
     "title": "Reminder",
@@ -688,7 +699,6 @@
     "series_skipped_other": "{{count}} dates were skipped (closed or taken)",
     "calendar": "Added to your calendar",
     "cancel_email": "Cancelled · cancellation email sent",
-    "moved": "Booking moved · email sent",
     "confirmed": "Booking confirmed",
     "report_sent": "Report sent to staff",
     "thanks": "Thanks for your rating!",
@@ -707,7 +717,8 @@
     "err_full": "Public seating is full, so no seat to check {{name}} into",
     "err_already_in": "{{name}} is already checked in",
     "err_nothing_booked": "Nothing booked: the room is taken or {{name}} already has a booking then",
-    "err_clash": "Skipped {{count}} day(s) where {{name}} already has a booking"
+    "err_clash": "Skipped {{count}} day(s) where {{name}} already has a booking",
+    "changed": "Booking changed · email sent"
   },
   "msg": {
     "code": "Your Sit code is {{code}}. It expires in 10 minutes.",

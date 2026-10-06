@@ -5,7 +5,7 @@ import Home from './renter/Home'
 import { BookAhead, RoomDetails, Hours } from './renter/Browse'
 import { Book, SlotTaken, Confirmed } from './renter/Booking'
 import { SignUp, Code, Login } from './renter/Auth'
-import { MyBookings, MoveBooking, Reminder } from './renter/Manage'
+import { MyBookings, ChangeBooking, Reminder } from './renter/Manage'
 import { Report, MyReports } from './renter/Report'
 import { Notifications } from './renter/Notifications'
 import StaffLayout from './staff/StaffLayout'
@@ -38,7 +38,7 @@ export default function App() {
           <Route path="code" element={<Code />} />
           <Route path="login" element={<Login />} />
           <Route path="bookings" element={<MyBookings />} />
-          <Route path="bookings/:id/move" element={<MoveBooking />} />
+          <Route path="bookings/:id/move" element={<ChangeBooking />} />
           <Route path="reminder/:id" element={<Reminder />} />
           <Route path="report" element={<Report />} />
           <Route path="reports" element={<MyReports />} />

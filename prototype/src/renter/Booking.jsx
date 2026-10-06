@@ -11,6 +11,7 @@ import { RoomPhoto } from '../components/RoomPhoto'
 import { useDuration } from '../components/DayTimeline'
 import Icon from '../components/Icon'
 import { NeedLogin } from './RenterLayout'
+import { BookingHistory } from './Manage'
 
 /** R-06 Book a room. With a room and time already picked it is a one-screen review; otherwise the full form. */
 export function Book() {
@@ -365,6 +366,7 @@ export function Confirmed() {
             />
           </GroupRow>
         </Group>
+        <BookingHistory b={b} className="px-1 !text-[15px]" />
         {series > 1 && <p className="px-1 text-[15px] text-grey-ink">{t('confirmed.series', { count: series })}</p>}
         <div className="grid gap-2">
           {/* Confirm any time it's waiting, not only once the reminder has gone out (same as Today) */}

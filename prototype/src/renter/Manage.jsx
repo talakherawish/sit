@@ -3,8 +3,8 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { useReportBooking, useSpaceName, useTemplate } from '../lib/hooks'
-import { ACTIVE, endAbs, freeStarts, hoursFor, startAbs, dateOf, minOfDay, renter as findRenter } from '../lib/logic'
-import { addDays, fmtDate, hm } from '../lib/time'
+import { ACTIVE, endAbs, hoursFor, isFree, startAbs, dateOf, minOfDay, renter as findRenter } from '../lib/logic'
+import { addDays, ceil30, fmtDate, hm } from '../lib/time'
 import { Chip, Confirm, Empty, ScreenTitle, StatusChip } from '../components/ui'
 import Icon from '../components/Icon'
 import MonthGrid from '../components/MonthGrid'
@@ -293,6 +293,7 @@ function BookingCard({ b, onCancel }) {
           <span className="shrink-0 text-[15px] font-medium text-grey-ink">{fmtDate(b.date, lang, { weekday: 'short', day: 'numeric', month: 'short' })}</span>
         </div>
         {st.note && <p className="mt-0.5 text-[13px] text-grey-ink">{st.note}</p>}
+        <BookingHistory b={b} className="mt-2 border-t border-black/[0.06] pt-2" />
       </Link>
       <Actions b={b} st={st} onCancel={onCancel} />
     </article>
@@ -449,8 +450,12 @@ function BookingsCalendar({ bookings, render }) {
   )
 }
 
-/** R-14 Move booking */
-export function MoveBooking() {
+/**
+ * R-14 Change booking: opens filled in with the booking as it is. Time first (date, start, end in 30-minute
+ * steps, so it can get shorter or longer), then the rooms free for that time, with yours pinned on top.
+ * Cancel leaves it as it was; Save keeps the old version on the same booking and offers Undo.
+ */
+export function ChangeBooking() {
   const { id } = useParams()
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -458,64 +463,191 @@ export function MoveBooking() {
   const s = useStore()
   const b = s.data.bookings.find((x) => x.id === id)
   const [date, setDate] = useState(b?.date)
-  const [start, setStart] = useState(null)
-  if (!b) return <ScreenTitle id="R-14" title={t('move.title')} back />
-  const dur = b.end - b.start
-  const days = Array.from({ length: 14 }, (_, i) => addDays(dateOf(s.now), i)).filter((d) => hoursFor(s.data, d))
-  const slots = freeStarts(s.data, b.space_id, date, s.now, dur, b.id).filter((m) => !(date === b.date && m === b.start))
+  const [start, setStart] = useState(b?.start)
+  const [end, setEnd] = useState(b?.end)
+  const [room, setRoom] = useState(b?.space_id)
+  if (!b) return <ScreenTitle id="R-14" title={t('change.title')} back />
+
+  const today = dateOf(s.now)
+  const days = Array.from({ length: 14 }, (_, i) => addDays(today, i)).filter((d) => hoursFor(s.data, d))
+  const openFrom = (d) => {
+    const dh = hoursFor(s.data, d)
+    return { from: d === today ? Math.max(dh.open, ceil30(minOfDay(s.now))) : dh.open, close: dh.close }
+  }
+  const { from: earliest, close } = hoursFor(s.data, date) ? openFrom(date) : { from: start, close: end }
+  // Moving the start keeps the length; moving the end changes it. Never under 30 minutes, never past closing.
+  const moveStart = (d) => {
+    const ns = Math.min(Math.max(start + d, earliest), close - 30)
+    setStart(ns)
+    setEnd(Math.min(ns + (end - start), close))
+  }
+  const moveEnd = (d) => setEnd(Math.min(Math.max(end + d, start + 30), close))
+  const pickDay = (d) => {
+    const { from, close: c } = openFrom(d)
+    const ns = Math.min(Math.max(start, from), c - 30)
+    setDate(d)
+    setStart(ns)
+    setEnd(Math.min(ns + (end - start), c))
+  }
+
+  const free = (spId) => isFree(s.data, spId, date, start, end, b.id)
+  // Your room first, then the others that are free for this time
+  const rooms = [s.data.spaces.find((x) => x.id === b.space_id), ...s.data.spaces.filter((x) => x.id !== b.space_id && free(x.id))]
+  // If your room is taken partway, how late it stays free from this start (for a one-tap "end then")
+  let freeUntil = start
+  while (freeUntil < close && isFree(s.data, b.space_id, date, start, freeUntil + 30, b.id)) freeUntil += 30
+
+  const changed = room !== b.space_id || date !== b.date || start !== b.start || end !== b.end
+  const ok = changed && free(room)
+  const short = (d) => fmtDate(d, s.lang, { weekday: 'short', day: 'numeric', month: 'short' })
+  const len = end - start
   const save = () => {
-    s.moveBooking(b.id, date, start, start + dur)
-    s.showToast('toast.moved')
+    s.changeWithUndo(b.id, { space_id: room, date, start, end })
     navigate('/r/bookings', { replace: true })
   }
+
   return (
     <>
-      <ScreenTitle id="R-14" title={t('move.title')} back />
-      <div className="space-y-4 px-4">
-        <p className="rounded-2xl bg-surface p-4">
-          {name(b.space_id)} · {fmtDate(b.date, s.lang)} ·{' '}
-          <span dir="ltr">
-            {hm(b.start)}–{hm(b.end)}
-          </span>
-        </p>
-        <div>
-          <p className="mb-1 text-sm font-semibold">{t('book.date')}</p>
+      <ScreenTitle id="R-14" title={t('change.title')} back />
+      <div className="space-y-6 px-4 pb-6">
+        <section>
+          <p className="mb-2 px-1 text-[13px] font-semibold text-grey-ink">{t('book.date')}</p>
           <div className="fade-x no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
             {days.map((d) => (
-              <Chip
-                key={d}
-                active={d === date}
-                onClick={() => {
-                  setDate(d)
-                  setStart(null)
-                }}
-              >
-                {fmtDate(d, s.lang)}
+              <Chip key={d} active={d === date} onClick={() => pickDay(d)}>
+                {short(d)}
               </Chip>
             ))}
           </div>
-        </div>
-        <div>
-          <p className="mb-1 text-sm font-semibold">{t('move.free_only', { count: dur })}</p>
-          <div className="flex flex-wrap gap-2">
-            {slots.length ? (
-              slots.map((m) => (
-                <Chip key={m} active={start === m} onClick={() => setStart(m)}>
-                  <span dir="ltr">
-                    {hm(m)}–{hm(m + dur)}
-                  </span>
-                </Chip>
-              ))
-            ) : (
-              <p className="text-grey-ink">{t('room.no_free_today')}</p>
-            )}
+        </section>
+
+        <section>
+          <p className="mb-2 flex justify-between px-1 text-[13px] font-semibold text-grey-ink">
+            {t('book.time')}
+            <span className="font-medium">{len % 60 ? t('change.length_hm', { h: Math.floor(len / 60), m: len % 60 }) : t('change.length_h', { h: len / 60 })}</span>
+          </p>
+          <div className="divide-y divide-black/[0.06] rounded-2xl bg-surface">
+            <Stepper label={t('change.starts')} value={start} onDown={() => moveStart(-30)} onUp={() => moveStart(30)} canDown={start > earliest} canUp={start < close - 30} />
+            <Stepper label={t('change.ends')} value={end} onDown={() => moveEnd(-30)} onUp={() => moveEnd(30)} canDown={end > start + 30} canUp={end < close} />
           </div>
+        </section>
+
+        <section>
+          <p className="mb-2 px-1 text-[13px] font-semibold text-grey-ink">{t('change.room')}</p>
+          <div className="space-y-2">
+            {rooms.map((sp) => {
+              const mine = sp.id === b.space_id
+              const open = free(sp.id)
+              const on = room === sp.id
+              return (
+                <div key={sp.id} className={`rounded-2xl bg-surface ${on && open ? 'ring-2 ring-navy' : ''}`}>
+                  <button
+                    type="button"
+                    disabled={!open}
+                    onClick={() => setRoom(sp.id)}
+                    aria-pressed={on}
+                    className="flex min-h-14 w-full items-center gap-3 px-4 py-2 text-start disabled:opacity-60"
+                  >
+                    <span className={`grid size-5 shrink-0 place-items-center rounded-full ${on && open ? 'bg-navy text-white' : 'ring-2 ring-black/15 ring-inset'}`}>
+                      {on && open && <Icon name="check" size={12} className="stroke-[3]" />}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[15px] font-semibold">{name(sp.id)}</span>
+                      <span className="block text-[13px] text-grey-ink">{t('map.people', { n: sp.capacity })}</span>
+                    </span>
+                    {mine && (
+                      <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[12px] font-semibold ${open ? 'bg-teal/15 text-[#2f5656]' : 'bg-red/10 text-[#a32f2f]'}`}>
+                        {open ? t('change.stay') : t('change.taken')}
+                      </span>
+                    )}
+                  </button>
+                  {mine && !open && freeUntil >= start + 30 && (
+                    <button
+                      type="button"
+                      className="-mt-1 mb-3 ms-12 min-h-8 text-[13px] font-semibold text-navy"
+                      onClick={() => {
+                        setEnd(freeUntil)
+                        setRoom(sp.id)
+                      }}
+                    >
+                      {t('change.end_then', { time: hm(freeUntil) })}
+                    </button>
+                  )}
+                </div>
+              )
+            })}
+            {rooms.length === 1 && !free(b.space_id) && <p className="px-1 text-[13px] text-grey-ink">{t('change.none_free')}</p>}
+          </div>
+        </section>
+
+        {changed && (
+          <div className="rounded-2xl bg-surface p-4 text-[15px]">
+            <p className="text-grey-ink line-through decoration-1">
+              {name(b.space_id)} · {short(b.date)} ·{' '}
+              <span dir="ltr">
+                {hm(b.start)}–{hm(b.end)}
+              </span>
+            </p>
+            <p className="mt-1 font-semibold">
+              {name(room)} · {short(date)} ·{' '}
+              <span dir="ltr">
+                {hm(start)}–{hm(end)}
+              </span>
+            </p>
+          </div>
+        )}
+
+        <div className="grid grid-cols-2 gap-2">
+          <button className="btn-secondary" onClick={() => navigate(-1)}>
+            {t('change.cancel')}
+          </button>
+          <button className="btn-primary" disabled={!ok} onClick={save}>
+            {t('change.save')}
+          </button>
         </div>
-        <button className="btn-primary w-full" disabled={start === null} onClick={save}>
-          {t('move.save')}
-        </button>
       </div>
     </>
+  )
+}
+
+/** A time with − / + either side, in 30-minute steps. */
+function Stepper({ label, value, onDown, onUp, canDown, canUp }) {
+  const { t } = useTranslation()
+  const btn = 'grid size-10 place-items-center rounded-full bg-black/[0.05] text-ink active:bg-black/[0.1] disabled:opacity-30'
+  return (
+    <div className="flex min-h-14 items-center gap-2 px-4">
+      <span className="flex-1 text-[15px]">{label}</span>
+      <button type="button" className={btn} disabled={!canDown} onClick={onDown} aria-label={t('change.earlier', { what: label })}>
+        <Icon name="minus" size={18} />
+      </button>
+      <span dir="ltr" className="w-16 text-center font-head text-[20px] font-bold tabular-nums">
+        {hm(value)}
+      </span>
+      <button type="button" className={btn} disabled={!canUp} onClick={onUp} aria-label={t('change.later', { what: label })}>
+        <Icon name="plus" size={18} />
+      </button>
+    </div>
+  )
+}
+
+/** What a booking was before it was changed, newest first, kept on the same booking. */
+export function BookingHistory({ b, className = '' }) {
+  const { t } = useTranslation()
+  const lang = useStore((s) => s.lang)
+  const name = useSpaceName()
+  if (!b.history?.length) return null
+  return (
+    <div className={`text-[13px] text-grey-ink ${className}`}>
+      <p className="font-semibold">{t('change.before')}</p>
+      {b.history.map((v, i) => (
+        <p key={i} className="line-through decoration-1">
+          {name(v.space_id)} · {fmtDate(v.date, lang, { weekday: 'short', day: 'numeric', month: 'short' })} ·{' '}
+          <span dir="ltr">
+            {hm(v.start)}–{hm(v.end)}
+          </span>
+        </p>
+      ))}
+    </div>
   )
 }
 
