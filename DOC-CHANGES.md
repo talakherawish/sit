@@ -128,7 +128,7 @@ Answers to the follow-up questions: repeat = "Weekly/Monthly + Until date"; room
 | **Reception's bookings table** shows Awaiting confirmation / Confirmed instead of "Upcoming"; repeating bookings get a repeat mark | When a renter confirms from Today, the desk sees it straight away | Visibility of system status |
 | **Reports inbox** shows which booking a report is about ("Booking · Thu 1 Oct · 09:00–10:00") | Reports sent from a booking carry it; staff shouldn't have to ask | Context; fewer steps |
 | **People:** a repeating booking counts once in "Upcoming" | Same rule as My bookings (Tala showed 37 upcoming) | Consistency |
-| **Demo** header describes the new journey: confirm Tala's 13:30 on Today and watch reception change; check someone in and watch free seats drop on her phone; answer her report and the alert reaches her | The presentation should narrate a journey (Diaa's main point) | Storytelling |
+| **Demo** has no header: just the phone and the reception dashboard, the same height, filling the screen, with a small Reset demo button in the corner. The journey (confirm Tala's 13:30 and watch reception change; check someone in and watch free seats drop on her phone; answer her report and the alert reaches her) is narrated in the presentation instead | The header took space from the dashboard and made it hard to read in a screen recording; the journey is still told (Diaa's main point) | Storytelling; aesthetic and minimalist design |
 
 ### 1c. Earlier decisions this round overrides
 

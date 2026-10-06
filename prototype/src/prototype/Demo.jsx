@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useStore } from '../store'
 import { minOfDay } from '../lib/logic'
 import { hm } from '../lib/time'
-import Icon, { TechnoparkLogo } from '../components/Icon'
+import Icon from '../components/Icon'
 
 const BASE = import.meta.env.BASE_URL
 
@@ -11,9 +11,11 @@ const BASE = import.meta.env.BASE_URL
 const PHONE = { w: 390, h: 800, bezel: 11, status: 44 }
 const PHONE_W = PHONE.w + PHONE.bezel * 2
 const PHONE_H = PHONE.h + PHONE.status + PHONE.bezel * 2
-const DESK = { w: 1280, h: 800, bar: 36 }
-const DESK_H = DESK.h + DESK.bar
-const GAP = 40
+// The desktop frame is exactly as tall as the phone, so the two line up top and bottom.
+const DESK_H = PHONE_H
+const DESK = { w: 1280, h: DESK_H - 36, bar: 36 }
+const GAP = 72
+const CAPTION = 40 // label under each screen
 // "Time & scenarios" button hidden while we rework it; the panel still opens with Ctrl+. or a triple tap on the staff logo.
 const SHOW_PANEL_BUTTON = false
 
@@ -34,9 +36,10 @@ export default function Demo() {
     const fit = () => {
       const el = stage.current
       if (!el) return
-      const w = el.clientWidth - 24
-      const h = el.clientHeight - 64 // room for the labels
-      setScale(Math.min(1, w / (PHONE_W + GAP + DESK.w), h / Math.max(PHONE_H, DESK_H)))
+      const w = el.clientWidth - 48
+      const h = el.clientHeight - 32 - CAPTION
+      // No upper cap: on a big screen the frames grow to fill it (for screen recording).
+      setScale(Math.min(w / (PHONE_W + GAP + DESK.w), h / PHONE_H))
     }
     fit()
     window.addEventListener('resize', fit)
@@ -45,20 +48,15 @@ export default function Demo() {
 
   return (
     <div className="flex h-dvh flex-col bg-surface">
-      <header className="flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-black/[0.06] bg-white px-6 py-3">
-        <TechnoparkLogo />
-        <div className="min-w-0 flex-1">
-          <h1 className="text-[17px] font-semibold">{t('demo.title')}</h1>
-          <p className="text-[13px] text-grey-ink">{t('demo.hint')}</p>
-        </div>
+      <div className="fixed top-3 right-3 z-10 flex gap-2">
         {SHOW_PANEL_BUTTON && (
-          <button className="btn-secondary !min-h-10 !text-[15px]" onClick={() => set({ drawerOpen: true })}>
-            <Icon name="clock" size={18} />
+          <button className="btn-secondary !min-h-9 !text-[14px]" onClick={() => set({ drawerOpen: true })}>
+            <Icon name="clock" size={16} />
             {t('demo.panel')}
           </button>
         )}
         <button
-          className="btn-secondary !min-h-10 !text-[15px]"
+          className="btn-secondary !min-h-9 !text-[14px] opacity-50 transition-opacity hover:opacity-100"
           onClick={() => {
             reset()
             setFrames(frames + 1)
@@ -66,7 +64,7 @@ export default function Demo() {
         >
           {t('demo.reset')}
         </button>
-      </header>
+      </div>
 
       <div ref={stage} className="flex min-h-0 flex-1 items-center justify-center overflow-hidden" dir="ltr">
         <div className="flex items-start" style={{ gap: GAP * scale }}>
